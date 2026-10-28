@@ -1,0 +1,15 @@
+# Private runtime inputs and generated output never belong in Git.
+.local/
+**/*.json
+!source-manifest.json
+**/dashboard.html
+**/board.html
+**/__pycache__/
+**/*.pyc
+**/raw/
+**/out/
+**/logs/
+**/manual/
+**/ref/
+*.bak
+.DS_Store

@@ -1,0 +1,96 @@
+{
+  "baseline": "v1.0.0",
+  "captured_date": "2026-10-27",
+  "files": [
+    {
+      "path": "工具/求职进度面板/make_dashboard.py",
+      "sha256": "53a62fb057d39ab7304b13548eef994d7e2968bdcf98cb8390b1145689fb705b",
+      "export_sha256": "445fcb6ff61ada5f6f0e77a5316b3ade297c379ca5bba5fcd111202b7402b420"
+    },
+    {
+      "path": "工具/求职进度面板/oa_analytics.py",
+      "sha256": "f5f1f64f259747ebed4135b34552d3bf1d375e4e7e9da96b3afd080c02f760a9",
+      "export_sha256": "53c5076a6245bfac230d140f804bd892509d9a468247ca601884ff236efc01f0"
+    },
+    {
+      "path": "工具/求职进度面板/internship_updates.py",
+      "sha256": "abf4ba9c97d0ce393a8e1eb3ca4b252d1d2b1ed78578eca95e1710502830c980",
+      "export_sha256": "abf4ba9c97d0ce393a8e1eb3ca4b252d1d2b1ed78578eca95e1710502830c980"
+    },
+    {
+      "path": "工具/求职进度面板/opportunity_updates.py",
+      "sha256": "77faff5b97363be31db435ef14bf400410af39a955e7b0bd72979da818854c2e",
+      "export_sha256": "77faff5b97363be31db435ef14bf400410af39a955e7b0bd72979da818854c2e"
+    },
+    {
+      "path": "工具/求职进度面板/dashboard_template.html",
+      "sha256": "148a51910d373fc5fe8126eb2152102e215fce0d9f89f75ea8865035fc79eac8",
+      "export_sha256": "c5659afe0f169c63641bd14aee1be133798a8871313f90e1d1f57acdce3d9803"
+    },
+    {
+      "path": "工具/求职进度面板/company_filter.js",
+      "sha256": "ea0c6c4d13c896ec9011b7365ca5dc19980931d36ac99361fc0edd6e4aa692e6",
+      "export_sha256": "ea0c6c4d13c896ec9011b7365ca5dc19980931d36ac99361fc0edd6e4aa692e6"
+    },
+    {
+      "path": "工具/求职进度面板/company_filter.css",
+      "sha256": "9e0536332dabf46157964f14fb07a3cca417bef4661e25f4502ce9a33a141c61",
+      "export_sha256": "9e0536332dabf46157964f14fb07a3cca417bef4661e25f4502ce9a33a141c61"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/render_board.py",
+      "sha256": "f9d6ae2e3d30895dff251f10f996c38dff9a033b0ef41276dc52fbb46ebb0138",
+      "export_sha256": "f9d6ae2e3d30895dff251f10f996c38dff9a033b0ef41276dc52fbb46ebb0138"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/app_status.py",
+      "sha256": "32f23d63a1b1b2bb7bd9743a4d2b95a0a3e4c8708e068e6ef9e79b845e05efd2",
+      "export_sha256": "f5c55956d081359584618309ea1927c0363e728296cabcbde58be341cae447a0"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/common.py",
+      "sha256": "deb144a78446dcd31d0da3cf54da3f9d47d4d9dbb1dd7a94e6c8a7f2c1823667",
+      "export_sha256": "deb144a78446dcd31d0da3cf54da3f9d47d4d9dbb1dd7a94e6c8a7f2c1823667"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/apply_links.py",
+      "sha256": "c400cb319d27aca3573a677e89fb59834b25dd93adcbd6d1f48c385d9f378a37",
+      "export_sha256": "c400cb319d27aca3573a677e89fb59834b25dd93adcbd6d1f48c385d9f378a37"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/render_notes.py",
+      "sha256": "8ba8a40ae44af0bce9e384996038c7d62087358288c41209e4b17678fce97488",
+      "export_sha256": "3a4120c9cd995441bf3c919ba0f6f35366ce7e0729ccf488cacb986048984576"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/parse_jd.py",
+      "sha256": "b62a7763be05a31ee7b5069d388b962fc8b2cee77e10c4f4b42d8f4f19257ae9",
+      "export_sha256": "b62a7763be05a31ee7b5069d388b962fc8b2cee77e10c4f4b42d8f4f19257ae9"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/visa_signals.py",
+      "sha256": "c5ee12453ea421f52c3c6a42621e5fe07feb168fbd0d4127eb961c5926f1e3a2",
+      "export_sha256": "0dc82c9084af3d8fffa7d9a8e41378595419ea44c8d79c6dbcc3da5718722c0d"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/make_registry.py",
+      "sha256": "fe46d1451574c9a435e998fa4dfdaa418554d3281e289a0ef8835c74ca01569b",
+      "export_sha256": "fe46d1451574c9a435e998fa4dfdaa418554d3281e289a0ef8835c74ca01569b"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/board_template.html",
+      "sha256": "39679bbc64f233a6a4c566b97c98039d00e0ff5ced896c3ecfef1c23c3d73dfe",
+      "export_sha256": "39679bbc64f233a6a4c566b97c98039d00e0ff5ced896c3ecfef1c23c3d73dfe"
+    },
+    {
+      "path": "工具/岗位有效性检查/check_jobs.py",
+      "sha256": "f2b8df07342acab07d1040480aafdec4569c3d5552f4c1e28e373e25fda64e7d",
+      "export_sha256": "f2b8df07342acab07d1040480aafdec4569c3d5552f4c1e28e373e25fda64e7d"
+    }
+  ],
+  "packaging_notes": [
+    "Personal case-study comments and resume example names generalized.",
+    "The note-export CLI derives its default vault path from its installation directory.",
+    "The wage-region default is preserved as configurable legacy behavior."
+  ]
+}

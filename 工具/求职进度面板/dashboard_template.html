@@ -1,0 +1,2346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>求职面板</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --wash: #f3f2ee;
+  --ink: #0b0b0b;
+  --ink2: #52514e;
+  --muted: #6b6964;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.10);
+  --c-pending: #b58200;
+  --c-waiting: #2a78d6;
+  --c-progress: #0ca30c;
+  --c-rejected: #d03b3b;
+  --c-closed: #898781;
+  --c-paused: #927454;
+  --c-bar: #2a78d6;
+  --shadow: 0 1px 2px rgba(11, 11, 11, 0.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --wash: #222220;
+    --ink: #ffffff;
+    --ink2: #c3c2b7;
+    --muted: #9a988f;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --c-pending: #c98500;
+    --c-waiting: #3987e5;
+    --c-bar: #3987e5;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d;
+  --surface: #1a1a19;
+  --wash: #222220;
+  --ink: #ffffff;
+  --ink2: #c3c2b7;
+  --muted: #9a988f;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --border: rgba(255, 255, 255, 0.10);
+  --c-pending: #c98500;
+  --c-waiting: #3987e5;
+  --c-bar: #3987e5;
+  --shadow: none;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--page);
+  color: var(--ink);
+  font: 14px/1.5 system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 24px 16px 64px; }
+header.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+header.top h1 { font-size: 22px; line-height: 1.25; margin: 0 0 4px; font-weight: 650; letter-spacing: -0.01em; }
+header.top .meta { color: var(--ink2); font-size: 13px; }
+button, input, select { font: inherit; color: inherit; }
+.btn {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; cursor: pointer; white-space: nowrap;
+}
+.btn:hover { background: var(--wash); }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: var(--shadow); padding: 16px;
+}
+section { margin-top: 16px; }
+h2 { font-size: 15px; font-weight: 650; margin: 0 0 12px; }
+h2 .sub { font-weight: 400; color: var(--ink2); font-size: 13px; margin-left: 8px; }
+
+/* KPI row */
+.kpis { display: grid; grid-template-columns: 1.4fr repeat(6, 1fr); gap: 12px; }
+.kpi { padding: 14px 16px; }
+.kpi .label { color: var(--ink2); font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.kpi .value { font-size: 30px; font-weight: 650; line-height: 1.15; margin-top: 4px; }
+.kpi .value small { font-size: 14px; font-weight: 500; color: var(--ink2); margin-left: 4px; }
+.kpi .cap { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.kpi.is-hidden { border-style: dashed; }
+.filter-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 12px 0; color: var(--ink2); font-size: 13px; }
+.filter-summary button, .lane .empty button { font: inherit; color: var(--c-waiting); border: 1px solid var(--border); background: var(--surface); border-radius: 6px; padding: 4px 9px; cursor: pointer; }
+.chip .off-label { font-size: 11px; margin-left: 2px; }
+.kpi.hero .value { font-size: 34px; }
+
+/* status key */
+.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+.g-pending .dot, .dot.g-pending { background: var(--c-pending); }
+.g-waiting .dot, .dot.g-waiting { background: var(--c-waiting); }
+.g-progress .dot, .dot.g-progress { background: var(--c-progress); }
+.g-rejected .dot, .dot.g-rejected { background: var(--c-rejected); }
+.g-closed .dot, .dot.g-closed { background: var(--c-closed); }
+.g-paused .dot, .dot.g-paused { background: var(--c-paused); }
+.g-archived .dot, .dot.g-archived { background: var(--c-closed); }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  font-size: 12px; padding: 1px 8px 1px 6px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+}
+.badge .ico { font-size: 11px; color: var(--ink2); }
+
+/* filters */
+.filters { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin-top: 20px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
+  border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px 4px 10px;
+  background: var(--surface); font-size: 13px;
+}
+.chip[aria-pressed="false"] { opacity: 0.45; }
+.chip[aria-pressed="false"] .dot { background: transparent !important; box-shadow: inset 0 0 0 1.5px var(--muted); }
+.chip .n { color: var(--ink2); font-variant-numeric: tabular-nums; }
+.search { border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; background: var(--surface); min-width: 200px; }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; background: transparent; padding: 5px 10px; cursor: pointer; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--wash); font-weight: 600; }
+.seg button + button { border-left: 1px solid var(--border); }
+.filters .lbl { color: var(--ink2); font-size: 13px; }
+
+/* board：每个阶段一条横向泳道，卡片在泳道内排成网格 */
+.board { display: flex; flex-direction: column; gap: 10px; }
+.lane { background: var(--wash); border-radius: 12px; padding: 10px 12px 12px; }
+.lane-h { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; font-weight: 600; font-size: 13.5px; padding: 0 2px 8px; }
+.lane-h .ico { color: var(--ink2); width: 14px; text-align: center; }
+.lane-h .n { color: var(--ink2); font-weight: 400; font-variant-numeric: tabular-nums; }
+.lane-h .hint { margin-left: auto; color: var(--ink2); font-weight: 400; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.lane-h .hint.warn { color: var(--ink); font-weight: 600; }
+.lane-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(var(--cardw, 240px), 100%), 1fr)); gap: 8px; }
+.lane.act .lane-cards { --cardw: 300px; }
+.empty { color: var(--muted); font-size: 13px; padding: 2px 2px 0; }
+.bcard {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 12px; cursor: pointer; position: relative; min-width: 0;
+  display: flex; flex-direction: column;
+}
+.bcard:hover { border-color: var(--axis); }
+.bcard:focus-visible { outline: 2px solid var(--c-waiting); outline-offset: 1px; }
+.bcard.overdue { box-shadow: inset 3px 0 0 var(--ink); }
+.bcard .co { font-weight: 650; display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.bcard .co .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.bcard .co .cnt { color: var(--ink2); font-weight: 400; font-size: 12px; flex: none; }
+.bcard .co .stg { margin-left: auto; flex: none; font-weight: 500; font-size: 11.5px; color: var(--ink); border: 1px solid var(--border); border-radius: 999px; padding: 0 8px; display: inline-flex; align-items: center; gap: 5px; }
+.bcard ul { list-style: none; margin: 3px 0 0; padding: 0; }
+.bcard li { font-size: 12.5px; color: var(--ink); padding: 1px 0; line-height: 1.45; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bcard li.more { color: var(--muted); }
+.bcard .when { font-size: 12px; color: var(--muted); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.bcard .nxt { font-size: 12.5px; color: var(--ink2); margin-top: 6px; line-height: 1.5; }
+.bcard .nxt b { color: var(--ink); font-weight: 600; margin-right: 6px; font-variant-numeric: tabular-nums; }
+.bcard.overdue .nxt b { font-weight: 700; }
+.bcard .clamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.bcard .clamp.two { -webkit-line-clamp: 2; }
+.bcard .note { font-size: 12px; color: var(--ink2); margin-top: 4px; line-height: 1.45; }
+/* 等回音：已等天数 / 止损日 的细进度条（轨道是同色的浅一档） */
+.bcard .wait { margin-top: auto; padding-top: 8px; }
+.meter { height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--c-waiting) 18%, transparent); overflow: hidden; }
+.meter > i { display: block; height: 100%; border-radius: 2px; background: var(--c-waiting); }
+.bcard .wait .lbl { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bcard.overdue .wait .lbl .w { color: var(--ink); font-weight: 600; }
+.lane-more { margin-top: 8px; }
+.lane-more button { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 4px 12px; cursor: pointer; font-size: 12.5px; color: var(--ink2); }
+.lane-more button:hover { background: var(--wash); color: var(--ink); }
+/* 已结束：一家一个小标签 */
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap;
+  border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px 3px 8px;
+  background: var(--surface); font-size: 12.5px; color: var(--ink); font: inherit; font-size: 12.5px;
+}
+.pill:hover { border-color: var(--axis); }
+.pill:focus-visible { outline: 2px solid var(--c-waiting); outline-offset: 1px; }
+.pill .ico { color: var(--ink2); font-size: 11px; }
+.pill .cnt { color: var(--ink2); font-size: 12px; }
+.pill .d { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.history-note { color: var(--muted); font-size: 12px; }
+.scope-note { color: var(--muted); font-size: 12px; margin: 8px 0 12px; }
+
+/* upcoming */
+.two { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: stretch; }
+.up-list { list-style: none; margin: 0; padding: 0; }
+.up-list li { display: grid; grid-template-columns: 62px 1fr; gap: 10px; padding: 8px 0; border-top: 1px solid var(--grid); font-size: 13px; }
+.up-list li:first-child { border-top: 0; padding-top: 0; }
+.up-list .d { font-weight: 650; font-variant-numeric: tabular-nums; }
+.up-list .d small { display: block; color: var(--muted); font-weight: 400; font-size: 11.5px; }
+.up-list .c { font-weight: 600; }
+.up-list .a { color: var(--ink2); }
+
+/* timeline */
+.tl-company-filter { margin-bottom: 12px; }
+.tl-company-filter .jcf-panel { max-width: 760px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink2); margin-bottom: 10px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend svg { overflow: visible; }
+.tl { display: grid; grid-template-columns: var(--labw, 230px) minmax(0, 1fr); }
+.tl-labels .row, .tl-labels .axis-spacer { height: var(--rowh); display: flex; align-items: center; gap: 8px; padding-right: 10px; min-width: 0; }
+.tl-labels .row { font-size: 12.5px; cursor: pointer; }
+.tl-labels .row .co { font-weight: 650; white-space: nowrap; flex: none; max-width: 55%; overflow: hidden; text-overflow: ellipsis; }
+.tl-labels .row .ti { color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.tl-labels .row.cont .co { visibility: hidden; }
+.tl-labels .row .rq2 { flex: none; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+.tl-svg { display: block; width: 100%; overflow: visible; }
+.tl-note { color: var(--muted); font-size: 12px; margin-top: 8px; }
+svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
+.hit { fill: transparent; cursor: pointer; outline: none; }
+.hit:focus-visible { stroke: var(--ink); stroke-width: 1.5; }
+
+/* cadence */
+.cad-wrap { position: relative; }
+
+/* table */
+.tbl-wrap { }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { font-weight: 600; color: var(--ink2); font-size: 12.5px; white-space: nowrap; cursor: pointer; user-select: none; position: sticky; top: 0; background: var(--surface); }
+th[aria-sort="ascending"]::after { content: " ↑"; }
+th[aria-sort="descending"]::after { content: " ↓"; }
+td.num, td.date { font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.app { cursor: pointer; }
+tr.app:hover td { background: var(--wash); }
+tr.app.flash td { animation: flash 1.6s ease-out; }
+@keyframes flash { from { background: color-mix(in srgb, var(--c-waiting) 22%, transparent); } to { background: transparent; } }
+td .t { font-weight: 600; }
+.show-sm { display: none !important; }
+td .rq { color: var(--muted); font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+td .sm { color: var(--ink2); font-size: 12.5px; }
+tr.detail td { background: var(--wash); padding: 10px 14px 14px; }
+.ev { list-style: none; margin: 0; padding: 0; }
+.ev li { display: grid; grid-template-columns: 96px 110px 1fr; gap: 10px; padding: 5px 0; font-size: 12.5px; border-top: 1px solid var(--grid); }
+.ev li:first-child { border-top: 0; }
+.ev .d { font-variant-numeric: tabular-nums; color: var(--ink2); }
+.ev .ty { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.ev .links a { margin-left: 8px; font-size: 12px; color: var(--ink2); }
+.det-meta { font-size: 12.5px; color: var(--ink2); margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.det-meta a { color: var(--ink); }
+.conf { margin-top: 8px; font-size: 12.5px; color: var(--ink2); }
+.conf li { margin: 2px 0; }
+
+/* 医疗 AI 扫描池 */
+.hc-meta { color: var(--ink2); font-size: 12.5px; margin: -4px 0 12px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.hc-meta a { color: var(--ink); }
+.hc-meta .warn { color: var(--ink); font-weight: 600; }
+.hc-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--ink2); margin-bottom: 8px; }
+.hc-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex: none; }
+.sw.todo, .seg-todo { background: transparent; box-shadow: inset 0 0 0 1.5px var(--axis); }
+.hc-rows { display: grid; grid-template-columns: 112px minmax(0, 1fr) minmax(0, 260px); gap: 8px 12px; align-items: center; }
+.hc-rows .hc-tl { font-weight: 600; font-size: 13px; white-space: nowrap; }
+.hc-rows .hc-tl small { color: var(--muted); font-weight: 400; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.hc-bar { display: flex; gap: 2px; height: 18px; }
+.hc-bar > div { height: 100%; min-width: 3px; cursor: default; }
+.hc-bar > div:first-child { border-radius: 4px 0 0 4px; }
+.hc-bar > div:last-child { border-radius: 0 4px 4px 0; }
+.hc-bar > div:only-child { border-radius: 4px; }
+.hc-bar > div:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.hc-rows .br { color: var(--ink2); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.hc-rows .br b { color: var(--ink); font-weight: 600; }
+.hc-sent { margin-top: 12px; font-size: 12.5px; color: var(--ink2); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.hc-sent button { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 1px 9px; cursor: pointer; font-size: 12px; }
+.hc-sent button:hover { background: var(--wash); }
+.hc-h3 { font-size: 13.5px; font-weight: 650; margin: 16px 0 6px; }
+.hc-h3 .sub { font-weight: 400; color: var(--ink2); font-size: 12.5px; margin-left: 6px; }
+table.hc-tbl th { position: static; cursor: default; }
+table.hc-tbl td a { color: var(--ink); }
+.hc-new { font-size: 11px; color: var(--ink2); border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; margin-left: 4px; white-space: nowrap; }
+details.hc-more { margin-top: 10px; }
+details.hc-more summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }
+.tag-hc { display: inline-block; font-size: 11px; color: var(--ink2); border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; margin-top: 3px; white-space: nowrap; }
+.chip.hc-toggle[aria-pressed="false"] { opacity: 1; }
+.chip.hc-toggle[aria-pressed="true"] { background: var(--wash); font-weight: 600; border-color: var(--axis); }
+.up-list li.dl .c::after { content: "医疗 AI 待投"; font-weight: 400; font-size: 11px; color: var(--ink2); border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; margin-left: 6px; }
+@media (max-width: 600px) {
+  .hc-rows { grid-template-columns: 1fr; gap: 4px; }
+  .hc-rows .br { margin-bottom: 8px; }
+}
+
+details.checks summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+details.checks ul { margin: 10px 0 0; padding-left: 20px; font-size: 13px; color: var(--ink2); }
+details.checks li { margin: 4px 0; }
+details.checks li b { color: var(--ink); }
+
+footer { margin-top: 24px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+footer code { font-size: 11.5px; }
+
+/* tooltip */
+#tip {
+  position: fixed; z-index: 50; pointer-events: none; max-width: 320px;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14); padding: 8px 10px;
+  font-size: 12.5px; line-height: 1.45; display: none;
+}
+#tip .h { color: var(--ink2); font-size: 12px; margin-bottom: 4px; }
+#tip .r { display: grid; grid-template-columns: 12px 1fr; gap: 6px; margin-top: 3px; }
+#tip .r i { display: block; width: 12px; height: 2px; margin-top: 8px; border-radius: 1px; }
+#tip .r b { font-weight: 650; }
+#tip .r span { color: var(--ink2); }
+
+@media (max-width: 1000px) {
+  .kpis { grid-template-columns: repeat(3, 1fr); }
+  .two { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .kpi.hero { grid-column: 1 / -1; }
+  header.top { flex-direction: column; }
+  .search { min-width: 0; flex: 1; }
+  .ev li { grid-template-columns: 80px 1fr; }
+  .ev li .sm2 { grid-column: 1 / -1; }
+  th.hide-sm, td.hide-sm { display: none; }
+  .tbl-wrap { overflow-x: auto; }
+  th { position: static; }
+  th, td { padding: 7px 6px; }
+  td.latest .sm { display: none; }
+  td.latest .date { white-space: normal; }
+  td .rq { word-break: break-all; }
+  .show-sm { display: inline-flex !important; margin-top: 4px; }
+}
+@media (forced-colors: active) {
+  .dot { forced-color-adjust: none; }
+}
+/* ---------- 标签（2026-10-06 两面板合一）---------- */
+.tabpane[hidden] { display: none !important; }
+.tabs { display: flex; gap: 2px; margin: 14px 0 16px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 30; background: var(--page); overflow-x: auto; }
+.tabs button { border: 0; background: none; padding: 9px 14px 8px; font: inherit; font-size: 14px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tabs button:hover { color: var(--ink); }
+.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 650; border-bottom-color: var(--ink); }
+.tabs .n { font-size: 12px; color: var(--muted); margin-left: 5px; font-weight: 400; font-variant-numeric: tabular-nums; }
+#todo-frame { display: block; width: 100%; height: calc(100vh - 140px); min-height: 560px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.t-kpi { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0 0 14px; font-size: 13.5px; color: var(--ink2); }
+.t-kpi b { color: var(--ink); font-size: 20px; font-weight: 650; margin-right: 4px; font-variant-numeric: tabular-nums; }
+.t-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.t-grid .card { margin: 0; }
+.t-grid.t-secondary { margin-top: 14px; }
+.t-list-more { margin-top: 8px; }
+.t-list-more > summary, .t-reason > summary { color: var(--c-waiting); cursor: pointer; font-size: 12.5px; }
+.t-list-more[open] > summary { margin-bottom: 4px; }
+.t-secondary > details > summary { cursor: pointer; font-size: 14px; font-weight: 650; }
+.t-secondary > details > summary .sub { margin-left: 8px; color: var(--muted); font-size: 12.5px; font-weight: 400; }
+.t-secondary > details > .t-empty { margin: 8px 0 0; }
+@media (max-width: 800px) { .t-grid { grid-template-columns: 1fr; } }
+.t-list { list-style: none; margin: 0; padding: 0; }
+.t-list li { display: flex; gap: 10px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+.t-list li:last-child { border-bottom: 0; }
+.t-list li.discovered { border-left: 3px solid var(--c-waiting); padding-left: 9px; }
+.discovery-badge { border: 1px solid var(--c-waiting); color: var(--c-waiting); margin-right: 5px; }
+.t-refresh { padding: 10px 13px; border-left: 3px solid var(--c-waiting); background: var(--surface); color: var(--ink2); font-size: 12.5px; line-height: 1.6; }
+.t-when { flex: 0 0 74px; color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.t-when.late { color: var(--c-rejected); font-weight: 600; }
+.t-what { flex: 1 1 auto; min-width: 0; }
+.t-what .s { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.t-reason { margin-top: 5px; }
+.t-tag { display: inline-block; border: 1px solid var(--border); border-radius: 6px; padding: 0 5px; font-size: 11.5px; color: var(--ink2); margin: 0 4px; }
+.t-empty { color: var(--muted); font-size: 13px; padding: 6px 0; }
+.internship-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.internship-head h2 { font-size: 18px; margin-bottom: 5px; }
+.internship-note { color: var(--ink2); font-size: 13px; margin: 6px 0 14px; }
+.internship-group { margin: 20px 0 10px; font-size: 14px; }
+.internship-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.internship-card { min-width: 0; }
+.internship-card.paused { border-left: 3px solid var(--c-pending); }
+.internship-card.discovered { border-left: 3px solid var(--c-waiting); }
+.internship-card.unverified { border-left: 3px solid var(--c-pending); }
+.internship-card.archived { opacity: .85; }
+.internship-verification, .internship-closure { border-left: 2px solid var(--c-pending); padding-left: 10px; margin: 10px 0; font-size: 12.5px; color: var(--ink2); }
+.internship-archive, .internship-graduation-filter, .internship-declined { margin-top: 22px; }
+.internship-archive > summary, .internship-graduation-filter > summary, .internship-declined > summary { cursor: pointer; font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+.internship-card h3 { font-size: 15px; line-height: 1.45; margin: 8px 0 5px; overflow-wrap: anywhere; }
+.internship-meta, .internship-actions { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 12.5px; color: var(--ink2); }
+.internship-company { font-size: 13px; font-weight: 650; color: var(--ink); }
+.internship-card dl { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 7px 10px; margin: 14px 0 10px; font-size: 13px; }
+.internship-card dt { color: var(--muted); }
+.internship-card dd { margin: 0; overflow-wrap: anywhere; }
+.internship-opt { border-left: 2px solid var(--c-pending); padding-left: 10px; font-size: 13px; margin: 12px 0; }
+.internship-opt b { display: block; margin-bottom: 3px; }
+.internship-detail { border-top: 1px solid var(--border); padding-top: 10px; font-size: 13px; }
+.internship-detail summary { cursor: pointer; color: var(--c-waiting); }
+.internship-detail ul { padding-left: 20px; margin: 8px 0; }
+.internship-next { font-size: 13px; margin: 12px 0; }
+.internship-actions { margin-top: 12px; }
+@media (max-width: 800px) { .internship-grid { grid-template-columns: 1fr; } }
+.top-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.oa-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.oa-head h2 { margin-bottom: 4px; font-size: 18px; }
+.oa-note { color: var(--muted); font-size: 12.5px; margin: 5px 0 12px; max-width: 100ch; }
+.oa-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 8px; margin: 14px 0; }
+.oa-metric { border: 1px solid var(--border); border-radius: 9px; background: var(--wash); padding: 10px 12px; }
+.oa-metric b { display: block; font-size: 25px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.oa-metric span { font-size: 12px; color: var(--ink2); }
+.oa-metric.rejected { border-color: color-mix(in srgb, var(--c-rejected) 40%, var(--border)); }
+.oa-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.oa-group { border: 1px solid var(--border); border-radius: 10px; padding: 12px; min-width: 0; }
+.oa-group h3, .oa-group summary { font-size: 13.5px; font-weight: 650; margin: 0 0 9px; }
+.oa-group summary { cursor: pointer; }
+.oa-group .count { float: right; color: var(--ink2); font-variant-numeric: tabular-nums; }
+.oa-group.ended { margin-top: 14px; background: var(--wash); }
+.oa-list { display: grid; gap: 8px; }
+.oa-app { display: block; width: 100%; text-align: left; border: 1px solid var(--border); border-radius: 8px; padding: 10px 11px; background: var(--surface); cursor: pointer; }
+.oa-app:hover { border-color: var(--axis); }
+.oa-app:focus-visible { outline: 2px solid var(--c-waiting); outline-offset: 2px; }
+.oa-company { font-size: 13px; font-weight: 650; display: flex; gap: 8px; align-items: baseline; justify-content: space-between; }
+.oa-company .badge { font-size: 11px; font-weight: 500; flex: none; }
+.oa-title { display: block; font-size: 13px; overflow-wrap: anywhere; margin-top: 3px; }
+.oa-detail { display: block; font-size: 12px; color: var(--muted); margin-top: 5px; }
+.oa-unmapped { border-left: 3px solid var(--c-pending); background: var(--wash); border-radius: 8px; padding: 11px 13px; margin-top: 14px; }
+.oa-unmapped h3 { font-size: 13.5px; margin: 0 0 6px; }
+.oa-unmapped p { margin: 5px 0; font-size: 12.5px; }
+.flow-figure { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: #fcfcfb; }
+.flow-figure svg { display: block; width: 100%; min-width: 780px; height: auto; }
+.flow-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 10px; }
+.flow-table th, .flow-table td { padding: 7px 9px; border-bottom: 1px solid var(--border); text-align: left; }
+.flow-table th:last-child, .flow-table td:last-child { text-align: right; }
+.flow-data { margin-top: 13px; }
+.flow-data summary { cursor: pointer; color: var(--ink2); font-size: 12.5px; }
+@media (max-width: 720px) { .oa-columns { grid-template-columns: 1fr; } .oa-head { flex-wrap: wrap; } .oa-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.t-more { border: 0; background: none; color: var(--c-waiting); cursor: pointer; font: inherit; font-size: 12.5px; padding: 8px 0 0; }
+__COMPANY_FILTER_CSS__
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>求职面板</h1>
+      <div class="meta" id="meta"></div>
+    </div>
+    <div class="top-actions"><button class="btn" id="oa-shortcut" type="button">OA / 测评</button><button class="btn" id="theme" type="button" aria-label="切换配色">配色：自动</button></div>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="面板"></nav>
+  <section id="company-filter" aria-label="公司筛选"></section>
+  <section class="tabpane" id="tab-today" role="tabpanel" aria-label="今天"></section>
+  <section class="tabpane" id="tab-discovered" role="tabpanel" aria-label="近7天新发现" hidden></section>
+  <section class="tabpane" id="tab-todo" role="tabpanel" aria-label="待投岗位" hidden><iframe id="todo-frame" title="待投岗位"></iframe></section>
+  <section class="tabpane" id="tab-internships" role="tabpanel" aria-label="春季 PhD 实习" hidden></section>
+  <div class="tabpane" id="tab-progress" role="tabpanel" aria-label="投递进度" hidden>
+
+  <section class="kpis" id="kpis" aria-label="总览 · 当前筛选范围"></section>
+  <p class="scope-note" id="progress-scope"></p>
+
+  <div class="filters" role="group" aria-label="筛选">
+    <div class="chips" id="chips"></div>
+    <div class="chips" id="hc-chip"></div>
+    <input class="search" id="q" type="search" placeholder="搜公司 / 岗位 / req" aria-label="搜索">
+    <span class="lbl">时间</span>
+    <div class="seg" id="range"></div>
+  </div>
+  <div class="filter-summary" id="progress-filter-summary" aria-live="polite"></div>
+
+  <section class="card" id="oa-workspace" aria-label="OA与测评 · 按当前任务和结果区分"></section>
+  <section class="card" id="application-flow" aria-label="申请流向 · 历史最高记录与当前结果"></section>
+
+  <section class="card">
+    <h2>进度看板 <span class="sub">按当前阶段分段；同公司同阶段合成一张卡，点卡片跳到明细</span></h2>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section class="card" id="hc-card" hidden>
+    <h2>医疗 AI 扫描池 <span class="sub">healthcare 扫描入围岗（🥇 / 🟢 / 🟡）投到哪了；投递状态按本面板的 applications.json 现算</span></h2>
+    <div class="hc-meta" id="hc-meta"></div>
+    <div class="hc-legend" id="hc-legend"></div>
+    <div class="hc-rows" id="hc-rows"></div>
+    <div class="hc-sent" id="hc-sent"></div>
+    <div id="hc-todo"></div>
+  </section>
+
+  <div class="jcf-root tl-company-filter">
+      <details class="jcf-panel" id="tl-company-filter">
+        <summary class="jcf-summary">图表隐藏公司 <span class="jcf-summary-state" id="tl-company-status" aria-live="polite"></span></summary>
+        <div class="jcf-body">
+          <label class="jcf-search-label" for="tl-company-search">搜索要隐藏的公司</label>
+          <input class="jcf-search" id="tl-company-search" type="search" placeholder="输入公司名，可多选">
+          <div class="jcf-list" id="tl-company-list"></div>
+          <p class="jcf-empty" id="tl-company-empty" hidden>没有匹配的公司</p>
+          <p class="jcf-hint">每周发出数和时间线共用此设置，日期范围按剩余岗位重算。仅影响这两张图，选择会自动保存。</p>
+        </div>
+      </details>
+      <div class="jcf-active" id="tl-company-active"></div>
+  </div>
+
+  <section class="two">
+    <div class="card">
+      <h2>接下来的节点 <span class="sub">当前投递记录的止损 / 跟进日；待投截止见「今天」或「待投岗位」</span></h2>
+      <ul class="up-list" id="upcoming"></ul>
+    </div>
+    <div class="card">
+      <h2>每周发出数 <span class="sub">按岗位的首次发出日（投递或内推请求）计</span></h2>
+      <div class="cad-wrap" id="cadence"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>时间线 <span class="sub">每行一个岗位；线段 = 从发出到最新动态，淡线 = 仍在等</span></h2>
+    <div class="legend" id="legend"></div>
+    <div id="timeline"></div>
+    <div class="tl-note" id="tl-note"></div>
+  </section>
+
+  <section class="card">
+    <h2>明细表 <span class="sub">点行展开完整事件记录与来源（Gmail / Obsidian 链接）</span></h2>
+    <div class="tbl-wrap"><table id="tbl"></table></div>
+  </section>
+
+  <section class="card" id="missing-card" hidden>
+    <details class="checks" id="missing"><summary></summary><ul></ul></details>
+  </section>
+
+  <section class="card" id="checks-card" hidden>
+    <details class="checks" id="checks"><summary></summary><ul></ul></details>
+  </section>
+
+  </div>
+
+  <footer id="foot"></footer>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script type="application/json" id="data">__DATA_JSON__</script>
+<script>__COMPANY_FILTER_JS__</script>
+<script>
+(function () {
+  "use strict";
+  var D = JSON.parse(document.getElementById("data").textContent);
+  var APPS = D.apps;
+  var TODAY = D.today;
+
+  var GROUPS = [
+    { key: "pending", label: "内推中 · 未投递", ico: "◇" },
+    { key: "waiting", label: "已投递 · 待后续", ico: "○" },
+    { key: "progress", label: "当前推进", ico: "✓" },
+    { key: "paused", label: "暂停 · 待确认", ico: "Ⅱ" },
+    { key: "rejected", label: "已拒", ico: "✕" },
+    { key: "closed", label: "已关闭 / 撤回", ico: "–" },
+    { key: "archived", label: "沉默归档", ico: "▤" }
+  ];
+  var GROUP_BY_KEY = {};
+  GROUPS.forEach(function (g) { GROUP_BY_KEY[g.key] = g; });
+  var EVENT_GROUP = {
+    referral_request: "pending", referral_submitted: "pending", referrer_reply: "pending",
+    applied: "waiting", ack: "waiting", human_reply: "waiting",
+    assessment: "progress", interview: "progress", offer: "progress",
+    rejected: "rejected", closed: "closed", withdrawn: "closed", other: "closed"
+  };
+  // 同一天多事件时画哪个形状：终态和进展优先
+  var EVENT_RANK = ["other", "referrer_reply", "referral_request", "ack", "applied", "referral_submitted", "human_reply", "assessment", "interview", "offer", "withdrawn", "closed", "rejected"];
+  var LEGEND = [
+    { type: "referral_request", label: "发内推请求" },
+    { type: "referral_submitted", label: "内推已提交" },
+    { type: "referrer_reply", label: "内推人回复" },
+    { type: "applied", label: "投递" },
+    { type: "ack", label: "系统确认" },
+    { type: "human_reply", label: "招聘联系" },
+    { type: "assessment", label: "测评记录" },
+    { type: "interview", label: "面试记录" },
+    { type: "offer", label: "Offer 记录" },
+    { type: "rejected", label: "拒信" },
+    { type: "closed", label: "关闭 / 撤回" },
+    { type: "other", label: "其他记录" },
+    { type: "next", label: "止损 / 跟进日" }
+  ];
+
+  // 医疗 AI 扫描池（D.hc 为 null 时整块不显示）
+  var HC = D.hc;
+  // 段序：绿、蓝不与红相邻（红绿色弱分不开）；待投是空心框，不占颜色
+  var HC_SEGS = [
+    { key: "progress", label: "当前推进", color: "var(--c-progress)" },
+    { key: "waiting", label: "已投 · 待后续", color: "var(--c-waiting)" },
+    { key: "pending", label: "内推中", color: "var(--c-pending)" },
+    { key: "rejected", label: "已拒", color: "var(--c-rejected)" },
+    { key: "closed", label: "下线 / 关闭", color: "var(--c-closed)" },
+    { key: "archived", label: "沉默归档", color: "var(--c-closed)" },
+    { key: "todo", label: "待投", color: null }
+  ];
+  var TIER_NAME = { "🥇 投": "🥇 优先", "🟢 投": "🟢 可投", "🟡 条件投": "🟡 条件投" };
+  var TIER_ORDER = { "🥇 投": 0, "🟢 投": 1, "🟡 条件投": 2 };
+
+  var companyFilter = null;
+  var state = {
+    groups: new Set(GROUPS.filter(function (g) { return g.key !== "archived"; }).map(function (g) { return g.key; })),
+    hcOnly: false,
+    q: "",
+    range: "all",
+    sortKey: "last",
+    sortDir: -1,
+    expanded: new Set(),
+    waitExpanded: false
+  };
+
+  // ---------- helpers ----------
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      var v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? "" : v);
+    }
+    (kids || []).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function sv(tag, attrs, kids) {
+    var n = document.createElementNS(SVGNS, tag);
+    if (attrs) for (var k in attrs) if (attrs[k] != null) n.setAttribute(k, attrs[k]);
+    (kids || []).forEach(function (c) { if (c) n.appendChild(c); });
+    return n;
+  }
+  function dayNum(s) { var p = s.split("-"); return Date.UTC(+p[0], +p[1] - 1, +p[2]) / 86400000; }
+  function fromDayNum(n) { var d = new Date(n * 86400000); return d.getUTCFullYear() + "-" + pad(d.getUTCMonth() + 1) + "-" + pad(d.getUTCDate()); }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function md(s) { var p = s.split("-"); return (+p[1]) + "/" + (+p[2]); }
+  var TODAY_N = dayNum(TODAY);
+  function daysFromToday(s) { return dayNum(s) - TODAY_N; }
+  function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function groupColor(g) { return "var(--c-" + g + ")"; }
+  function uniq(arr) { return Array.from(new Set(arr)); }
+
+  // ---------- theme ----------
+  var THEMES = ["auto", "light", "dark"];
+  var THEME_LABEL = { auto: "自动", light: "浅色", dark: "深色" };
+  function applyTheme(t) {
+    if (t === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t);
+    document.getElementById("theme").textContent = "配色：" + THEME_LABEL[t];
+  }
+  var theme = "auto";
+  try { theme = localStorage.getItem("jobdash-theme") || "auto"; } catch (e) {}
+  if (THEMES.indexOf(theme) < 0) theme = "auto";
+  applyTheme(theme);
+  document.getElementById("theme").addEventListener("click", function () {
+    theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+    applyTheme(theme);
+    try { localStorage.setItem("jobdash-theme", theme); } catch (e) {}
+    renderTimeline(); renderCadence(); sendTheme();
+  });
+
+  // ---------- tooltip ----------
+  var tip = document.getElementById("tip");
+  function showTip(evt, head, rows) {
+    tip.textContent = "";
+    tip.appendChild(el("div", { class: "h", text: head }));
+    rows.forEach(function (r) {
+      var key = el("i");
+      key.style.background = r.color;
+      tip.appendChild(el("div", { class: "r" }, [key, el("div", null, [el("b", { text: r.value }), r.label ? el("span", { text: "  " + r.label }) : null])]));
+    });
+    tip.style.display = "block";
+    var x, y;
+    if (evt.type === "focus") {
+      var bb = evt.target.getBoundingClientRect();
+      x = bb.right; y = bb.bottom;
+    } else { x = evt.clientX; y = evt.clientY; }
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    var left = x + 14, top = y + 14;
+    if (left + w > window.innerWidth - 8) left = x - w - 14;
+    if (top + h > window.innerHeight - 8) top = y - h - 14;
+    tip.style.left = Math.max(8, left) + "px";
+    tip.style.top = Math.max(8, top) + "px";
+  }
+  function hideTip() { tip.style.display = "none"; }
+  window.addEventListener("scroll", hideTip, { passive: true });
+
+  // ---------- filtering ----------
+  function rangeStart() {
+    if (state.range === "all") return null;
+    return TODAY_N - (+state.range);
+  }
+  function matchesContext(a, skipHc) {
+    if (skipHc !== true && state.hcOnly && !a.hc) return false;
+    if (!companyMatches(a)) return false;
+    if (state.q) {
+      var hay = (a.company + " " + a.title + " " + a.req + " " + a.channel + " " + a.referrer).toLowerCase();
+      if (hay.indexOf(state.q) < 0) return false;
+    }
+    var rs = rangeStart();
+    if (rs != null && dayNum(a.last.date) < rs) return false;
+    return true;
+  }
+  function matches(a) { return state.groups.has(a.group) && matchesContext(a); }
+  function filtered() { return APPS.filter(matches); }
+  function companyMatches(a) {
+    return !companyFilter || companyFilter.matches(a);
+  }
+
+  // ---------- OA: separate historical reach, current task and final result ----------
+  function oaUniqueRows(rows) {
+    var seen = new Set();
+    return rows.filter(function (a) { if (seen.has(a.id)) return false; seen.add(a.id); return true; });
+  }
+  function oaContextRows() { return oaUniqueRows(APPS.filter(matchesContext)); }
+  function oaDeadlineText(a) {
+    var oa = a.oa || {};
+    if (oa.bucket === "ended") return "本轮已结束，不再作为测评待办";
+    if (oa.bucket === "submitted") return "已提交，等待结果；不重复测评";
+    if (oa.bucket === "reused") return "旧测评复用获准，等待后续安排";
+    if (oa.waiting_for_link === true) return "仅收到测评阶段通知，等待测评链接；「接下来一周」是预计发链接窗口，不是作答截止日。";
+    return oa.deadline ? "正式截止：" + oa.deadline : (oa.deadline_note || "截止未提供");
+  }
+  function oaViewModel(rows) {
+    var list = oaUniqueRows(rows || oaContextRows());
+    var result = {rows: list, confirmed: 0, unconfirmed: 0, history_total: 0, active: [], submitted: [], reused: [], advanced: [], expired: [], ended: [], rejected: 0, closed: 0, withdrawn: 0, all_rejected: 0};
+    list.forEach(function (a) {
+      if (a.application_confirmed) result.confirmed++; else result.unconfirmed++;
+      if (a.stage === "rejected") result.all_rejected++;
+      var oa = a.oa || {};
+      if (!oa.has_history) return;
+      result.history_total++;
+      if (oa.bucket === "ended" || a.stage === "rejected" || a.stage === "closed" || a.stage === "withdrawn") {
+        result.ended.push(a);
+        if (a.stage === "rejected") result.rejected++;
+        else if (a.stage === "withdrawn") result.withdrawn++;
+        else result.closed++;
+      } else if (oa.bucket === "active" || oa.bucket === "unknown") result.active.push(a);
+      else if (result[oa.bucket]) result[oa.bucket].push(a);
+    });
+    result.active.sort(function (a, b) { return ((a.oa || {}).deadline || "9999").localeCompare((b.oa || {}).deadline || "9999") || a.company.localeCompare(b.company); });
+    return result;
+  }
+  function oaUnmappedRows() {
+    var seen = new Set();
+    return (D.unmapped_updates || []).filter(function (u) {
+      var key = u.company + ":" + (u.message_id || u.source_url || u.id);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      var date = (u.received_at_cdt || u.received_at_utc || u.date || "").slice(0, 10);
+      if (!date && state.range !== "all") return false;
+      var medical = Object.prototype.hasOwnProperty.call(u, "hc") ? !!u.hc : APPS.some(function (a) { return a.company === u.company && !!a.hc; });
+      return matchesContext({company: u.company, title: "公司级测评邀请 岗位待确认", req: "", channel: "", referrer: "", hc: medical ? {} : null, last: {date: date || "1900-01-01"}});
+    });
+  }
+  function oaGroupTitle(key) {
+    return {active: "待完成 / 待确认", submitted: "已提交待结果", reused: "复用获准", advanced: "已到后续阶段", expired: "已明确过期", ended: "已结束"}[key] || key;
+  }
+  function oaAppCard(a) {
+    var oa = a.oa || {}, ended = oa.bucket === "ended" || !a.open && (a.stage === "rejected" || a.stage === "closed" || a.stage === "withdrawn");
+    var status = ended ? a.stage_label : oa.waiting_for_link === true ? "等待测评链接" : oa.bucket === "unknown" ? "完成待确认" : oaGroupTitle(oa.bucket);
+    return el("button", {type: "button", class: "oa-app", "data-app-id": a.id, onclick: function () { jumpTo(a.id); }}, [
+      el("span", {class: "oa-company"}, [el("span", {text: a.company}), el("span", {class: "badge" + (a.stage === "rejected" ? " g-rejected" : ""), text: status})]),
+      el("span", {class: "oa-title", text: a.title + (a.req ? " · " + a.req : " · 编号未确认")}),
+      el("span", {class: "oa-detail", text: oaDeadlineText(a)}),
+      oa.last_date ? el("span", {class: "oa-detail", text: "最近测评记录 " + oa.last_date + (ended ? " · 历史保留" : "")}) : null
+    ]);
+  }
+  function oaGroup(key, rows, sub) {
+    var heading = el(key === "ended" ? "summary" : "h3", {}, [oaGroupTitle(key), el("span", {class: "count", text: String(rows.length)})]);
+    return el(key === "ended" ? "details" : "div", {class: "oa-group" + (key === "ended" ? " ended" : ""), "data-oa-group": key}, [heading,
+      sub ? el("p", {class: "oa-note", text: sub}) : null,
+      rows.length ? el("div", {class: "oa-list"}, rows.map(oaAppCard)) : el("div", {class: "t-empty", text: "当前范围暂无"})]);
+  }
+  function renderOaWorkspace() {
+    var box = document.getElementById("oa-workspace");
+    if (!box) return;
+    var s = oaViewModel(), updates = oaUnmappedRows();
+    box.textContent = "";
+    box.appendChild(el("div", {class: "oa-head"}, [el("div", {}, [el("h2", {text: "OA / 测评"}), el("div", {class: "oa-note", text: "历史到过OA、当前是否待做、最终是否结束，分别统计。缺少截止日期的邀请仍然列出。"})])]));
+    box.appendChild(el("p", {class: "oa-note", text: "当前范围 " + s.rows.length + " 条记录 · 已确认申请 " + s.confirmed + " · 投递证据未确认 " + s.unconfirmed + "。本区与流向图跟随公司、搜索、医疗AI和时间筛选；阶段隐藏只影响原列表。"}));
+    var metrics = [[s.history_total, "曾有OA / 测评"], [s.active.length, "待完成 / 待确认"], [s.submitted.length, "已提交待结果"], [s.reused.length, "复用获准"], [s.ended.length, "已结束的OA历史"], [s.all_rejected, "全部已拒记录"]];
+    box.appendChild(el("div", {class: "oa-metrics"}, metrics.map(function (m, i) {return el("div", {class: "oa-metric" + (i === 5 ? " rejected" : "")}, [el("b", {text: String(m[0])}), el("span", {text: m[1]})]);})));
+    box.appendChild(el("div", {class: "oa-columns"}, [oaGroup("active", s.active, "包括完成状态尚待确认的邀请；并不据此断言尚未完成。"), oaGroup("submitted", s.submitted, "已提交确认与成绩、通过或面试是不同事实。") ]));
+    var secondary = [];
+    ["reused", "advanced", "expired"].forEach(function (key) { if (s[key].length) secondary.push(oaGroup(key, s[key])); });
+    if (secondary.length) box.appendChild(el("div", {class: "oa-columns", style: "margin-top:14px"}, secondary));
+    box.appendChild(oaGroup("ended", s.ended, "仅统计曾有OA的已结束记录：已拒 " + s.rejected + " · 已关闭 " + s.closed + " · 已撤回 " + s.withdrawn + "。它们不再算待做；全部已拒数量还包括没有OA历史的岗位。"));
+    if (updates.length) box.appendChild(el("div", {class: "oa-unmapped"}, [el("h3", {text: "公司级邀请 · 岗位待确认（" + updates.length + "）"})].concat(updates.map(function (u) {
+      return el("p", {}, [el("b", {text: u.company + "："}), "未注明对应岗位，完成状态未知；不计为新申请，不分摊给多个岗位。 ", u.source_url ? el("a", {href: u.source_url, target: "_blank", rel: "noopener noreferrer", text: "查看原邀请"}) : null]);
+    }))));
+  }
+
+  // ---------- flow: recorded highest stage x current result, not an assumed funnel ----------
+  function flowHistoryLabel(key) {
+    return {application: "申请 / 收件记录", reply: "招聘联系记录", assessment: "OA / 测评记录", interview: "面试记录", offer: "Offer记录", unconfirmed: "阶段待核"}[key] || "阶段待核";
+  }
+  function flowOutcomeLabel(key) {
+    return {waiting: "等待后续", reactivation_pending: "暂停 · 重新激活待确认", contact: "已联系，待下一步", oa_active: "OA待完成 / 待确认", oa_submitted: "OA已提交，待结果", oa_reused: "测评复用，待下一步", interview: "当前面试阶段", oa_expired: "OA已明确过期", rejected: "已拒", closed: "已关闭", withdrawn: "已撤回", archived: "沉默归档", offer: "当前Offer", unconfirmed: "当前状态待核"}[key] || "当前状态待核";
+  }
+  function flowColor(key) {
+    return {application: "#8795a6", reply: "#85a7cd", assessment: "#3b82c4", interview: "#5668bd", offer: "#27846b", oa_active: "#397dc0", oa_submitted: "#439d9a", oa_reused: "#7c77b5", oa_expired: "#a48657", contact: "#769ec5", waiting: "#a4adb9", reactivation_pending: "#927454", rejected: "#cc6267", withdrawn: "#a3a0a3", closed: "#92959b", archived: "#898781", unconfirmed: "#a7adb5"}[key] || "#a7adb5";
+  }
+  function applicationFlowModel(rows) {
+    var all = oaUniqueRows(rows || oaContextRows()), list = all.filter(function (a) { return a.application_confirmed; });
+    var hs = {}, os = {}, edges = {};
+    function edge(source, target) {var k = source + ":" + target; if (!edges[k]) edges[k] = {source: source, target: target, value: 0}; edges[k].value++;}
+    list.forEach(function (a) {
+      var h = a.history_highest || "application", o = a.flow_outcome || "unconfirmed";
+      if (!hs[h]) hs[h] = {key: h, value: 0}; hs[h].value++;
+      if (!os[o]) os[o] = {key: o, value: 0}; os[o].value++;
+      edge("applications", "history:" + h); edge("history:" + h, "outcome:" + o);
+    });
+    var ho = ["application", "reply", "assessment", "interview", "offer", "unconfirmed"];
+    var oo = ["waiting", "reactivation_pending", "contact", "oa_active", "oa_submitted", "oa_reused", "interview", "offer", "oa_expired", "rejected", "closed", "withdrawn", "archived", "unconfirmed"];
+    return {total: list.length, record_count: all.length, unconfirmed_count: all.length - list.length,
+      histories: Object.keys(hs).map(function (k) { return hs[k]; }).sort(function (a, b) {return ho.indexOf(a.key) - ho.indexOf(b.key);}),
+      outcomes: Object.keys(os).map(function (k) { return os[k]; }).sort(function (a, b) {return oo.indexOf(a.key) - oo.indexOf(b.key);}),
+      links: Object.keys(edges).map(function (k) {return edges[k];})};
+  }
+  function applicationFlowSvg(model) {
+    var plot = Math.max(390, Math.max(model.histories.length, model.outcomes.length) * 52), height = plot + 110, gap = 30;
+    var scale = model.total ? (plot - gap * (Math.max(model.histories.length, model.outcomes.length, 1) - 1)) / model.total : 0;
+    var svg = sv("svg", {xmlns: SVGNS, viewBox: "0 0 1080 " + height, role: "img", "aria-labelledby": "flow-svg-title flow-svg-desc", id: "application-flow-svg"});
+    var title = sv("title", {id: "flow-svg-title"}); title.textContent = "已确认申请、已记录最高阶段与当前结果的流向"; svg.appendChild(title);
+    var desc = sv("desc", {id: "flow-svg-desc"}); desc.textContent = "仅统计有投递、收件或明确申请存在证据的申请，每项一次。没有OA或面试记录时不补造；下方有等价数据表。"; svg.appendChild(desc);
+    svg.appendChild(sv("rect", {width: 1080, height: height, fill: "#fcfcfb"}));
+    function text(x, y, str, size, weight) {var n = sv("text", {x: x, y: y, fill: "#243043", "font-family": "system-ui, sans-serif", "font-size": size || 13, "font-weight": weight || 400}); n.textContent = str; return n;}
+    svg.appendChild(text(28, 30, "已确认申请", 14, 650)); svg.appendChild(text(385, 30, "已记录的最高阶段", 14, 650)); svg.appendChild(text(765, 30, "当前结果 / 待办", 14, 650));
+    var nodes = {applications: {x: 28, y: 70 + (plot - model.total * scale) / 2, value: model.total, color: "#8795a6"}}, offsets = {};
+    function column(rows, prefix, x) {
+      var full = model.total * scale + Math.max(0, rows.length - 1) * gap, y = 70 + (plot - full) / 2;
+      rows.forEach(function (r) {nodes[prefix + r.key] = {x: x, y: y, value: r.value, color: flowColor(r.key)}; y += r.value * scale + gap;});
+    }
+    column(model.histories, "history:", 385); column(model.outcomes, "outcome:", 765);
+    model.links.forEach(function (link) {
+      var s = nodes[link.source], t = nodes[link.target], side = link.source + ">out", incoming = link.target + ">in";
+      var sy = s.y + (offsets[side] || 0), ty = t.y + (offsets[incoming] || 0), h = link.value * scale, sx = s.x + 9, tx = t.x, mid = (sx + tx) / 2;
+      offsets[side] = (offsets[side] || 0) + h; offsets[incoming] = (offsets[incoming] || 0) + h;
+      var d = "M " + sx + " " + sy + " C " + mid + " " + sy + " " + mid + " " + ty + " " + tx + " " + ty + " L " + tx + " " + (ty + h) + " C " + mid + " " + (ty + h) + " " + mid + " " + (sy + h) + " " + sx + " " + (sy + h) + " Z";
+      var path = sv("path", {d: d, fill: t.color, "fill-opacity": 0.25, "data-flow-count": link.value});
+      var tooltip = sv("title"); tooltip.textContent = link.value + " 条申请"; path.appendChild(tooltip); svg.appendChild(path);
+    });
+    Object.keys(nodes).forEach(function (key) {
+      var n = nodes[key]; svg.appendChild(sv("rect", {x: n.x, y: n.y, width: 9, height: Math.max(n.value * scale, 1), rx: 1, fill: n.color}));
+      var label = key === "applications" ? "已确认申请" : key.indexOf("history:") === 0 ? flowHistoryLabel(key.slice(8)) : flowOutcomeLabel(key.slice(8));
+      var y = n.y + n.value * scale / 2;
+      svg.appendChild(text(n.x + 17, y - 2, label, 13, 500));
+      svg.appendChild(text(n.x + 17, y + 15, String(n.value) + " · " + (100 * n.value / Math.max(1, model.total)).toFixed(1) + "%", 12, 650));
+    });
+    svg.appendChild(text(28, height - 15, "历史最高仅指已记录阶段；右侧为当前状态。缺失经历不补造。", 12));
+    return svg;
+  }
+  function renderApplicationFlow() {
+    var box = document.getElementById("application-flow");
+    if (!box) return;
+    var m = applicationFlowModel(); box.textContent = "";
+    box.appendChild(el("div", {class: "oa-head"}, [el("div", {}, [el("h2", {text: "申请去向"}), el("p", {class: "oa-note", text: "已记录的最高阶段 × 当前结果；不是依次转化漏斗，不假定每条申请都经历OA和面试。"})]),
+      el("button", {class: "btn", type: "button", disabled: !m.total, onclick: exportApplicationFlow, text: "导出 SVG"})]));
+    box.appendChild(el("p", {class: "oa-note", text: "图中仅含 " + m.total + " 条有申请存在证据的申请；当前范围共 " + m.record_count + " 条记录，另 " + m.unconfirmed_count + " 条投递证据未确认，不混入申请分母。缺少明确申请存在证据的记录仍保留在原列表；已拒总数以全部记录的独立统计为准。"}));
+    if (!m.total) { box.appendChild(el("div", {class: "t-empty", text: "当前范围没有已确认申请，未确认记录仍保留在原列表。"})); return; }
+    box.appendChild(el("div", {class: "flow-figure"}, [applicationFlowSvg(m)]));
+    var header = el("tr", {}, [el("th", {text: "从"}), el("th", {text: "到"}), el("th", {text: "申请数 / 图中分母"})]);
+    var table = el("table", {class: "flow-table"}, [el("thead", {}, [header])]);
+    var body = el("tbody");
+    m.links.forEach(function (e) {
+      var from = e.source === "applications" ? "已确认申请" : flowHistoryLabel(e.source.slice(8));
+      var to = e.target.indexOf("history:") === 0 ? "最高阶段：" + flowHistoryLabel(e.target.slice(8)) : flowOutcomeLabel(e.target.slice(8));
+      body.appendChild(el("tr", {}, [el("td", {text: from}), el("td", {text: to}), el("td", {text: e.value + " / " + m.total})]));
+    });
+    table.appendChild(body);
+    box.appendChild(el("details", {class: "flow-data"}, [el("summary", {text: "查看流量数据表与统计口径"}), el("p", {class: "oa-note", text: "每项申请在左右两段各计一次，两段流量分别守恒。百分比以图内已确认申请为分母，不是阶段通过率；只有明确事件的最高记录，不代表阶段发生顺序。"}), table]));
+  }
+  function exportApplicationFlow() {
+    var svg = document.getElementById("application-flow-svg"); if (!svg) return;
+    var data = new XMLSerializer().serializeToString(svg), blob = new Blob([data], {type: "image/svg+xml;charset=utf-8"});
+    var url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = "求职申请去向.svg"; a.click();
+    setTimeout(function () {URL.revokeObjectURL(url);}, 1000);
+  }
+  function openOaWorkspace() {
+    showTab("progress");
+    var section = document.getElementById("oa-workspace");
+    if (section) section.scrollIntoView({behavior: "smooth", block: "start"});
+  }
+  document.getElementById("oa-shortcut").addEventListener("click", openOaWorkspace);
+
+  // ---------- header / KPIs: same filter context, stage counts show what can be displayed ----------
+  function renderMeta() {
+    var s = D.summary;
+    document.getElementById("meta").textContent =
+      "按 " + TODAY + " 计算 · 记录范围 " + md(s.first_date) + " – " + md(s.last_date) +
+      " · 数据更新 " + (D.data_updated || "?") + " · 面板生成 " + D.generated;
+    if (HC && !D.board_html) {
+      var meta = document.getElementById("meta");
+      meta.appendChild(document.createTextNode(" · "));
+      meta.appendChild(el("a", { href: "#hc-card", text: "医疗 AI 扫描池 ↓" }));
+    }
+  }
+  function progressSummary() {
+    var rows = APPS.filter(matchesContext), groups = {};
+    GROUPS.forEach(function (g) {
+      var items = rows.filter(function (a) { return a.group === g.key; });
+      groups[g.key] = { apps: items.length, companies: uniq(items.map(function (a) { return a.company; })).length };
+    });
+    return { applications: rows.length, companies: uniq(rows.map(function (a) { return a.company; })).length,
+      answered: rows.filter(function (a) { return a.answered; }).length, groups: groups,
+      shown: rows.filter(function (a) { return state.groups.has(a.group); }).length };
+  }
+  function renderKpis() {
+    var s = progressSummary(), box = document.getElementById("kpis");
+    box.textContent = "";
+    document.getElementById("progress-scope").textContent = "统计与列表共用公司、搜索、医疗 AI 和时间条件。阶段数字表示可显示数量；关闭的阶段明确标为已隐藏。当前推进仅计未结束的测评、面试或 Offer。";
+    var answered = s.answered;
+    box.appendChild(el("div", { class: "card kpi hero" }, [
+      el("div", { class: "label", text: "记录范围 · 含已隐藏阶段" }),
+      el("div", { class: "value" }, [String(s.companies), el("small", { text: "家公司" })]),
+      el("div", { class: "cap", text: s.applications + " 个岗位 · 明确回复（含拒绝） " + answered + " 个" })
+    ]));
+    GROUPS.forEach(function (g) {
+      var v = s.groups[g.key];
+      var on = state.groups.has(g.key);
+      box.appendChild(el("div", { class: "card kpi g-" + g.key + (on ? "" : " is-hidden") }, [
+        el("div", { class: "label" }, [el("span", { class: "dot" }), g.label]),
+        el("div", { class: "value" }, [String(v.apps), el("small", { text: "个岗位" })]),
+        el("div", { class: "cap", text: v.companies + " 家公司" + (on ? "" : " · 列表已隐藏") })
+      ]));
+    });
+  }
+
+  // ---------- filter controls ----------
+  function renderChips() {
+    var box = document.getElementById("chips");
+    box.textContent = "";
+    GROUPS.forEach(function (g) {
+      var n = APPS.filter(function (a) { return matchesContext(a) && a.group === g.key; }).length;
+      var on = state.groups.has(g.key);
+      box.appendChild(el("button", {
+        class: "chip g-" + g.key, type: "button", "aria-pressed": on ? "true" : "false",
+        title: (on ? "隐藏" : "显示") + "这一阶段的 " + n + " 个岗位",
+        onclick: function () {
+          if (state.groups.has(g.key)) state.groups.delete(g.key); else state.groups.add(g.key);
+          renderAll();
+        }
+      }, [el("span", { class: "dot" }), g.label, el("span", { class: "n", text: String(n) }),
+        !on ? el("span", { class: "off-label", text: "已隐藏" }) : null]));
+    });
+  }
+  function renderHcChip() {
+    var box = document.getElementById("hc-chip");
+    box.textContent = "";
+    var n = APPS.filter(function (a) { return matchesContext(a, true) && a.hc; }).length;
+    if (!n && !state.hcOnly) return;
+    box.appendChild(el("button", {
+      class: "chip hc-toggle", type: "button", "aria-pressed": state.hcOnly ? "true" : "false",
+      title: "医疗 AI 线：扫描池匹配上的岗位，加上 求职机会/*-医疗AI/ 下有档案的岗位",
+      onclick: function () { state.hcOnly = !state.hcOnly; renderHcChip(); renderAll(); }
+    }, [state.hcOnly ? "✓ 只看医疗 AI" : "只看医疗 AI", el("span", { class: "n", text: String(n) })]));
+  }
+  function renderRange() {
+    var box = document.getElementById("range");
+    box.textContent = "";
+    [["all", "全部时间"], ["60", "近 60 天动态"], ["30", "近 30 天动态"]].forEach(function (r) {
+      box.appendChild(el("button", {
+        type: "button", "aria-pressed": state.range === r[0] ? "true" : "false", text: r[1],
+        title: "按岗位最新有效动态日期；未来提醒不会把旧记录算作近期动态",
+        onclick: function () { state.range = r[0]; renderRange(); renderAll(); }
+      }));
+    });
+  }
+  document.getElementById("q").addEventListener("input", function (e) {
+    state.q = e.target.value.trim().toLowerCase();
+    renderAll();
+  });
+  function restoreProgressGroups(keys) {
+    keys.forEach(function (key) { state.groups.add(key); });
+    renderAll();
+  }
+  function clearProgressFilters() {
+    state.groups = new Set(GROUPS.map(function (g) { return g.key; }));
+    state.q = ""; state.hcOnly = false; state.range = "all"; state.waitExpanded = false;
+    document.getElementById("q").value = "";
+    renderRange(); renderHcChip(); renderAll();
+  }
+  function renderFilterSummary() {
+    var box = document.getElementById("progress-filter-summary"), s = progressSummary();
+    box.textContent = "";
+    box.appendChild(el("span", { text: "列表显示 " + s.shown + " / " + s.applications + " 岗" }));
+    var hidden = GROUPS.filter(function (g) { return !state.groups.has(g.key); });
+    if (hidden.length) {
+      box.appendChild(el("span", { text: "已隐藏：" + hidden.map(function (g) { return g.label; }).join("、") }));
+      box.appendChild(el("button", { type: "button", text: "显示全部阶段", onclick: function () { restoreProgressGroups(GROUPS.map(function (g) { return g.key; })); } }));
+    }
+    if (hidden.length || state.q || state.hcOnly || state.range !== "all") {
+      box.appendChild(el("button", { type: "button", text: "清空本页筛选", title: "恢复进度页的阶段、搜索、医疗 AI 和时间条件，保留公司筛选", onclick: clearProgressFilters }));
+    }
+  }
+
+  // ---------- board ----------
+  function jumpTo(id) {
+    var a = APPS.find(function (item) { return item.id === id; });
+    if (!a || !companyMatches(a)) return;
+    state.groups.add(a.group);
+    if (!matchesContext(a)) {
+      state.hcOnly = false; state.q = ""; state.range = "all";
+      document.getElementById("q").value = "";
+    }
+    state.expanded.add(id);
+    renderRange(); renderHcChip(); renderAll(); showTab("progress");
+    var row = document.querySelector('tr.app[data-id="' + CSS.escape(id) + '"]');
+    if (row) {
+      row.scrollIntoView({ behavior: "smooth", block: "center" });
+      row.classList.remove("flash"); void row.offsetWidth; row.classList.add("flash");
+    }
+  }
+  // 泳道从上到下：要动手的在上；已拒和已关闭合成「已结束」，一家一个小标签
+  var LANES = [
+    { key: "progress", groups: ["progress"], label: "当前推进", ico: "✓", act: true },
+    { key: "pending", groups: ["pending"], label: "内推中 · 未投递", ico: "◇", act: true },
+    { key: "waiting", groups: ["waiting"], label: "已投递 · 待后续", ico: "○" },
+    { key: "paused", groups: ["paused"], label: "暂停 · 待确认", ico: "Ⅱ" },
+    { key: "done", groups: ["rejected", "closed"], label: "已结束（已拒／关闭／撤回）", ico: "" },
+    { key: "archived", groups: ["archived"], label: "沉默归档", ico: "▤" }
+  ];
+  var WAIT_CARD_W = 240, CARD_GAP = 8, LANE_PAD = 24;
+  function groupByCompany(apps) {
+    var by = {}, order = [];
+    apps.forEach(function (a) {
+      if (!by[a.company]) { by[a.company] = []; order.push(a.company); }
+      by[a.company].push(a);
+    });
+    return order.map(function (co) {
+      return { co: co, items: by[co].slice().sort(function (a, b) { return a.first_out < b.first_out ? -1 : a.first_out > b.first_out ? 1 : 0; }) };
+    });
+  }
+  function latestApp(items) { return items.reduce(function (m, a) { return !m || a.last.date > m.last.date ? a : m; }, null); }
+  function firstOut(items) { return items.reduce(function (m, a) { return a.first_out < m ? a.first_out : m; }, "9999"); }
+  // 默认止损说法（含「按沉默」的那几段）不在卡上重复，剩下的才显示
+  function extraAction(s) {
+    return (s || "").split(/[；;]/).map(function (x) { return x.trim(); })
+      .filter(function (x) { return x && x.indexOf("按沉默") < 0; }).join("；");
+  }
+  function durTxt(n) { return n <= 0 ? "当天" : n + " 天"; }
+  function cardKeys(card, go) {
+    card.addEventListener("click", go);
+    card.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    return card;
+  }
+  function titleList(items, suffix) {
+    var shown = items.slice(0, 3).map(function (a) {
+      return el("li", { title: a.title + (a.req ? " · " + a.req : ""), text: a.title + (suffix ? suffix(a) : "") });
+    });
+    if (items.length > 3) shown.push(el("li", { class: "more", text: "…另 " + (items.length - 3) + " 个，点开看明细" }));
+    return el("ul", null, shown);
+  }
+  function coLine(g, extra) {
+    return el("div", { class: "co" }, [el("span", { class: "nm", text: g.co }),
+      g.items.length > 1 ? el("span", { class: "cnt", text: "×" + g.items.length }) : null, extra || null]);
+  }
+
+  // 有进展 / 内推中：下一步写全（最多 3 行），过期的加左侧强调条
+  function actCard(g, laneKey) {
+    var items = g.items, first = firstOut(items), lastA = latestApp(items);
+    var nexts = items.filter(function (a) { return a.next && a.open; }).map(function (a) { return a.next; })
+      .sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    var stages = uniq(items.map(function (a) { return a.stage_label; }));
+    var badge = laneKey === "progress" && stages.length === 1
+      ? el("span", { class: "stg g-progress" }, [el("span", { class: "dot" }), stages[0]]) : null;
+    var suffix = function (a) {
+      if (laneKey === "progress" && stages.length > 1) return " · " + a.stage_label;
+      return a.stage === "referred" ? " · " + a.stage_label : "";
+    };
+    var waited = TODAY_N - dayNum(lastA.last.date);
+    var when = (laneKey === "pending" ? "请求 " : "发出 ") + md(first);
+    if (lastA.last.date !== first) when += " · 最新 " + md(lastA.last.date) + " " + (D.event_labels[lastA.last.type] || "");
+    when += " · 已等 " + waited + " 天";
+    var kids = [coLine(g, badge), titleList(items, suffix), el("div", { class: "when", text: when })];
+    var overdue = false;
+    if (nexts.length) {
+      var nx = nexts[0], dd = daysFromToday(nx.date);
+      overdue = dd < 0;
+      var head = dd < 0 ? "⚠ 已过 " + (-dd) + " 天" : dd === 0 ? "⏳ 今天" : "⏳ " + md(nx.date) + "（" + dd + " 天后）";
+      var full = uniq(nexts.map(function (n) { return md(n.date) + " " + n.action; })).join("\n");
+      kids.push(el("div", { class: "nxt clamp", title: full }, [el("b", { text: head }), nx.action]));
+    }
+    return cardKeys(el("div", { class: "bcard" + (overdue ? " overdue" : ""), role: "listitem", tabindex: "0" }, kids),
+      function () { jumpTo(items[0].id); });
+  }
+
+  // 等回音：进度条从投递日走到止损日；默认止损说法不重复，只显示补充的那句
+  function waitRep(g) {
+    var withNext = g.items.filter(function (a) { return a.next; })
+      .sort(function (a, b) { return a.next.date < b.next.date ? -1 : a.next.date > b.next.date ? 1 : 0; });
+    return withNext[0] || g.items[0];
+  }
+  function waitCard(g) {
+    var items = g.items, rep = waitRep(g), lastA = latestApp(items);
+    function recordedDate(a) {
+      var submission = a.submission || {}, applied = a.applied_date || submission.applied_date;
+      var receipt = a.receipt_date || submission.receipt_date;
+      return applied ? { date: applied, label: "投递" } : receipt ? { date: receipt, label: "收件确认" }
+        : { date: a.first_out, label: "首次记录" };
+    }
+    var repDate = recordedDate(rep), start = repDate.date, repName = rep.req || rep.title;
+    var waited = TODAY_N - dayNum(start);
+    var when = items.length > 1 ? "各岗日期见上 · 最近动态 " + md(lastA.last.date) + " " + (D.event_labels[lastA.last.type] || "")
+      : (rep.channel === "内推" ? "内推 · " : "") + repDate.label + " " + md(start);
+    if (items.length === 1 && (lastA.last.date !== start || !["applied", "ack"].includes(lastA.last.type))) {
+      when += " · 最近动态 " + md(lastA.last.date) + " " + (D.event_labels[lastA.last.type] || "");
+    }
+    var kids = [coLine(g), titleList(items, function (a) {
+      var date = recordedDate(a);
+      return (items.length > 1 ? " · " + (a.req || "未记 req") + " · " + date.label + " " + md(date.date) : "")
+        + (a.stage === "screening" ? " · " + a.stage_label : "");
+    }), el("div", { class: "when", text: when })];
+    var fulls = uniq(items.filter(function (a) { return a.next && a.next.action; }).map(function (a) { return a.next.action; }));
+    var extras = uniq(fulls.map(extraAction).filter(Boolean));
+    if (extras.length) kids.push(el("div", { class: "note clamp two", title: fulls.join("\n"), text: extras.join("；") }));
+    var overdue = false, wait;
+    if (rep.next) {
+      var end = dayNum(rep.next.date), total = end - dayNum(start), dd = end - TODAY_N;
+      overdue = dd < 0;
+      var frac = total > 0 ? Math.min(1, Math.max(0, waited / total)) : 1;
+      var fill = el("i");
+      fill.style.width = (overdue ? 100 : Math.max(frac * 100, 2)) + "%";
+      wait = el("div", { class: "wait" }, [
+        el("div", { class: "meter", role: "img", "aria-label": repName + "：" + repDate.label + " " + start + "，已等 " + waited + " 天，止损日 " + rep.next.date }, [fill]),
+        el("div", { class: "lbl" }, [el("span", { text: (items.length > 1 ? repName + " · " : "") + repDate.label + "后已等 " + waited + " 天" }),
+          el("span", { class: overdue ? "w" : null, text: overdue ? "⚠ 止损 " + md(rep.next.date) + " 已过 " + (-dd) + " 天" : "止损 " + md(rep.next.date) })])
+      ]);
+    } else {
+      wait = el("div", { class: "wait" }, [el("div", { class: "lbl" }, [el("span", { text: (items.length > 1 ? repName + " · " : "") + repDate.label + "后已等 " + waited + " 天" }), el("span", { text: "未设止损日" })])]);
+    }
+    kids.push(wait);
+    return cardKeys(el("div", { class: "bcard" + (overdue ? " overdue" : ""), role: "listitem", tabindex: "0",
+      title: items.map(function (a) { var date = recordedDate(a); return (a.req || a.title) + "：" + date.label + " " + date.date; }).join("\n") }, kids),
+      function () { jumpTo(rep.id); });
+  }
+
+  function pausedCard(g) {
+    var kids = [coLine(g), titleList(g.items, function (a) { return " · " + (a.req || a.id) + " · " + a.stage_label; }),
+      el("div", { class: "note clamp two", text: "未确认激活；仅收到自动回执，等待招聘团队确认。" })];
+    return cardKeys(el("div", { class: "bcard", role: "listitem", tabindex: "0",
+      title: g.items.map(function (a) { return (a.req || a.id) + "：" + a.stage_label; }).join("\n") }, kids),
+      function () { jumpTo(g.items[0].id); });
+  }
+
+  function historyText(a) {
+    return a.history_stage_label ? (a.lifecycle === "ended" || !a.open ? "曾有" : "") + a.history_stage_label : "";
+  }
+  function lifecycleCaption(a) {
+    if (a.lifecycle === "paused") return a.stage_label;
+    if (a.archive) return "已归档 · 无回复";
+    var prefix = a.lifecycle === "ended" || !a.open ? "已结束" : a.lifecycle === "advancing" ? "当前推进" : a.stage === "screening" ? a.stage_label : "待后续";
+    var history = historyText(a);
+    return prefix + (history ? " · " + history : "");
+  }
+  // 已结束：公司 × 结果类型一个标签；历史来自各 req 本身，不传给同公司其他岗位。
+  function donePill(g, group) {
+    var items = g.items;
+    var real = items.map(function (a) { return a.outcome; }).filter(function (o) { return o && !o.manual; });
+    var oc = real.reduce(function (m, o) { return !m || o.date > m.date ? o : m; }, null);
+    function resultSpan(a) {
+      var submission = a.submission || {}, applied = a.applied_date || submission.applied_date;
+      var receipt = a.receipt_date || submission.receipt_date;
+      var date = applied || receipt || a.first_out, label = applied ? "投递" : receipt ? "收件" : "首次记录";
+      var outcome = a.outcome;
+      if (a.archive) return { short: "归档 " + md(a.archive.date),
+        full: label + " " + md(date) + " · 归档 " + md(a.archive.date) + "：" + a.archive.reason };
+      if (!outcome || outcome.manual) return { short: "手动标记" + a.stage_label,
+        full: label + " " + md(date) + " · 手动标记" + a.stage_label + (outcome ? " " + md(outcome.date) : "") };
+      var duration = durTxt(dayNum(outcome.date) - dayNum(date));
+      return { short: label + "→结果 " + duration,
+        full: label + " " + md(date) + " → " + md(outcome.date) + " " + (D.event_labels[outcome.type] || a.stage_label) + "（" + duration + "）" };
+    }
+    var d = items.length === 1 ? resultSpan(items[0]).short : group === "archived" ? "沉默归档（逐岗见详情）" : oc ? "最近结果 " + md(oc.date) : "手动标记（逐岗见详情）";
+    var tip = g.co + "\n" + items.map(function (a) {
+      return "· " + a.title + (a.req ? " (" + a.req + ")" : "") + "：" + a.stage_label + " · " + lifecycleCaption(a) + " · " + resultSpan(a).full;
+    }).join("\n");
+    var histories = items.filter(function (a) { return !!a.history_stage_label; });
+    var historical = items.length === 1 ? historyText(items[0]) : histories.length ? histories.length + " 岗有历史阶段（逐岗见详情）" : "";
+    var pill = el("button", { class: "pill", type: "button", title: tip }, [
+      el("span", { class: "dot g-" + group }), el("span", { class: "ico", "aria-hidden": "true", text: group === "rejected" ? "✕" : "–" }),
+      g.co, items.length > 1 ? el("span", { class: "cnt", text: "×" + items.length }) : null,
+      historical ? el("span", { class: "history-note", text: historical }) : null, el("span", { class: "d", text: d })
+    ]);
+    pill.addEventListener("click", function () { jumpTo(items[0].id); });
+    pill._sort = oc ? oc.date : items.reduce(function (m, a) { var date = a.archive ? a.archive.date : a.last_any.date; return date > m ? date : m; }, "");
+    return pill;
+  }
+
+  function laneHint(lane, apps) {
+    if (lane.act) {
+      // 按卡片数：同公司同一件事合成一张卡，只算一件
+      function cnt(test) {
+        return uniq(apps.filter(function (a) { return a.next && test(daysFromToday(a.next.date)); })
+          .map(function (a) { return a.company + "|" + a.next.date + "|" + a.next.action; })).length;
+      }
+      var od = cnt(function (d) { return d < 0; }), td = cnt(function (d) { return d === 0; });
+      var parts = [];
+      if (od) parts.push(od + " 件已过期");
+      if (td) parts.push("今天 " + td + " 件");
+      return parts.length ? { text: parts.join(" · "), warn: od > 0 } : null;
+    }
+    if (lane.key === "waiting") {
+      var dates = apps.filter(function (a) { return a.next; }).map(function (a) { return a.next.date; }).sort();
+      var past = uniq(apps.filter(function (a) { return a.next && daysFromToday(a.next.date) < 0; }).map(function (a) { return a.company; })).length;
+      var up = dates.filter(function (x) { return daysFromToday(x) >= 0; })[0];
+      var t = (past ? past + " 家已过止损日" : "") + (past && up ? " · " : "") + (up ? "最近止损 " + md(up) : "");
+      return t ? { text: t, warn: past > 0 } : null;
+    }
+    var days = apps.filter(function (a) { return a.outcome && !a.outcome.manual && a.outcome.type === "rejected"; })
+      .map(function (a) { return dayNum(a.outcome.date) - dayNum(a.first_out); }).sort(function (x, y) { return x - y; });
+    if (!days.length) return null;
+    var mid = days.length % 2 ? days[(days.length - 1) / 2] : Math.round((days[days.length / 2 - 1] + days[days.length / 2]) / 2);
+    return { text: "拒信中位 " + durTxt(mid) + "到" };
+  }
+
+  function renderBoard(list) {
+    var box = document.getElementById("board");
+    box.textContent = "";
+    var laneW = (box.clientWidth || 1176) - LANE_PAD;
+    LANES.forEach(function (lane) {
+      var apps = list.filter(function (a) { return lane.groups.indexOf(a.group) >= 0; });
+      var available = APPS.filter(function (a) { return matchesContext(a) && lane.groups.indexOf(a.group) >= 0; });
+      var off = lane.groups.every(function (gk) { return !state.groups.has(gk); });
+      if ((lane.key === "archived" || lane.key === "paused") && !available.length) return;
+      if (lane.key === "archived" && off) {
+        box.appendChild(el("div", { class: "lane", role: "group", "aria-label": lane.label }, [
+          el("div", { class: "lane-h" }, [el("span", { text: "▤ 沉默归档 · " + available.length + " 岗" }),
+            el("button", { type: "button", "aria-expanded": "false", text: "展开记录", onclick: function () { restoreProgressGroups(lane.groups); } })])
+        ]));
+        return;
+      }
+      var hidden = available.filter(function (a) { return !state.groups.has(a.group); });
+      var cos = uniq(apps.map(function (a) { return a.company; }));
+      var dots = lane.groups.map(function (gk) { return el("span", { class: "dot g-" + gk }); });
+      var hint = laneHint(lane, apps);
+      var sec = el("div", { class: "lane" + (lane.act ? " act" : ""), role: "group", "aria-label": lane.label }, [
+        el("div", { class: "lane-h" }, dots.concat([
+          lane.ico ? el("span", { class: "ico", "aria-hidden": "true", text: lane.ico }) : null,
+          el("span", { text: lane.label }),
+          el("span", { class: "n", text: off ? "已隐藏 · " + available.length + " 岗 / " + uniq(available.map(function (a) { return a.company; })).length + " 家可显示" : apps.length + " 岗 / " + cos.length + " 家" + (hidden.length ? " · 另隐藏 " + hidden.length + " 岗" : "") }),
+          hint ? el("span", { class: "hint" + (hint.warn ? " warn" : ""), text: hint.text }) : null
+        ]))
+      ]);
+      box.appendChild(sec);
+      if (!apps.length) {
+        sec.appendChild(el("div", { class: "empty" }, off ? [
+          el("span", { text: "此阶段已关闭显示。 " }),
+          el("button", { type: "button", text: "显示这 " + available.length + " 岗", onclick: function () { restoreProgressGroups(lane.groups); } })
+        ] : ["当前筛选下暂无岗位"]));
+        return;
+      }
+
+      if (lane.key === "done" || lane.key === "archived") {
+        var pills = [];
+        lane.groups.forEach(function (gk) {
+          groupByCompany(apps.filter(function (a) { return a.group === gk; })).forEach(function (g) { pills.push(donePill(g, gk)); });
+        });
+        pills.sort(function (x, y) { return x._sort < y._sort ? 1 : x._sort > y._sort ? -1 : 0; });
+        sec.appendChild(el("div", { class: "pills" }, pills));
+        if (lane.key === "archived") sec.appendChild(el("div", { class: "lane-more" }, [el("button", {
+          type: "button", "aria-expanded": "true", text: "收起归档", onclick: function () { state.groups.delete("archived"); renderAll(); }
+        })]));
+        return;
+      }
+
+      var groups = groupByCompany(apps);
+      var wrap = el("div", { class: "lane-cards", role: "list" });
+      sec.appendChild(wrap);
+      if (lane.key === "waiting") {
+        // 离止损日最近的在前（已过的最前），没设止损的最后；同一天止损按投递日倒序
+        groups.sort(function (x, y) {
+          var rx = waitRep(x), ry = waitRep(y);
+          var nx = rx.next ? rx.next.date : "9999", ny = ry.next ? ry.next.date : "9999";
+          if (nx !== ny) return nx < ny ? -1 : 1;
+          var sx = rx.applied_date || rx.first_out, sy = ry.applied_date || ry.first_out;
+          if (sx !== sy) return sx < sy ? 1 : -1;
+          return x.co.localeCompare(y.co);
+        });
+        var cols = Math.max(1, Math.floor((laneW + CARD_GAP) / (WAIT_CARD_W + CARD_GAP)));
+        var limit = cols * 2;
+        var fold = groups.length - limit >= 3;
+        (fold && !state.waitExpanded ? groups.slice(0, limit) : groups).forEach(function (g) { wrap.appendChild(waitCard(g)); });
+        if (fold) {
+          sec.appendChild(el("div", { class: "lane-more" }, [el("button", {
+            type: "button", "aria-expanded": state.waitExpanded ? "true" : "false",
+            text: state.waitExpanded ? "收起" : "展开其余 " + (groups.length - limit) + " 家",
+            onclick: function () { state.waitExpanded = !state.waitExpanded; renderBoard(filtered()); }
+          })]));
+        }
+        return;
+      }
+      // 有进展 / 内推中：过期的、下一步日期近的在前
+      groups.sort(function (x, y) {
+        var nx = x.items.filter(function (a) { return a.next; }).map(function (a) { return a.next.date; }).sort()[0] || "9999";
+        var ny = y.items.filter(function (a) { return a.next; }).map(function (a) { return a.next.date; }).sort()[0] || "9999";
+        if (nx !== ny) return nx < ny ? -1 : 1;
+        return x.co.localeCompare(y.co);
+      });
+      groups.forEach(function (g) { wrap.appendChild(lane.key === "paused" ? pausedCard(g) : actCard(g, lane.key)); });
+    });
+  }
+
+  // ---------- upcoming ----------
+  function renderUpcoming(list) {
+    var box = document.getElementById("upcoming");
+    box.textContent = "";
+    var items = list.filter(function (a) { return a.next && (a.open || a.next_kind === "restart"); })
+      .sort(function (a, b) { return a.next.date < b.next.date ? -1 : a.next.date > b.next.date ? 1 : 0; });
+    // 同公司同日同动作合并
+    var merged = [];
+    items.forEach(function (a) {
+      var m = merged.find(function (x) { return x.date === a.next.date && x.company === a.company && x.action === a.next.action; });
+      if (m) m.apps.push(a); else merged.push({ date: a.next.date, company: a.company, action: a.next.action, apps: [a] });
+    });
+    merged.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    if (!merged.length) { box.appendChild(el("li", { class: "empty", text: "当前筛选下没有待办节点" })); return; }
+    merged.forEach(function (m) {
+      var dd = daysFromToday(m.date);
+      var rel = dd < 0 ? "已过 " + (-dd) + " 天" : dd === 0 ? "今天" : dd + " 天后";
+      var reqs = m.apps.map(function (a) { return a.req; }).filter(Boolean);
+      var go = m.hc ? function () { if (m.hc.apply) window.open(m.hc.apply, "_blank", "noopener"); } : function () { jumpTo(m.apps[0].id); };
+      box.appendChild(el("li", { class: m.hc ? "dl" : null, tabindex: "0", style: "cursor:pointer", onclick: go,
+        onkeydown: function (e) { if (e.key === "Enter") go(); } }, [
+        el("div", { class: "d" }, [md(m.date), el("small", { text: rel })]),
+        el("div", null, [
+          el("span", { class: "c", text: m.company }),
+          reqs.length ? el("span", { class: "a", text: " " + (reqs.length > 2 ? reqs.length + " 个岗位" : reqs.join(" / ")) }) : null,
+          el("div", { class: "a", text: (m.apps[0].next_kind === "restart" ? "重启计划（旧流程已结束）：" : "") + m.action })
+        ])
+      ]));
+    });
+  }
+
+  // ---------- 医疗 AI 扫描池（全局，不随上方筛选变） ----------
+  function renderHc() {
+    var card = document.getElementById("hc-card");
+    if (!HC || D.board_html) { card.hidden = true; return; }   // 合一后扫描池在「待投岗位」标签里
+    card.hidden = false;
+
+    var meta = document.getElementById("hc-meta");
+    meta.textContent = "";
+    var dl = HC.delta || {};
+    if (dl.date) meta.appendChild(el("span", { text: "最近一次追踪 " + md(dl.date) + "：新增 " + dl.n_new + " 条、下线 " + dl.n_closed + " 条" }));
+    if (HC.final_file) meta.appendChild(el("span", { text: "档位取自 " + HC.final_file }));
+    var stale = HC.age_days != null && HC.age_days > 7;
+    meta.appendChild(el("span", { class: stale ? "warn" : null, text: "快照 " + HC.generated + (stale ? "（已 " + HC.age_days + " 天没刷新，档位与下线信息可能过时）" : "") }));
+    if (HC.links.board) meta.appendChild(el("a", { href: HC.links.board, target: "_blank", rel: "noopener", text: "岗位面板 ↗" }));
+    if (HC.links.progress) meta.appendChild(el("a", { href: HC.links.progress, text: "投递进展 ↗" }));
+
+    var lg = document.getElementById("hc-legend");
+    lg.textContent = "";
+    HC_SEGS.forEach(function (s) {
+      var sw = el("span", { class: "sw" + (s.color ? "" : " todo") });
+      if (s.color) sw.style.background = s.color;
+      lg.appendChild(el("span", null, [sw, s.label]));
+    });
+
+    var rows = document.getElementById("hc-rows");
+    rows.textContent = "";
+    var maxT = Math.max.apply(null, HC.tiers.map(function (t) { return t.total; }).concat([1]));
+    HC.tiers.forEach(function (t) {
+      var its = HC.items.filter(function (i) { return i.tier === t.tier; });
+      rows.appendChild(el("div", { class: "hc-tl" }, [TIER_NAME[t.tier] || t.tier, el("small", { text: t.total + " 条" })]));
+      var bar = el("div", { class: "hc-bar", role: "img", "aria-label": (TIER_NAME[t.tier] || t.tier) + "：" + HC_SEGS.map(function (s) { return s.label + " " + (t.counts[s.key] || 0); }).join("，") });
+      bar.style.width = (t.total / maxT * 100) + "%";
+      HC_SEGS.forEach(function (s) {
+        var n = t.counts[s.key];
+        if (!n) return;
+        var names = its.filter(function (i) { return i.group === s.key; }).map(function (i) { return i.company; });
+        var byCo = {};
+        names.forEach(function (c) { byCo[c] = (byCo[c] || 0) + 1; });
+        var list = Object.keys(byCo).map(function (c) { return c + (byCo[c] > 1 ? " ×" + byCo[c] : ""); });
+        var seg = el("div", { class: s.color ? null : "seg-todo", tabindex: "0" });
+        seg.style.flex = n + " 1 0";
+        if (s.color) seg.style.background = s.color;
+        function show(e) {
+          showTip(e, (TIER_NAME[t.tier] || t.tier) + " · " + s.label, [{ color: s.color || "var(--axis)", value: n + " 条", label: list.slice(0, 8).join("、") + (list.length > 8 ? " 等 " + list.length + " 家" : "") }]);
+        }
+        seg.addEventListener("mouseenter", show); seg.addEventListener("mousemove", show); seg.addEventListener("focus", show);
+        seg.addEventListener("mouseleave", hideTip); seg.addEventListener("blur", hideTip);
+        bar.appendChild(seg);
+      });
+      rows.appendChild(el("div", null, t.total ? [bar] : [el("span", { class: "empty", text: "—" })]));
+      var c = t.counts, sent = c.progress + c.waiting + c.pending;
+      var parts = [el("b", { text: "待投 " + c.todo })];
+      if (sent) parts.push(" · 在途 " + sent + (c.progress ? "（当前推进 " + c.progress + "）" : ""));
+      if (c.rejected) parts.push(" · 已拒 " + c.rejected);
+      if (c.closed) parts.push(" · 下线/关闭 " + c.closed);
+      if (c.archived) parts.push(" · 沉默归档 " + c.archived);
+      rows.appendChild(el("div", { class: "br" }, parts));
+    });
+
+    var sentBox = document.getElementById("hc-sent");
+    sentBox.textContent = "";
+    var sent = HC.items.filter(function (i) { return i.app_id; })
+      .sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : a.company.localeCompare(b.company); });
+    if (sent.length) {
+      sentBox.appendChild(el("span", { text: "已投的入围岗（点名字跳到下方明细）：" }));
+      sent.forEach(function (i) {
+        sentBox.appendChild(el("button", { type: "button", title: i.tier + " · " + i.title + " · " + i.label + (i.closed_note ? "；" + i.closed_note : ""),
+          onclick: function () { jumpTo(i.app_id); } }, [i.tier.split(" ")[0] + " " + i.company + (i.group === "rejected" ? " ✕" : "")]));
+      });
+    }
+    if (HC.stretch) sentBox.appendChild(el("span", { style: "margin-left:auto", text: "另有 stretch " + HC.stretch + " 条资深岗只观察，不计入" }));
+
+    var box = document.getElementById("hc-todo");
+    box.textContent = "";
+    var todo = HC.items.filter(function (i) { return i.group === "todo"; }).sort(function (a, b) {
+      return (((a.priority_review || {}).rank || 999999) - ((b.priority_review || {}).rank || 999999)) || (TIER_ORDER[a.tier] - TIER_ORDER[b.tier]) || (b.priority - a.priority) || a.company.localeCompare(b.company);
+    });
+    // 与统一待投页共用人工复核顺序；暂缓记录不进入建议。
+    var nextUp = todo.filter(function (i) { return (i.priority_review || {}).actionable !== false; }).slice(0, 10);
+    if (nextUp.length) {
+      box.appendChild(el("div", { class: "hc-h3" }, ["下一批建议投 · 前 " + nextUp.length + " 条",
+        el("span", { class: "sub", text: "按最新行动顺序；旧辅助分仅在岗位详情解释。全部公司与具体卡点见「待投岗位」。" })]));
+      box.appendChild(el("div", { class: "tbl-wrap" }, [hcTable(nextUp)]));
+    }
+    var top = todo.filter(function (i) { return i.tier !== "🟡 条件投"; });
+    var cond = todo.filter(function (i) { return i.tier === "🟡 条件投"; });
+    box.appendChild(el("div", { class: "hc-h3" }, ["待投 · 🥇 优先 / 🟢 可投 " + top.length + " 条",
+      el("span", { class: "sub", text: "按行动顺序排；⚠️ 的要先问 recruiter 认不认博士研究年限；职位名直达申请页" })]));
+    box.appendChild(top.length ? el("div", { class: "tbl-wrap" }, [hcTable(top)]) : el("div", { class: "empty", text: "🥇 / 🟢 都投完了" }));
+    if (cond.length) {
+      box.appendChild(el("details", { class: "hc-more" }, [el("summary", { text: "待投 · 🟡 条件投 " + cond.length + " 条（点开）" }), el("div", { class: "tbl-wrap" }, [hcTable(cond)])]));
+    }
+  }
+  function hcTable(list) {
+    var heads = [["公司", null], ["职位", null], ["应届资格", null], ["票数 · 建议填", null], ["地点", "hide-sm"], ["截止", "hide-sm"], ["行动顺序", null], ["", "hide-sm"]];
+    function lv(n) { return n ? "L" + n : "低于 L1"; }
+    function usd(n) { return "$" + Number(n).toLocaleString("en-US"); }
+    function visaCell(i) {
+      var w = i.wage || {}, s = w.suggest, pol = i.emp_policy || {}, lca = i.emp_lca, kids = [];
+      if (pol.h1b === "cap-exempt") kids.push(el("div", { text: "免抽签（cap-exempt，推断）" }));
+      else if (s) kids.push(el("div", { title: w.area_name + " · SOC " + w.soc + "：L1–L4 线 " + w.levels.map(usd).join(" / ") + "；区间下沿 / 中位 / 上沿 = " + [w.tix_lo, w.tix_mid, w.tix_hi].map(lv).join(" / ") },
+        [el("b", { text: s.amount + " " }), "（" + lv(s.level) + (s.alt ? "；稳妥 " + s.alt.amount : "") + "）"]));
+      else if (w.levels) kids.push(el("div", { title: "L1–L4 线 " + w.levels.map(usd).join(" / "), text: "薪资未披露 · L4 线 " + usd(w.levels[3]) }));
+      else kids.push(el("div", { text: "—" }));
+      var notes = [];
+      if (pol.stem_opt === "no") notes.push("不做 STEM OPT");
+      if (pol.h1b === "freeze") notes.push("新 H-1B 冻结");
+      if (lca && lca.n_h1b) notes.push("LCA " + lca.n_h1b + " · 新雇 " + lca.n_new_cap); else if (pol.h1b !== "cap-exempt") notes.push("LCA 查无");
+      if ((i.jd_visa || []).indexOf("SPONSOR_NOT_GUARANTEED") >= 0) notes.push("JD：不保证 sponsor");
+      kids.push(el("div", { style: "color:var(--muted);font-size:12px", text: notes.join(" · ") }));
+      return kids;
+    }
+    var t = el("table", { class: "hc-tbl" }, [el("thead", null, [el("tr", null, heads.map(function (h) { return el("th", { scope: "col", class: h[1], text: h[0] }); }))])]);
+    var tb = el("tbody");
+    list.forEach(function (i) {
+      var dd = i.deadline ? daysFromToday(i.deadline) : null;
+      var loc = (i.dfw ? "DFW · " : "") + i.loc;
+      tb.appendChild(el("tr", null, [
+        el("td", null, [el("span", { class: "t", text: i.company })]),
+        el("td", null, [
+          i.apply ? el("a", { href: i.apply, target: "_blank", rel: "noopener", text: i.title }) : el("span", { text: i.title }),
+          i.new ? el("span", { class: "hc-new", text: "新增" }) : null,
+          i.priority_review && !i.priority_review.actionable ? el("span", { class: "hc-new", text: "暂缓 / 不投入" }) : null,
+          i.req ? el("div", { class: "rq", text: i.req }) : null]),
+        el("td", { class: "sm", title: i.elig_line, text: i.elig }),
+        el("td", { class: "sm" }, visaCell(i)),
+        el("td", { class: "sm hide-sm", title: loc, text: loc.length > 34 ? loc.slice(0, 34) + "…" : loc }),
+        el("td", { class: "date sm hide-sm", text: i.deadline ? md(i.deadline) + (dd < 0 ? "（已过）" : dd <= 7 ? "（" + dd + " 天后）" : "") : "—" }),
+        el("td", { class: "num sm", title: (i.priority_review || {}).reason || "尚未逐岗复核", text: i.priority_review ? "#" + i.priority_review.rank : "未复核" }),
+        el("td", { class: "sm hide-sm" }, [i.note ? el("a", { href: i.note, text: "笔记 ↗" }) : "—"])
+      ]));
+    });
+    t.appendChild(tb);
+    return t;
+  }
+
+  // ---------- markers ----------
+  function marker(type, x, y, r) {
+    var g = EVENT_GROUP[type] || "closed";
+    var c = groupColor(type === "next" ? "closed" : g);
+    var surf = "var(--surface)";
+    switch (type) {
+      case "referral_request":
+        return sv("path", { d: "M" + x + " " + (y - r) + " L" + (x + r) + " " + y + " L" + x + " " + (y + r) + " L" + (x - r) + " " + y + "Z", fill: surf, stroke: c, "stroke-width": 2 });
+      case "referral_submitted":
+        return sv("path", { d: "M" + x + " " + (y - r) + " L" + (x + r) + " " + y + " L" + x + " " + (y + r) + " L" + (x - r) + " " + y + "Z", fill: c, stroke: surf, "stroke-width": 1.5 });
+      case "referrer_reply":
+        var q = r - 2.5;
+        return sv("path", { d: "M" + x + " " + (y - q) + " L" + (x + q) + " " + y + " L" + x + " " + (y + q) + " L" + (x - q) + " " + y + "Z", fill: c, stroke: surf, "stroke-width": 1 });
+      case "applied":
+        return sv("circle", { cx: x, cy: y, r: r - 0.5, fill: c, stroke: surf, "stroke-width": 1.5 });
+      case "ack":
+        return sv("circle", { cx: x, cy: y, r: r - 2, fill: surf, stroke: c, "stroke-width": 2 });
+      case "human_reply":
+        return sv("rect", { x: x - r + 1, y: y - r + 1, width: 2 * r - 2, height: 2 * r - 2, rx: 2, fill: c, stroke: surf, "stroke-width": 1.5 });
+      case "assessment":
+      case "interview":
+        return sv("path", { d: "M" + x + " " + (y - r) + " L" + (x + r) + " " + (y + r - 1) + " L" + (x - r) + " " + (y + r - 1) + "Z", fill: c, stroke: surf, "stroke-width": 1.5, "stroke-linejoin": "round" });
+      case "offer":
+        var pts = [];
+        for (var i = 0; i < 10; i++) {
+          var rr = i % 2 ? r * 0.45 : r + 1, ang = Math.PI / 5 * i - Math.PI / 2;
+          pts.push((x + rr * Math.cos(ang)).toFixed(1) + " " + (y + rr * Math.sin(ang)).toFixed(1));
+        }
+        return sv("path", { d: "M" + pts.join(" L") + "Z", fill: c, stroke: surf, "stroke-width": 1 });
+      case "rejected":
+        var k = r - 1.5;
+        return sv("g", null, [
+          sv("circle", { cx: x, cy: y, r: r, fill: surf }),
+          sv("path", { d: "M" + (x - k) + " " + (y - k) + " L" + (x + k) + " " + (y + k) + " M" + (x + k) + " " + (y - k) + " L" + (x - k) + " " + (y + k), stroke: c, "stroke-width": 2.5, "stroke-linecap": "round" })
+        ]);
+      case "closed":
+      case "withdrawn":
+        return sv("g", null, [
+          sv("circle", { cx: x, cy: y, r: r - 1, fill: surf, stroke: c, "stroke-width": 2 }),
+          sv("path", { d: "M" + (x - r + 3) + " " + (y + r - 3) + " L" + (x + r - 3) + " " + (y - r + 3), stroke: c, "stroke-width": 2, "stroke-linecap": "round" })
+        ]);
+      case "next":
+        return sv("circle", { cx: x, cy: y, r: r - 2.5, fill: surf, stroke: "var(--muted)", "stroke-width": 1.5 });
+      default:
+        return sv("circle", { cx: x, cy: y, r: 3, fill: c });
+    }
+  }
+  function renderLegend() {
+    var box = document.getElementById("legend");
+    box.textContent = "";
+    LEGEND.forEach(function (l) {
+      var s = sv("svg", { width: 16, height: 16, viewBox: "0 0 16 16", "aria-hidden": "true" }, [marker(l.type, 8, 8, 6)]);
+      box.appendChild(el("span", null, [s, l.label]));
+    });
+  }
+
+  // ---------- timeline ----------
+  var ROWH = 26;
+  var timelineHidden = new Set();
+  try {
+    var savedTimelineHidden = JSON.parse(localStorage.getItem("jobdash-timeline-hidden-companies-v1"));
+    if (Array.isArray(savedTimelineHidden)) timelineHidden = new Set(window.JobCompanyFilter.normalize({ selected: savedTimelineHidden }).selected);
+  } catch (e) {}
+  function timelineMatches(a) { return !timelineHidden.has(window.JobCompanyFilter.keyFor(a.company)); }
+  function initTimelineCompanies() {
+    var companies = window.JobCompanyFilter.catalog(APPS);
+    var search = document.getElementById("tl-company-search"), list = document.getElementById("tl-company-list");
+    var controls = companies.map(function (co) {
+      var input = el("input", { type: "checkbox", value: co.key });
+      input.addEventListener("change", function () {
+        if (input.checked) timelineHidden.add(co.key); else timelineHidden.delete(co.key);
+        update();
+      });
+      var row = el("label", { class: "jcf-company" }, [input, el("span", { class: "jcf-company-name", text: co.label }), el("span", { class: "jcf-count", text: co.count })]);
+      list.appendChild(row);
+      return { co: co, input: input, row: row };
+    });
+    function searchCompanies() {
+      var q = search.value.trim().toLowerCase(), visible = 0;
+      controls.forEach(function (c) {
+        c.row.hidden = !!q && (c.co.label + " " + c.co.key).toLowerCase().indexOf(q) < 0;
+        if (!c.row.hidden) visible++;
+      });
+      document.getElementById("tl-company-empty").hidden = visible > 0;
+    }
+    function renderSelection() {
+      var active = document.getElementById("tl-company-active");
+      active.textContent = "";
+      document.getElementById("tl-company-status").textContent = timelineHidden.size ? "已隐藏 " + timelineHidden.size + " 家" : "显示全部公司";
+      controls.forEach(function (c) { c.input.checked = timelineHidden.has(c.co.key); });
+      timelineHidden.forEach(function (key) {
+        var co = companies.find(function (c) { return c.key === key; });
+        active.appendChild(el("button", { type: "button", class: "jcf-tag", text: (co ? co.label : window.JobCompanyFilter.labelFor(key)) + " ×", "aria-label": "在图表恢复公司：" + (co ? co.label : window.JobCompanyFilter.labelFor(key)), onclick: function () { timelineHidden.delete(key); update(); } }));
+      });
+      if (timelineHidden.size) active.appendChild(el("button", { type: "button", class: "jcf-clear", text: "恢复全部", onclick: function () { timelineHidden.clear(); update(); } }));
+      active.hidden = !timelineHidden.size;
+    }
+    function update() {
+      try { localStorage.setItem("jobdash-timeline-hidden-companies-v1", JSON.stringify(Array.from(timelineHidden))); } catch (e) {}
+      renderSelection(); renderTimeline(); renderCadence();
+    }
+    search.addEventListener("input", searchCompanies);
+    renderSelection(); searchCompanies();
+  }
+  function niceTicks(d0, d1, width) {
+    var perPx = (d1 - d0) / Math.max(width, 1), ticks = [];
+    var step = perPx * 70 <= 7 ? 7 : perPx * 70 <= 14 ? 14 : 0;
+    if (step) {
+      var t = weekStart(d0);
+      if (t < d0) t += 7;
+      for (; t <= d1; t += step) ticks.push({ n: t, label: md(fromDayNum(t)) });
+      return ticks;
+    }
+    var d = new Date(d0 * 86400000), y = d.getUTCFullYear(), m = d.getUTCMonth() + 1;
+    var pxPerMonth = 30.4 / perPx, mstep = pxPerMonth < 34 ? 2 : 1, k = 0;
+    for (;;) {
+      if (m > 11) { m -= 12; y++; }
+      var n = Date.UTC(y, m, 1) / 86400000;
+      if (n > d1) break;
+      if (k++ % mstep === 0) ticks.push({ n: n, label: (m + 1) + (pxPerMonth < 26 ? "" : " 月") });
+      m++;
+    }
+    return ticks;
+  }
+  function renderTimeline() {
+    var host = document.getElementById("timeline");
+    var note = document.getElementById("tl-note");
+    host.textContent = "";
+    hideTip();
+    var list = filtered().filter(timelineMatches);
+    if (!list.length) { host.appendChild(el("div", { class: "empty", text: "当前筛选下没有可显示的岗位；可取消隐藏公司或调整上方筛选。" })); note.textContent = ""; return; }
+
+    // 公司按最早发出日排，公司内按岗位发出日排
+    var coFirst = {};
+    list.forEach(function (a) { if (!coFirst[a.company] || a.first_out < coFirst[a.company]) coFirst[a.company] = a.first_out; });
+    var rows = list.slice().sort(function (a, b) {
+      if (a.company !== b.company) return coFirst[a.company] < coFirst[b.company] ? -1 : coFirst[a.company] > coFirst[b.company] ? 1 : a.company.localeCompare(b.company);
+      return a.first_out < b.first_out ? -1 : a.first_out > b.first_out ? 1 : 0;
+    });
+
+    var rs = rangeStart();
+    var allDays = [];
+    rows.forEach(function (a) {
+      a.events.forEach(function (e) { allDays.push(dayNum(e.date)); });
+      if (a.next && a.open) allDays.push(dayNum(a.next.date));
+    });
+    allDays.push(TODAY_N);
+    var d0 = Math.min.apply(null, allDays) - 2, d1 = Math.max.apply(null, allDays) + 3;
+    if (rs != null) d0 = Math.max(d0, rs);
+    var hiddenBefore = 0, hiddenRows = 0;
+    if (rs != null) {
+      var saved = state.range; state.range = "all";
+      var inScope = APPS.filter(matches).filter(timelineMatches);
+      state.range = saved;
+      inScope.forEach(function (a) { a.events.forEach(function (e) { if (dayNum(e.date) < rs) hiddenBefore++; }); });
+      hiddenRows = inScope.length - rows.length;
+    }
+
+    var wrapW = host.clientWidth || 900;
+    var labW = wrapW < 560 ? 120 : wrapW < 900 ? 190 : 250;
+    var W = Math.max(wrapW - labW, 200);
+    var PADL = 10, PADR = 14, AXH = 36;
+    var H = AXH + rows.length * ROWH + 6;
+    function X(n) { return PADL + (n - d0) / (d1 - d0) * (W - PADL - PADR); }
+
+    var grid = el("div", { class: "tl" });
+    grid.style.setProperty("--labw", labW + "px");
+    grid.style.setProperty("--rowh", ROWH + "px");
+    var labels = el("div", { class: "tl-labels" }, [el("div", { class: "axis-spacer", style: "height:" + AXH + "px" })]);
+    var svg = sv("svg", { class: "tl-svg", width: W, height: H, viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "岗位时间线，共 " + rows.length + " 行" });
+
+    // 公司色带
+    var band = false, prevCo = null;
+    rows.forEach(function (a, i) {
+      if (a.company !== prevCo) band = !band;
+      prevCo = a.company;
+      if (band) svg.appendChild(sv("rect", { x: 0, y: AXH + i * ROWH, width: W, height: ROWH, fill: "var(--wash)" }));
+    });
+    // 刻度与网格
+    niceTicks(d0, d1, W).forEach(function (t) {
+      var x = X(t.n);
+      if (x < PADL - 0.5 || x > W - PADR + 0.5) return;
+      svg.appendChild(sv("line", { x1: x, x2: x, y1: AXH - 4, y2: H, stroke: "var(--grid)", "stroke-width": 1 }));
+      var tx = sv("text", { x: x, y: 12, "text-anchor": "middle" });
+      tx.textContent = t.label;
+      svg.appendChild(tx);
+    });
+    svg.appendChild(sv("line", { x1: 0, x2: W, y1: AXH - 4, y2: AXH - 4, stroke: "var(--axis)", "stroke-width": 1 }));
+    // 今天
+    var tx0 = X(TODAY_N);
+    svg.appendChild(sv("line", { x1: tx0, x2: tx0, y1: AXH - 4, y2: H, stroke: "var(--ink2)", "stroke-width": 1 }));
+    var tt = sv("text", { x: tx0, y: AXH - 8, "text-anchor": "middle", style: "fill:var(--ink2);font-weight:600" });
+    tt.textContent = "今天";
+
+    var prev = null;
+    rows.forEach(function (a, i) {
+      var y = AXH + i * ROWH + ROWH / 2;
+      var cont = a.company === prev;
+      prev = a.company;
+      var lab = el("div", { class: "row" + (cont ? " cont" : ""), title: a.company + " — " + a.title + (a.req ? " (" + a.req + ")" : ""), onclick: function () { jumpTo(a.id); } }, [
+        el("span", { class: "co", text: a.company }), a.req ? el("span", { class: "rq2", text: a.req }) : null, el("span", { class: "ti", text: a.title })
+      ]);
+      labels.appendChild(lab);
+
+      var evs = a.events.filter(function (e) { return rs == null || dayNum(e.date) >= rs; });
+      var color = groupColor(a.group);
+      if (evs.length) {
+        var x1 = X(dayNum(evs[0].date)), x2 = X(dayNum(evs[evs.length - 1].date));
+        if (x2 > x1) svg.appendChild(sv("line", { x1: x1, x2: x2, y1: y, y2: y, stroke: color, "stroke-width": 2, "stroke-linecap": "round" }));
+        if (a.open && TODAY_N > dayNum(evs[evs.length - 1].date)) {
+          svg.appendChild(sv("line", { x1: x2, x2: tx0, y1: y, y2: y, stroke: color, "stroke-width": 2, "stroke-opacity": 0.4, "stroke-linecap": "round" }));
+        }
+      } else if (a.open) {
+        svg.appendChild(sv("line", { x1: X(d0), x2: tx0, y1: y, y2: y, stroke: color, "stroke-width": 2, "stroke-opacity": 0.4 }));
+      }
+      // 下一个节点
+      if (a.open && a.next && dayNum(a.next.date) >= d0 && dayNum(a.next.date) <= d1) {
+        var nxX = X(dayNum(a.next.date));
+        if (dayNum(a.next.date) > TODAY_N) svg.appendChild(sv("line", { x1: tx0, x2: nxX, y1: y, y2: y, stroke: "var(--axis)", "stroke-width": 1 }));
+        svg.appendChild(marker("next", nxX, y, 7));
+        var hn = sv("circle", { class: "hit", cx: nxX, cy: y, r: 11, tabindex: "0", role: "img", "aria-label": a.company + " " + a.next.date + " " + a.next.action });
+        (function (a) {
+          function show(e) { showTip(e, a.company + " — " + a.title, [{ color: "var(--muted)", value: md(a.next.date) + "（" + (daysFromToday(a.next.date) >= 0 ? daysFromToday(a.next.date) + " 天后" : "已过 " + (-daysFromToday(a.next.date)) + " 天") + "）", label: a.next.action }]); }
+          hn.addEventListener("pointermove", show); hn.addEventListener("focus", show);
+          hn.addEventListener("pointerleave", hideTip); hn.addEventListener("blur", hideTip);
+        })(a);
+        svg.appendChild(hn);
+      }
+      // 按日期聚合事件，再把屏幕上挨得太近的日期并成一簇（画最重要的那个，提示框列出全部）
+      var byDay = {};
+      evs.forEach(function (e) { (byDay[e.date] = byDay[e.date] || []).push(e); });
+      var clusters = [];
+      Object.keys(byDay).sort().forEach(function (d) {
+        var x = X(dayNum(d)), c = clusters[clusters.length - 1];
+        if (c && x - c.x0 < 14) { c.days.push(d); c.es = c.es.concat(byDay[d]); }
+        else clusters.push({ x0: x, days: [d], es: byDay[d].slice() });
+      });
+      clusters.forEach(function (c) {
+        var top = c.es.slice().sort(function (p, q) { return EVENT_RANK.indexOf(q.type) - EVENT_RANK.indexOf(p.type); })[0];
+        var x = X(dayNum(top.date));
+        svg.appendChild(marker(top.type, x, y, 7));
+        if (c.es.length > 1 && c.days.length > 1) {
+          var badge = sv("text", { x: x + 8, y: y - 5, style: "font-size:9px;fill:var(--ink2)" });
+          badge.textContent = c.es.length;
+          svg.appendChild(badge);
+        }
+        var hit = sv("circle", { class: "hit", cx: x, cy: y, r: 12, tabindex: "0", role: "img",
+          "aria-label": a.company + " " + c.days.join("、") + " " + c.es.map(function (e) { return e.type_label; }).join("、") });
+        (function (a, es) {
+          function show(ev) {
+            showTip(ev, a.company + " — " + a.title + (a.req ? " · " + a.req : ""), es.map(function (e) {
+              return { color: groupColor(EVENT_GROUP[e.type] || "closed"), value: md(e.date) + (e.time ? " " + e.time : "") + " " + e.type_label, label: e.summary };
+            }));
+          }
+          hit.addEventListener("pointermove", show); hit.addEventListener("focus", show);
+          hit.addEventListener("pointerleave", hideTip); hit.addEventListener("blur", hideTip);
+          hit.addEventListener("click", function () { jumpTo(a.id); });
+        })(a, c.es);
+        svg.appendChild(hit);
+      });
+    });
+    svg.appendChild(tt);
+    grid.appendChild(labels);
+    grid.appendChild(el("div", { style: "min-width:0" }, [svg]));
+    host.appendChild(grid);
+    note.textContent = hiddenBefore ? "时间范围外还有 " + (hiddenRows ? hiddenRows + " 个岗位、" : "") + hiddenBefore + " 条更早的事件，切到「全部」可见。" : "";
+  }
+
+  // ---------- cadence (weekly bars) ----------
+  function weekStart(n) { return n - ((((n + 3) % 7) + 7) % 7); } // 周一为一周开始
+  function renderCadence() {
+    var host = document.getElementById("cadence");
+    host.textContent = "";
+    var list = filtered().filter(timelineMatches).filter(function (a) { return !a.submission_date_unknown; });
+    if (!list.length) { host.appendChild(el("div", { class: "empty", text: "当前筛选下没有已知发出日期的岗位；原提交日期未知的历史补记不按通知日计入发出数。" })); return; }
+    var rs = rangeStart();
+    var weeks = {};
+    list.forEach(function (a) {
+      var n = dayNum(a.first_out);
+      if (rs != null && n < rs) return;
+      var w = weekStart(n);
+      (weeks[w] = weeks[w] || []).push(a);
+    });
+    var keys = Object.keys(weeks).map(Number);
+    if (!keys.length) { host.appendChild(el("div", { class: "empty", text: "这段时间没有新发出的岗位" })); return; }
+    var w0 = Math.min.apply(null, keys), w1 = weekStart(TODAY_N);
+    if (rs != null) w0 = Math.min(w0, weekStart(rs));
+    var all = [];
+    for (var w = w0; w <= w1; w += 7) all.push({ w: w, apps: weeks[w] || [] });
+    var maxV = Math.max.apply(null, all.map(function (b) { return b.apps.length; }));
+    var yMax = Math.max(4, Math.ceil(maxV / 2) * 2);
+    var W = host.clientWidth || 900, H = 200, PL = 28, PR = 8, PT = 18, PB = 26;
+    var svg = sv("svg", { width: W, height: H, viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "每周发出数柱状图", style: "display:block;overflow:visible" });
+    var plotW = W - PL - PR, plotH = H - PT - PB;
+    var bw = plotW / all.length;
+    function Y(v) { return PT + plotH - v / yMax * plotH; }
+    var step = yMax <= 6 ? 1 : yMax <= 12 ? 2 : 5;
+    for (var v = 0; v <= yMax; v += step) {
+      svg.appendChild(sv("line", { x1: PL, x2: W - PR, y1: Y(v), y2: Y(v), stroke: v === 0 ? "var(--axis)" : "var(--grid)", "stroke-width": 1 }));
+      var t = sv("text", { x: PL - 6, y: Y(v) + 4, "text-anchor": "end", style: "font-variant-numeric:tabular-nums" });
+      t.textContent = v;
+      svg.appendChild(t);
+    }
+    var labelEvery = Math.ceil(44 / bw);
+    var maxIdx = -1;
+    all.forEach(function (b, i) { if (maxIdx < 0 || b.apps.length > all[maxIdx].apps.length) maxIdx = i; });
+    all.forEach(function (b, i) {
+      var x = PL + i * bw + 1, wbar = Math.max(bw - 2, 1), v = b.apps.length;
+      if (v) {
+        var y = Y(v), h = Y(0) - y, r = Math.min(4, wbar / 2, h);
+        svg.appendChild(sv("path", {
+          d: "M" + x + " " + Y(0) + " V" + (y + r) + " Q" + x + " " + y + " " + (x + r) + " " + y +
+            " H" + (x + wbar - r) + " Q" + (x + wbar) + " " + y + " " + (x + wbar) + " " + (y + r) + " V" + Y(0) + "Z",
+          fill: "var(--c-bar)"
+        }));
+      }
+      if ((i === maxIdx || i === all.length - 1) && v) {
+        var vl = sv("text", { x: x + wbar / 2, y: Y(v) - 5, "text-anchor": "middle", style: "fill:var(--ink);font-weight:600" });
+        vl.textContent = v;
+        svg.appendChild(vl);
+      }
+      if ((i % labelEvery === 0 && all.length - 1 - i >= labelEvery) || i === all.length - 1) {
+        var lt = sv("text", { x: x + wbar / 2, y: H - 8, "text-anchor": "middle" });
+        lt.textContent = i === all.length - 1 ? "本周" : md(fromDayNum(b.w));
+        svg.appendChild(lt);
+      }
+      var hit = sv("rect", { class: "hit", x: PL + i * bw, y: PT, width: bw, height: plotH, tabindex: v ? "0" : null, role: v ? "img" : null,
+        "aria-label": md(fromDayNum(b.w)) + " 这周发出 " + v + " 个" });
+      (function (b) {
+        function show(e) {
+          var cos = {};
+          b.apps.forEach(function (a) { cos[a.company] = (cos[a.company] || 0) + 1; });
+          var rows = [{ color: "var(--c-bar)", value: b.apps.length + " 个岗位", label: "" }];
+          Object.keys(cos).forEach(function (c) { rows.push({ color: "transparent", value: c, label: cos[c] > 1 ? "×" + cos[c] : "" }); });
+          showTip(e, md(fromDayNum(b.w)) + " – " + md(fromDayNum(b.w + 6)) + " 这周", rows);
+        }
+        hit.addEventListener("pointermove", show); hit.addEventListener("focus", show);
+        hit.addEventListener("pointerleave", hideTip); hit.addEventListener("blur", hideTip);
+      })(b);
+      svg.appendChild(hit);
+    });
+    host.appendChild(svg);
+  }
+
+  // ---------- table ----------
+  var COLS = [
+    { key: "company", label: "公司", get: function (a) { return a.company.toLowerCase(); } },
+    { key: "title", label: "岗位", get: function (a) { return a.title.toLowerCase(); } },
+    { key: "channel", label: "渠道", get: function (a) { return a.channel; }, cls: "hide-sm" },
+    { key: "first", label: "发出", get: function (a) { return a.first_out; }, cls: "hide-sm" },
+    { key: "last", label: "最新动态", get: function (a) { return a.last.date; } },
+    { key: "days", label: "已等", get: function (a) { return a.open ? a.days_since_last : -1; }, cls: "hide-sm" },
+    { key: "stage", label: "状态", get: function (a) { return GROUPS.findIndex(function (g) { return g.key === a.group; }); }, cls: "hide-sm" },
+    { key: "next", label: "下一步", get: function (a) { return a.next && (a.open || a.next_kind === "restart") ? a.next.date : "9999"; }, cls: "hide-sm" }
+  ];
+  function badge(a) {
+    var g = GROUP_BY_KEY[a.group];
+    return el("span", { class: "badge g-" + a.group }, [el("span", { class: "dot" }), el("span", { class: "ico", "aria-hidden": "true", text: g.ico }), a.stage_label]);
+  }
+  function badgeSm(a) { var b = badge(a); b.classList.add("show-sm"); return b; }
+  function renderTable() {
+    var tbl = document.getElementById("tbl");
+    tbl.textContent = "";
+    var col = COLS.find(function (c) { return c.key === state.sortKey; });
+    var list = filtered().sort(function (a, b) {
+      var x = col.get(a), y = col.get(b);
+      var r = x < y ? -1 : x > y ? 1 : 0;
+      if (!r) r = a.company.localeCompare(b.company) || (a.first_out < b.first_out ? -1 : 1);
+      return r * state.sortDir;
+    });
+    var thr = el("tr", null, COLS.map(function (c) {
+      return el("th", {
+        class: c.cls, scope: "col", tabindex: "0",
+        "aria-sort": state.sortKey === c.key ? (state.sortDir > 0 ? "ascending" : "descending") : null,
+        onclick: function () { sortBy(c.key); },
+        onkeydown: function (e) { if (e.key === "Enter") sortBy(c.key); },
+        text: c.label
+      });
+    }));
+    tbl.appendChild(el("thead", null, [thr]));
+    var tb = el("tbody");
+    if (!list.length) tb.appendChild(el("tr", null, [el("td", { colspan: COLS.length, class: "empty", text: "当前筛选下没有岗位" })]));
+    list.forEach(function (a) {
+      var nxt = a.next && (a.open || a.next_kind === "restart") ? a.next : null;
+      var tr = el("tr", { class: "app", "data-id": a.id, tabindex: "0", "aria-expanded": state.expanded.has(a.id) ? "true" : "false",
+        onclick: function () { toggle(a.id); },
+        onkeydown: function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(a.id); } } }, [
+        el("td", null, [el("span", { class: "t", text: a.company }), el("div", null, [badgeSm(a)]),
+          el("div", { class: "history-note show-sm", text: lifecycleCaption(a) })]),
+        el("td", null, [el("div", { text: a.title }), a.req ? el("div", { class: "rq", text: a.req }) : null,
+          a.hc ? el("span", { class: "tag-hc", text: a.hc.tier ? "医疗 AI 扫描 " + a.hc.tier.split(" ")[0] : "医疗 AI" }) : null]),
+        el("td", { class: "hide-sm sm", text: a.channel + (a.referrer ? "（" + a.referrer + "）" : "") }),
+        el("td", { class: "date hide-sm", text: a.submission_date_unknown ? "原提交日未知" : md(a.first_out) }),
+        el("td", { class: "latest" }, [el("div", { class: "date", text: md(a.last.date) + " " + (D.event_labels[a.last.type] || "") }), el("div", { class: "sm", text: a.last.summary }),
+          (a.last_any.date !== a.last.date || a.last_any.type !== a.last.type) ? el("div", { class: "sm", style: "color:var(--muted)", text: "另记 " + md(a.last_any.date) + "：" + a.last_any.summary }) : null]),
+        el("td", { class: "num hide-sm", text: a.open ? a.days_since_last + " 天" : "—" }),
+        el("td", { class: "hide-sm" }, [badge(a), el("div", { class: "history-note", text: lifecycleCaption(a) })]),
+        el("td", { class: "hide-sm sm" }, nxt ? [el("div", { class: "date", text: md(nxt.date) + (daysFromToday(nxt.date) < 0 ? "（已过）" : "") }), el("div", { text: (a.next_kind === "restart" ? "重启计划（旧流程已结束）：" : "") + nxt.action })] : ["—"])
+      ]);
+      tb.appendChild(tr);
+      if (state.expanded.has(a.id)) tb.appendChild(detailRow(a));
+    });
+    tbl.appendChild(tb);
+  }
+  function sortBy(k) {
+    if (state.sortKey === k) state.sortDir = -state.sortDir;
+    else { state.sortKey = k; state.sortDir = (k === "company" || k === "title" || k === "stage" || k === "next") ? 1 : -1; }
+    renderTable();
+  }
+  function toggle(id) {
+    if (state.expanded.has(id)) state.expanded.delete(id); else state.expanded.add(id);
+    renderTable();
+  }
+  function link(l) {
+    return l.url ? el("a", { href: l.url, target: l.url.indexOf("http") === 0 ? "_blank" : null, rel: "noopener", text: l.label + " ↗", onclick: function (e) { e.stopPropagation(); } }) : el("span", { text: l.label });
+  }
+  function submissionText(a) {
+    if (a.submission_date_unknown && a.submission) return a.submission.label;
+    if (a.applied_date) return "投递：" + a.applied_date;
+    if (a.receipt_date) return "收件确认：" + a.receipt_date + "；实际提交日期未记录";
+    if (a.submission) return a.submission.label + "；实际提交日期未记录";
+    return a.has_referral_request ? "仅见内推请求，未记录正式提交或收件" : "未记录正式提交或收件";
+  }
+  function detailRow(a) {
+    var meta = el("div", { class: "det-meta" }, [
+      el("span", { text: "岗位编号：" + (a.req || a.id) }),
+      el("span", { text: "当前结果：" + a.stage_label + " · " + lifecycleCaption(a) }),
+      a.location ? el("span", { text: "地点：" + a.location }) : null,
+      a.channel ? el("span", { text: "渠道：" + a.channel + (a.referrer ? "（" + a.referrer + "）" : "") }) : null,
+      el("span", { text: submissionText(a) }),
+      a.folder_url ? el("a", { href: a.folder_url, text: "Obsidian 岗位档案 ↗", onclick: function (e) { e.stopPropagation(); } }) : el("span", { text: "库内无岗位档案" })
+    ]);
+    var evs = el("ul", { class: "ev" }, a.events.map(function (e) {
+      var ty = el("span", { class: "ty g-" + (EVENT_GROUP[e.type] || "closed") }, [el("span", { class: "dot" }), e.type_label]);
+      return el("li", null, [
+        el("span", { class: "d", text: e.date + (e.time ? " " + e.time : "") }),
+        ty,
+        el("span", { class: "sm2" }, [e.summary, el("span", { class: "links" }, e.links.map(link))])
+      ]);
+    }));
+    var kids = [meta, evs];
+    if (a.archive) kids.push(el("div", { class: "conf", text: "沉默归档：" + a.archive.date + " · " + a.archive.reason }));
+    if (a.submitted && (a.submitted.resume || a.submitted.desired_salary != null)) kids.push(el("div", { class: "conf", text: "提交时：简历 " + (a.submitted.resume || "未记") + " · 期望薪资 " + (a.submitted.desired_salary != null && a.submitted.desired_salary !== "" ? a.submitted.desired_salary : "未记") }));
+    if (a.notes) kids.push(el("div", { class: "conf", text: "备注：" + a.notes }));
+    if (a.conflicts.length) kids.push(el("div", { class: "conf" }, [el("div", { text: "待核对：" }), el("ul", null, a.conflicts.map(function (c) { return el("li", { text: c }); }))]));
+    return el("tr", { class: "detail" }, [el("td", { colspan: COLS.length }, kids)]);
+  }
+
+  // ---------- data checks ----------
+  function renderChecks() {
+    var items = [];
+    APPS.filter(companyMatches).forEach(function (a) { a.conflicts.forEach(function (c) { items.push({ a: a, c: c }); }); });
+    var card = document.getElementById("checks-card");
+    if (!items.length) { card.hidden = true; return; }
+    card.hidden = false;
+    var d = document.getElementById("checks");
+    d.querySelector("summary").textContent = "数据待核对 " + items.length + " 条 · 当前公司范围（不受本页其他条件影响）";
+    var ul = d.querySelector("ul");
+    ul.textContent = "";
+    items.forEach(function (it) {
+      ul.appendChild(el("li", null, [el("b", { text: it.a.company + (it.a.req ? " " + it.a.req : "") + "：" }), it.c]));
+    });
+  }
+
+  // ---------- 待补投递记录（简历版本 / 期望薪资） ----------
+  function renderMissing() {
+    var items = APPS.filter(function (a) { return companyMatches(a) && a.missing && a.missing.length; });
+    var card = document.getElementById("missing-card");
+    if (!items.length) { card.hidden = true; return; }
+    card.hidden = false;
+    var d = document.getElementById("missing");
+    d.querySelector("summary").textContent = "待补投递记录 " + items.length + " 条 · 当前公司范围（不受本页其他条件影响）";
+    var ul = d.querySelector("ul");
+    ul.textContent = "";
+    items.sort(function (a, b) { return a.company.localeCompare(b.company); }).forEach(function (a) {
+      var sug = null;
+      if (HC) HC.items.forEach(function (i) { if (i.app_id === a.id && i.wage && i.wage.suggest) sug = i.wage.suggest.amount; });
+      ul.appendChild(el("li", { style: "cursor:pointer", onclick: function () { jumpTo(a.id); } }, [
+        el("b", { text: a.company + (a.req ? " " + a.req : "") + "：" }), a.title + " · 缺 " + a.missing.join("、") +
+        (sug && a.missing.indexOf("期望薪资") >= 0 ? "（按票数算的建议数 " + sug + "）" : "")]));
+    });
+  }
+
+  function renderFooter() {
+    var f = document.getElementById("foot");
+    f.textContent = "";
+    f.appendChild(el("div", { text: "数据源：工具/求职进度面板/applications.json（从 vault 投递记录 + Gmail 核对整理）。改数据后运行 python3 工具/求职进度面板/make_dashboard.py --open 重新生成。" }));
+    if (D.board_html) f.appendChild(el("div", { text: "待投岗位：医疗 AI 扫描池取自 工具/healthcare岗位抓取/pool_board.json（render_progress.py 或 render_board.py 渲染时刷新，并自动重新生成本页）；手工调研的待投岗取自 工具/求职进度面板/targets.json；两者的投递状态都按 applications.json 现算，记完投递重跑本页即可。" }));
+    else if (HC) f.appendChild(el("div", { text: "医疗 AI 扫描池：档位 / 资格 / 截止日 / 下线 / 票数与优先级分取自 工具/healthcare岗位抓取/pool_snapshot.json（render_progress.py 或 render_board.py 渲染时刷新）；投递状态按本面板的 applications.json 现算，记完投递重跑本面板即可。" }));
+    f.appendChild(el("div", { text: "看板上的「待后续」卡注明每个岗位的提交／收件日期，等待条对应指定 req；明细表按最新有效动态算。收件日不代表实际提交日。无回音 ≠ 已被拒，止损日见「接下来的节点」。当前结果与历史阶段分别显示；面试记录不代表面试已完成。本面板只在本机打开，不上传、不分享。" }));
+  }
+
+  function renderAll() {
+    var list = filtered();
+    renderKpis(); renderChips(); renderHcChip(); renderFilterSummary();
+    if (typeof renderOaWorkspace === "function") renderOaWorkspace();
+    if (typeof renderApplicationFlow === "function") renderApplicationFlow();
+    renderBoard(list);
+    renderUpcoming(list);
+    renderTimeline();
+    renderCadence();
+    renderTable();
+  }
+
+  // ---------- 顶层标签 ----------
+  var TP = D.today_panel || null;
+  var TABS = ["today", "discovered", "todo", "progress", "internships"];
+  var TAB_LABEL = { today: "今天", discovered: "近7天新发现", todo: "待投岗位", progress: "投递进度", internships: "春季 PhD 实习" };
+  var frameLoaded = false;
+  function sendTheme() {
+    var f = document.getElementById("todo-frame");
+    if (f && f.contentWindow) f.contentWindow.postMessage({ type: "theme", theme: theme }, "*");
+  }
+  function sendCompanyFilter() {
+    var f = document.getElementById("todo-frame");
+    if (companyFilter && f && f.contentWindow) f.contentWindow.postMessage({ type: "company-filter", value: companyFilter.getState() }, "*");
+  }
+  function handleCompanyMessage(e) {
+    var f = document.getElementById("todo-frame");
+    if (!f || e.source !== f.contentWindow || !e.data || e.data.type !== "open-company-filter") return;
+    if (companyFilter) companyFilter.open();
+  }
+  function handleApplicationMessage(e) {
+    var f = document.getElementById("todo-frame");
+    if (!f || e.source !== f.contentWindow || !e.data || e.data.type !== "show-application" || typeof e.data.id !== "string") return;
+    jumpTo(e.data.id);
+  }
+  function companyChanged() {
+    renderKpis(); renderChips(); renderHcChip(); renderToday(); renderDiscoveries(); renderInternships(); renderAll(); renderChecks(); renderMissing(); renderTabs(); sendCompanyFilter();
+    var active = document.querySelector('#tabs [aria-selected="true"]');
+    if (!active) {
+      var t = (location.hash || "#today").slice(1);
+      TABS.forEach(function (k) {
+        var b = document.querySelector('#tabs [data-tab="' + k + '"]');
+        if (b) { b.setAttribute("aria-selected", k === t ? "true" : "false"); b.tabIndex = k === t ? 0 : -1; }
+      });
+    }
+  }
+  function showTab(t) {
+    if (TABS.indexOf(t) < 0) t = "today";
+    if (companyFilter) companyFilter.reload();
+    TABS.forEach(function (k) {
+      document.getElementById("tab-" + k).hidden = k !== t;
+      var b = document.querySelector('#tabs [data-tab="' + k + '"]');
+      if (b) { b.setAttribute("aria-selected", k === t ? "true" : "false"); b.tabIndex = k === t ? 0 : -1; }
+    });
+    if (t === "todo" && !frameLoaded) {
+      var f = document.getElementById("todo-frame");
+      f.addEventListener("load", function () { sendTheme(); sendCompanyFilter(); });
+      f.srcdoc = D.board_html || '<p style="font-family:system-ui;padding:20px">还没有待投岗位数据。</p>';
+      frameLoaded = true;
+    }
+    if (t === "progress") { renderBoard(filtered()); renderTimeline(); renderCadence(); }   // 隐藏时宽度为 0，显示后重画
+    if (t === "internships") renderInternships();
+    try { localStorage.setItem("jobdash-tab", t); } catch (e) {}
+    if (location.hash !== "#" + t) history.replaceState(null, "", "#" + t);
+  }
+  function renderTabs() {
+    var nav = document.getElementById("tabs"), g = D.summary.groups;
+    var v = visibleToday();
+    var counts = {
+      today: v ? [v.soon.length + v.due.length, "当前公司筛选内要处理：3 天内下一步 + 10 天内截止"] : null,
+      discovered: v ? [v.n_discovered, "当前公司筛选内近7天首次发现的岗位（含暂缓与待核实）"] : null,
+      todo: v ? [v.n_todo, "当前公司筛选内待投（不含 stretch）"] : null,
+      progress: [APPS.filter(function (a) { return a.open && companyMatches(a); }).length, "当前公司筛选内在途：内推中 + 待后续 + 当前推进"],
+      internships: [visibleInternships().length, "当前公司筛选内的春季 PhD 实习条件候选（含备选与暂停项）"]
+    };
+    nav.textContent = "";
+    TABS.forEach(function (k) {
+      var c = counts[k];
+      nav.appendChild(el("button", { type: "button", role: "tab", "data-tab": k, "aria-controls": "tab-" + k, title: c ? c[1] : null,
+        onclick: function () { showTab(k); } }, [TAB_LABEL[k], c ? el("span", { class: "n", text: String(c[0]) }) : null]));
+    });
+    nav.onkeydown = function (e) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      var cur = TABS.indexOf(document.querySelector('#tabs [aria-selected="true"]').dataset.tab);
+      var nx = TABS[(cur + (e.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length];
+      showTab(nx); document.querySelector('#tabs [data-tab="' + nx + '"]').focus();
+    };
+  }
+  function visibleInternships(archived, graduationFiltered, declined) {
+    return ((D.internships || {}).items || []).filter(companyMatches).filter(function (x) {
+      var closed = !!(x.archived || x.listing_status === "closed");
+      var filtered = x.graduation_filter === "exclude_fall" || x.graduation_filter === "hold_return";
+      var notApplying = x.state === "declined";
+      return archived ? closed : !closed && notApplying === !!declined && (notApplying || filtered === !!graduationFiltered);
+    }).slice().sort(function (a, b) {
+      return (a.priority || 999) - (b.priority || 999);
+    });
+  }
+  function internshipLink(label, url) {
+    return /^https?:\/\//i.test(url || "") ? el("a", { href: url, target: "_blank", rel: "noopener noreferrer", text: label }) : el("span", { text: label });
+  }
+  function internshipCard(x) {
+    var optLabels = { unconfirmed: "未确认", f1_eligible_preopt_unconfirmed: "F-1 可申请，pre-OPT 待确认", form_collects_opt_unconfirmed: "表单涉及 OPT，pre-OPT 待确认",
+      accepted: "OPT 明确接受（具体类别见证据）", opt_accepted: "OPT 明确接受（具体类别见证据）", preopt_accepted: "pre-OPT 明确接受", not_accepted: "明确不接受（见限制）" };
+    var archived = !!(x.archived || x.listing_status === "closed"), uncertain = x.listing_status === "unverified", declined = x.state === "declined";
+    var graduationLabel = !declined && { exclude_fall: "排除：需秋季返校", hold_return: "暂缓：返校安排待确认" }[x.graduation_filter];
+    var optProof = x.opt_acceptance_evidence;
+    var rows = [];
+    [["开始 / 时长", [x.start, x.duration, x.hours].filter(Boolean).join(" · ")], ["地点", x.location],
+      ["在读要求", x.enrollment], ["实习后返校", x.return_to_school], ["毕业安排", x.graduation_note || "能否实习后直接毕业尚未确认。"], ["公开薪资", x.pay]].forEach(function (pair) {
+      rows.push(el("dt", { text: pair[0] }), el("dd", { text: pair[1] || "未披露，待确认" }));
+    });
+    var detail = el("details", { class: "internship-detail" }, [
+      el("summary", { text: "查看匹配理由、限制与来源" }),
+      el("p", { text: x.fit || "具体匹配情况待核实" }),
+      (x.caveats || []).length ? el("ul", {}, x.caveats.map(function (note) { return el("li", { text: note }); })) : null,
+      optProof ? el("div", { class: "internship-verification" }, [
+        el("b", { text: "OPT 政策证据" }),
+        el("p", { text: optProof.observed || optProof.summary || "摘要未记录" }),
+        el("div", { text: "政策核验：" + (optProof.checked_at_utc || "日期未记录") }),
+        internshipLink("OPT 政策官方来源 ↗", optProof.url)
+      ]) : null,
+      el("div", { class: "internship-actions" }, (x.sources || []).map(function (source) { return internshipLink(source.label || "核验来源", source.url); }))
+    ]);
+    return el("article", { class: "card internship-card" + (x.state === "paused" ? " paused" : "") +
+      (x.new && !archived && !graduationLabel && !declined ? " discovered" : "") + (uncertain && !archived ? " unverified" : "") + (archived ? " archived" : ""), "data-internship-id": x.id }, [
+      el("div", { class: "internship-meta" }, [el("span", { class: "internship-company", text: x.company }),
+        el("span", { class: "badge", text: x.group === "backup" ? "备选" : "主要候选" }),
+        el("span", { class: "badge", text: archived ? "官网已关闭" : declined ? "本人决定不投" : graduationLabel || (x.state === "paused" ? "暂停推进" : "条件待确认") }),
+        x.new && !archived && !graduationLabel && !declined ? el("span", { class: "badge discovery-badge", text: "新发现" }) : null]),
+      el("h3", {}, [internshipLink(x.title, x.url)]),
+      el("div", { class: "internship-meta", text: "岗位编号：" + (x.req || x.id) }),
+      x.first_seen ? el("div", { class: "internship-meta", text: "首次发现：" + x.first_seen }) : null,
+      declined ? el("div", { class: "internship-verification" }, [
+        el("b", { text: "本人决定不投" }),
+        el("div", { text: x.decision_reason || "按本人决定收起，官网状态独立核验。" }),
+        x.decision_date ? el("div", { text: "决定日期：" + x.decision_date }) : null
+      ]) : null,
+      graduationLabel ? el("div", { class: "internship-verification" }, [
+        el("b", { text: graduationLabel }),
+        el("div", { text: x.graduation_filter_reason || "按本人毕业安排收起，官网状态独立核验。" }),
+        x.graduation_filter_date ? el("div", { text: "毕业安排标记：" + x.graduation_filter_date }) : null
+      ]) : null,
+      archived ? el("div", { class: "internship-closure" }, [
+        el("div", { text: "关闭：" + (x.archive_date || "日期未记录") + " · " + (x.archive_reason || "官方核验确认关闭") }),
+        x.archive_source ? internshipLink("关闭依据 ↗", x.archive_source) : null
+      ]) : null,
+      uncertain && !archived ? el("div", { class: "internship-verification" }, [
+        el("b", { text: "本次核验待核实" }),
+        el("div", { text: x.verification_note || "本次未能读取官方页面；访问失败不等于关闭。" }),
+        el("div", { text: "上次成功核验：" + (x.last_verified || x.checked_on || "未记录") }),
+        x.last_verification_attempt ? el("div", { text: "最近尝试：" + x.last_verification_attempt }) : null
+      ]) : null,
+      el("dl", {}, rows),
+      el("div", { class: "internship-opt" }, [el("b", { text: "OPT：" + (optLabels[x.opt_status] || "未确认") }),
+        el("span", { text: x.opt_note || "尚无雇主明确接受 pre-OPT 的证据。" })]),
+      !archived && !graduationLabel && !declined ? el("p", { class: "internship-next" }, [el("b", { text: "下一步：" }), x.next_step || "先确认学生资格与工作授权。"]): null,
+      detail,
+      el("div", { class: "internship-actions" }, [internshipLink("官方岗位 ↗", x.url),
+        el("span", { text: "核验 " + (x.last_verified || x.checked_on || "日期未记录") + " · " + (archived ? "官网已关闭" : x.listing_status === "open" ? "核验当日在招" : "在招状态待核实") })])
+    ]);
+  }
+  function renderInternships() {
+    var box = document.getElementById("tab-internships"), data = D.internships || {}, items = visibleInternships(), archive = visibleInternships(true), graduation = visibleInternships(false, true), declined = visibleInternships(false, false, true);
+    var main = items.filter(function (x) { return x.group !== "backup"; });
+    var backup = items.filter(function (x) { return x.group === "backup"; });
+    var reportUrl = /^obsidian:\/\/open\?/i.test(data.report_url || "") ? data.report_url :
+      (data.report_path ? "obsidian://open?vault=Work&file=" + encodeURIComponent(data.report_path) : "");
+    box.textContent = "";
+    box.appendChild(el("div", { class: "internship-head" }, [el("h2", { text: "春季 PhD 实习" }),
+      reportUrl ? el("a", { href: reportUrl, class: "btn", text: "查看完整核验报告 ↗" }) : null]));
+    var refresh = data.refresh || data;
+    box.appendChild(el("div", { class: "t-refresh" }, [
+      el("div", { text: "最近搜索：" + (refresh.last_search_at || "未记录") + " · 最近同步：" + (refresh.last_sync_at || "未记录") }),
+      refresh.status === "partial" ? el("div", { text: "部分岗位待核实" }) : null,
+      refresh.note ? el("div", { text: refresh.note }) : null
+    ]));
+    box.appendChild(el("p", { class: "internship-note", text: "当前公司范围：主要候选 " + main.length + " 条 · 备选 " + backup.length + " 条。全部为条件线索；学生资格及 OPT 接受情况按每岗证据核对。" }));
+    if (data.note) box.appendChild(el("p", { class: "internship-note", text: data.note }));
+    if (!items.length) box.appendChild(el("p", { class: "t-empty", text: archive.length || graduation.length || declined.length ? "当前公司筛选内没有待推进的实习候选，收起的记录见下方。" : "当前公司筛选内没有实习候选，可调整上方公司筛选。" }));
+    [["主要候选", main], ["备选", backup]].forEach(function (group) {
+      if (!group[1].length) return;
+      box.appendChild(el("h3", { class: "internship-group", text: group[0] + " · " + group[1].length }));
+      box.appendChild(el("div", { class: "internship-grid" }, group[1].map(internshipCard)));
+    });
+    if (graduation.length) box.appendChild(el("details", { class: "internship-graduation-filter" }, [
+      el("summary", { text: "因毕业安排排除或暂缓 · " + graduation.length }),
+      el("div", { class: "internship-grid" }, graduation.map(internshipCard))
+    ]));
+    if (declined.length) box.appendChild(el("details", { class: "internship-declined" }, [
+      el("summary", { text: "本人决定不投 · " + declined.length }),
+      el("div", { class: "internship-grid" }, declined.map(internshipCard))
+    ]));
+    if (archive.length) box.appendChild(el("details", { class: "internship-archive" }, [
+      el("summary", { text: "已关闭归档 · " + archive.length }),
+      el("div", { class: "internship-grid" }, archive.map(internshipCard))
+    ]));
+    if (data.updated) box.appendChild(el("p", { class: "internship-note", text: "清单更新：" + data.updated + "。每岗核验日期见卡片；打开或重新生成页面不代表重新联网核验。" }));
+  }
+  function whenLabel(d) { return d < 0 ? "已过 " + (-d) + " 天" : d === 0 ? "今天" : d + " 天后"; }
+  function tierIcon(t) { return (t || "").split(" ")[0]; }
+  function jobLink(x) { return x.url ? el("a", { href: x.url, target: "_blank", rel: "noopener noreferrer", text: x.title }) : x.title; }
+  function tSec(title, sub, rows, extra, limit) {
+    var shown = limit ? rows.slice(0, limit) : rows;
+    return el("section", { class: "card" }, [
+      el("h2", {}, [title, el("span", { class: "sub", text: sub })]),
+      shown.length ? el("ul", { class: "t-list" }, shown) : el("div", { class: "t-empty", text: "暂无" }),
+      limit && rows.length > limit ? el("details", { class: "t-list-more" }, [
+        el("summary", { text: "其余 " + (rows.length - limit) + " 条，点击展开 / 收起" }),
+        el("ul", { class: "t-list" }, rows.slice(limit))
+      ]) : null,
+      extra || null
+    ]);
+  }
+  function tFold(title, sub, rows, total) {
+    return el("details", { class: "card" }, [
+      el("summary", {}, [title, el("span", { class: "sub", text: (total == null ? rows.length : total) + " 条" })]),
+      el("p", { class: "t-empty", text: sub }),
+      rows.length ? el("ul", { class: "t-list" }, rows) : el("div", { class: "t-empty", text: "暂无" }),
+      el("button", { type: "button", class: "t-more", text: "去「待投岗位」看全部 →", onclick: function () { showTab("todo"); } })
+    ]);
+  }
+  function jobRow(when, late, x, sub, reason) {
+    return el("li", { class: x.new ? "discovered" : null }, [
+      when ? el("span", { class: "t-when" + (late ? " late" : ""), text: when }) : null,
+      el("div", { class: "t-what" }, [x.new ? el("span", {class: "t-tag discovery-badge", text: "近7天新发现"}) : null, tierIcon(x.tier) + " ", el("b", { text: x.company }), x.role ? el("span", { class: "t-tag", text: x.role }) : " · ", jobLink(x),
+        sub ? el("span", { class: "s", text: sub }) : null,
+        reason ? el("details", { class: "t-reason" }, [el("summary", { text: "查看推荐理由" }), el("span", { class: "s", text: reason })]) : null])
+    ]);
+  }
+  function opportunityRefreshText(r) {
+    if (!r) return "增量发现记录尚未初始化；不把旧追踪批次当作新发现。";
+    const state = { baseline_ready: "历史基线已建立，尚未完成每日搜索批次", synced: "增量已同步", partial: "刷新部分完成", pending_sync: "来源有变动，待同步" }[r.sync_status] || "刷新状态待确认";
+    return state + (r.sync_status === "pending_sync" ? " " + (r.pending_sync_count || 0) + " 条" : "")
+      + " · 最新刷新：" + (r.last_refresh_at || "尚无搜索刷新记录")
+      + " · 最近成功核验：" + (r.latest_verification_at || "未记录")
+      + " · 待核实 " + (r.unverified_count || 0) + " · 可恢复归档 " + (r.archive_count || 0)
+      + "。近" + (r.new_window_days || 7) + "天新发现按首次发现日期计算；发现日期不等于岗位发布日期。时间保留来源时区。";
+  }
+  function visibleToday() {
+    if (!TP) return null;
+    var todo = (TP.todo || []).filter(companyMatches);
+    var fresh = (TP.fresh || []).filter(companyMatches);
+    var discovered = (TP.discovered || []).filter(companyMatches);
+    var counts = { "🥇 投": 0, "🟢 投": 0, "🟡 条件投": 0 };
+    todo.forEach(function (x) { if (counts[x.tier] != null) counts[x.tier]++; });
+    return {
+      counts: counts, n_todo: todo.length,
+      n_manual: todo.filter(function (x) { return x.manual; }).length,
+      n_paused: todo.filter(function (x) { return x.paused; }).length,
+      n_flight: APPS.filter(function (a) { return a.open && companyMatches(a); }).length,
+      n_discovered: discovered.length, discovered: discovered.slice(0, 12),
+      n_fresh: fresh.length, hidden_todo: TP.n_todo - todo.length,
+      n_missing: APPS.filter(function (a) { return companyMatches(a) && a.missing && a.missing.length; }).length,
+      hidden_flight: TP.n_flight - APPS.filter(function (a) { return a.open && companyMatches(a); }).length,
+      recommended: (TP.recommended || []).filter(companyMatches).slice(0, 10),
+      soon: (TP.soon || []).filter(companyMatches), due: (TP.due || []).filter(companyMatches),
+      fresh: fresh.slice(0, 12), manual: (TP.manual || []).filter(companyMatches)
+    };
+  }
+  function renderToday() {
+    var box = document.getElementById("tab-today");
+    box.textContent = "";
+    if (!TP) { box.appendChild(el("div", { class: "t-empty", text: "没有数据。" })); return; }
+    var v = visibleToday(), k = v.counts;
+    if (typeof D !== "undefined") box.appendChild(el("p", {class: "t-refresh", role: "status", text: opportunityRefreshText(D.opportunity_refresh)}));
+    box.appendChild(el("div", { class: "t-kpi" }, [
+      el("span", {}, [el("b", { text: String(v.n_todo) }), "当前候选池（🥇 " + k["🥇 投"] + " · 🟢 " + k["🟢 投"] + " · 🟡 " + k["🟡 条件投"] + "，其中手工调研 " + v.n_manual + (v.n_paused ? "；暂缓/不投入 " + v.n_paused : "") + "）"]),
+      el("span", {}, [el("b", { text: String(v.n_flight) }), "当前在途"]),
+      el("span", {}, [el("b", { text: String(v.n_discovered) }), "近7天新发现"]),
+      el("span", {}, [el("b", { text: String(v.n_fresh) }), "近 7 天发布"]),
+      v.n_missing ? el("span", {}, [el("b", { text: String(v.n_missing) }), "条投递记录待补（当前公司范围）"]) : null
+    ]));
+    if (v.hidden_todo || v.hidden_flight) box.appendChild(el("div", { class: "t-empty", text: "公司筛选已隐藏 " + v.hidden_todo + " 条候选岗位、" + v.hidden_flight + " 条在途记录；记录仍保留。" }));
+    if (!v.due.length) box.appendChild(el("p", { class: "t-empty", text: "未来 10 天暂无快截止的待投岗。" }));
+    var grid = el("div", { class: "t-grid" });
+    grid.appendChild(tSec("该做的事", "投递记录里的下一步，3 天内到期或已过期", v.soon.map(function (u) {
+      var reqs = u.reqs.filter(Boolean);
+      return el("li", {}, [
+        el("span", { class: "t-when" + (u.days < 0 ? " late" : ""), text: whenLabel(u.days) }),
+        el("span", { class: "t-what" }, [el("b", { text: u.company + (reqs.length ? " " + reqs.join(" / ") : "") }), "：" + (u.next_kind === "restart" ? "重启计划（旧流程已结束）：" : "") + u.action,
+          el("span", { class: "s" }, [el("button", { type: "button", class: "t-more", style: "padding:0", text: "看投递记录",
+            onclick: function () { showTab("progress"); jumpTo(u.id); } })])])
+      ]);
+    }), null, 5));
+    if (v.due.length) grid.appendChild(tSec("快截止的待投岗", "JD 写明或推算的截止日在 10 天内", v.due.map(function (x) {
+      return jobRow(x.days === 0 ? "今天截止" : "还剩 " + x.days + " 天", x.days <= 3, x, "截止 " + x.deadline + (x.manual ? " · 手工调研" : ""));
+    })));
+    if (v.recommended.length) grid.appendChild(tSec("按新优先级先看", "先列前 3 条；通用医学影像、应届 PhD 与 fintech / tech DS、MLE 并行。", v.recommended.map(function (x) {
+      return jobRow("#" + x.rank, false, x, x.blockers ? "条件卡点：" + x.blockers : null, x.reason);
+    }), el("button", { type: "button", class: "t-more", text: "去「待投岗位」看全部 →", onclick: function () { showTab("todo"); } }), 3));
+    box.appendChild(grid);
+    if (typeof D !== "undefined" && D.manual_followups) renderManualFollowups(box);
+    var supplementary = el("div", { class: "t-grid t-secondary" });
+    supplementary.appendChild(tFold("近 7 天发布的待投岗", "按行动优先级排；最多列 12 条", v.fresh.map(function (x) {
+      return jobRow(x.age === 0 ? "今天发布" : x.age + " 天前", false, x, null);
+    }), v.n_fresh));
+    var reviewed = typeof D !== "undefined" ? ((D.manual_followups || {}).records || []) : [];
+    var remainingManual = v.manual.filter(function (x) { return !reviewed.some(function (r) { return x.uid === "manual:" + r.target_id; }); });
+    if (remainingManual.length) supplementary.appendChild(tFold("已调研岗位：后续事项", "网页核查和材料准备可由助手继续；需本人确认的事项见各条说明。", remainingManual.map(function (x) {
+      return jobRow("", false, x, "下一步：" + x.action);
+    })));
+    box.appendChild(supplementary);
+  }
+
+  function followupFileLink(label, path) {
+    return el("a", { href: "obsidian://open?vault=Work&file=" + encodeURIComponent(path), text: label });
+  }
+  function renderManualFollowups(box) {
+    var review = D.manual_followups || {}, records = (review.records || []).filter(companyMatches);
+    if (!records.length) return;
+    var labels = { ready: "材料可用", employer_confirmation: "待雇主确认", user_confirmation: "待本人确认", hold: "暂缓", excluded: "停止投入" };
+    var questions = [], personal = [];
+    records.forEach(function (r) {
+      if (r.disposition === "excluded" || !TP || !(TP.todo || []).some(function (x) { return x.uid === "manual:" + r.target_id; })) return;
+      (r.needs_user || []).forEach(function (q) {
+        var existing = questions.find(function (item) { return item.question === q.question; });
+        if (existing) existing.records.push(r);
+        else questions.push({ question: q.question, reason: q.reason, records: [r] });
+      });
+    });
+    questions.forEach(function (q) {
+      personal.push(el("li", {}, [el("div", { class: "t-what" }, [
+        el("b", { text: q.records.map(function (r) { return r.company + " " + r.req; }).join(" / ") }), "：" + q.question,
+        q.reason ? el("span", { class: "s", text: q.reason }) : null,
+        el("span", { class: "s" }, Array.from(new Set(q.records.map(function (r) { return r.report_path; }))).filter(Boolean).map(function (path) {
+          return followupFileLink("查看依据与材料", path);
+        }))
+      ])]));
+    });
+    box.appendChild(tSec("需要本人确认", personal.length + " 项；相同问题合并。这里只列个人选择与尚缺的真实信息。", personal));
+    box.appendChild(el("details", { class: "card t-secondary" }, [
+      el("summary", { text: "本轮核查与材料准备 · " + records.length + " 条（含停止投入项）" }),
+      el("p", { class: "t-empty", text: "更新 " + (review.updated || "日期未记录") + "；逐岗核查时间见下。材料可用不代表已投递。" }),
+      el("ul", { class: "t-list" }, records.map(function (r) {
+        return el("li", {}, [el("div", { class: "t-what" }, [
+          el("b", { text: r.company + " " + r.req }), " · " + (labels[r.disposition] || "待核实"),
+          el("span", { class: "s", text: r.summary }),
+          el("span", { class: "s", text: "已完成：" + (r.completed || []).join("；") }),
+          el("span", { class: "s" }, (r.materials || []).map(function (m) {
+            return el("span", {}, [followupFileLink(m.label, m.path), m.verified ? "　" : "（待确认）　"]);
+          })),
+          (r.needs_employer || []).length ? el("span", { class: "s", text: "待雇主确认：" + r.needs_employer.join("；") }) : null,
+          el("span", { class: "s", text: "下一步：" + r.action }),
+          el("span", { class: "s" }, ["联网核查 " + r.checked_at + " · ", followupFileLink("核查与准备记录", r.report_path)])
+        ])]);
+      }))
+    ]));
+  }
+
+  function renderDiscoveries() {
+    var box = document.getElementById("tab-discovered");
+    box.textContent = "";
+    if (!TP) { box.appendChild(el("div", { class: "t-empty", text: "没有数据。" })); return; }
+    var v = visibleToday();
+    box.appendChild(tSec("近7天新发现", "首次发现日期不等于岗位发布日期；暂缓或待核实仍单独说明。最多列12条，全部见待投页的新发现筛选。", v.discovered.map(function (x) {
+      return jobRow("新发现", false, x, "首次发现 " + (x.first_seen || "日期待同步") + (x.discovery_batch ? " · 批次 " + x.discovery_batch : "") + (x.verification_status === "unverified" || x.verification_status === "unknown" ? " · 待核实" : "") + (x.paused ? " · 暂缓" : ""));
+    }), null));
+  }
+
+  companyFilter = window.JobCompanyFilter.create({ container: document.getElementById("company-filter"), items: D.company_items || APPS, onChange: companyChanged });
+  window.addEventListener("message", handleCompanyMessage);
+  window.addEventListener("message", handleApplicationMessage);
+  renderTabs();
+  renderToday();
+  renderDiscoveries();
+  renderInternships();
+  renderMeta();
+  renderKpis();
+  renderChips();
+  renderHcChip();
+  renderRange();
+  initTimelineCompanies();
+  renderLegend();
+  renderHc();
+  renderAll();
+  renderMissing();
+  renderChecks();
+  renderFooter();
+  var startTab = (location.hash || "").slice(1);
+  if (TABS.indexOf(startTab) < 0) { try { startTab = localStorage.getItem("jobdash-tab") || "today"; } catch (e) { startTab = "today"; } }
+  showTab(startTab);
+  window.addEventListener("hashchange", function () { showTab((location.hash || "").slice(1)); });
+  var rt;
+  window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { renderBoard(filtered()); renderTimeline(); renderCadence(); }, 120); });
+})();
+</script>
+</body>
+</html>

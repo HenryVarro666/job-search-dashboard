@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>医疗 AI 岗位面板</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f5f2;
+  --card: #fcfcfb;
+  --line: #e4e2dc;
+  --line-2: #d6d3cc;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --muted: #7a7873;
+  --accent: #2a78d6;
+  --accent-ink: #1c5cab;
+  --accent-soft: #e6f0fc;
+  --visited: #4a3aa7;
+  --track: #e9e7e2;
+  --good: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --chip-on: #0b0b0b;
+  --chip-on-text: #ffffff;
+  --shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111110;
+    --card: #1a1a19;
+    --line: #2e2e2b;
+    --line-2: #3d3d39;
+    --text: #ffffff;
+    --text-2: #c3c2b7;
+    --muted: #8e8d86;
+    --accent: #3987e5;
+    --accent-ink: #86b6ef;
+    --accent-soft: #16263a;
+    --visited: #9085e9;
+    --track: #2b2b28;
+    --chip-on: #ffffff;
+    --chip-on-text: #0b0b0b;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111110;
+  --card: #1a1a19;
+  --line: #2e2e2b;
+  --line-2: #3d3d39;
+  --text: #ffffff;
+  --text-2: #c3c2b7;
+  --muted: #8e8d86;
+  --accent: #3987e5;
+  --accent-ink: #86b6ef;
+  --accent-soft: #16263a;
+  --visited: #9085e9;
+  --track: #2b2b28;
+  --chip-on: #ffffff;
+  --chip-on-text: #0b0b0b;
+  --shadow: none;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.55 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Segoe UI", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font: inherit; color: inherit; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 20px 16px 64px; }
+
+/* header */
+.head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 16px; justify-content: space-between; }
+.head h1 { font-size: 22px; line-height: 1.25; margin: 0; letter-spacing: .2px; }
+.sub { color: var(--text-2); font-size: 13px; margin-top: 4px; }
+.head-links { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pill-link { border: 1px solid var(--line-2); border-radius: 999px; padding: 3px 10px; font-size: 12.5px; color: var(--text-2); background: var(--card); }
+.pill-link:hover { color: var(--text); text-decoration: none; border-color: var(--text-2); }
+.theme-btn { border: 1px solid var(--line-2); border-radius: 999px; padding: 3px 10px; font-size: 12.5px; background: var(--card); color: var(--text-2); cursor: pointer; }
+.note { margin: 14px 0 0; padding: 10px 12px; border: 1px solid var(--line); border-left: 3px solid var(--warning); border-radius: 8px; background: var(--card); color: var(--text-2); font-size: 13px; }
+.note b { color: var(--text); font-weight: 600; }
+
+/* tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(122px, 1fr)); gap: 8px; margin: 16px 0 12px; }
+.tile { text-align: left; border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 10px 12px; cursor: pointer; box-shadow: var(--shadow); }
+.tile:hover { border-color: var(--line-2); }
+.tile.on { border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+.tile .n { font-size: 24px; font-weight: 650; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tile .l { font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
+
+/* filter bar */
+.rolemx { margin: 4px 0 14px; overflow-x: auto; }
+.rolemx table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+.rolemx th, .rolemx td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rolemx th:first-child, .rolemx td:first-child { text-align: left; }
+.rolemx thead th { font-weight: 600; color: var(--text-2); font-size: 12.5px; }
+.rolemx tbody tr { cursor: pointer; }
+.rolemx tbody tr:hover td { background: var(--bg); }
+.rolemx tbody tr.on td { font-weight: 650; }
+.rolemx tbody tr.on td:first-child { box-shadow: inset 3px 0 0 var(--text); }
+.rolemx td.z { color: var(--muted); }
+.rolemx tfoot td { font-weight: 600; border-bottom: 0; color: var(--text-2); }
+.rolemx .cap { font-size: 12px; color: var(--muted); margin: 4px 2px 0; }
+.grp-h { font-size: 14px; font-weight: 650; margin: 12px 0 0; display: flex; gap: 8px; align-items: baseline; }
+.grp-h:first-child { margin-top: 0; }
+.grp-h .n { color: var(--text-2); font-weight: 400; font-size: 12.5px; }
+.tag.role { color: var(--text); border-color: var(--line-2); }
+.c-act { margin-top: 6px; font-size: 13px; color: var(--text); }
+.c-act b { font-weight: 600; margin-right: 4px; }
+html.embed .wrap { padding-top: 12px; }
+.bar { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0 8px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+.bar-row { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.bar-row + .bar-row { margin-top: 8px; }
+.search { flex: 1 1 240px; min-width: 0; border: 1px solid var(--line-2); border-radius: 8px; padding: 7px 10px; background: var(--card); color: var(--text); font: inherit; }
+.search:focus, select:focus, .chip:focus-visible, .btn:focus-visible, .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+select { border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 8px; background: var(--card); color: var(--text); font: inherit; max-width: 100%; }
+.grp { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.grp-l { font-size: 12px; color: var(--muted); margin-right: 2px; }
+.chip { border: 1px solid var(--line-2); background: var(--card); border-radius: 999px; padding: 3px 10px; font-size: 12.5px; cursor: pointer; color: var(--text-2); white-space: nowrap; }
+.chip:hover { color: var(--text); border-color: var(--text-2); }
+.chip.on { background: var(--chip-on); color: var(--chip-on-text); border-color: var(--chip-on); }
+.sep { width: 1px; height: 18px; background: var(--line-2); margin: 0 4px; }
+.count { font-size: 13px; color: var(--text-2); margin-left: auto; white-space: nowrap; }
+.link-btn { border: 0; background: none; color: var(--accent-ink); cursor: pointer; font-size: 12.5px; padding: 2px 4px; }
+.history-toggle { display: inline-flex; gap: 6px; align-items: center; padding: 5px 8px; border: 1px solid var(--line-2); border-radius: 8px; color: var(--text); font-size: 13px; cursor: pointer; }
+.history-toggle input { margin: 0; accent-color: var(--accent); }
+.history-toggle:focus-within, .link-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.scale { font-size: 12px; color: var(--muted); margin: 0 0 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.scale .demo { width: 120px; }
+
+/* cards */
+.list { display: grid; gap: 10px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow); }
+.card.marked { opacity: .55; }
+.c-top { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; font-size: 12.5px; color: var(--text-2); }
+.tier { font-weight: 600; color: var(--text); }
+.co { font-weight: 600; color: var(--text); font-size: 13.5px; }
+.tag { border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; font-size: 12px; color: var(--text-2); }
+.flag { border-radius: 6px; padding: 0 6px; font-size: 12px; font-weight: 600; }
+.flag.new { background: var(--accent-soft); color: var(--accent-ink); }
+.flag.due { border: 1px solid var(--serious); color: var(--text); }
+.flag.due::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--serious); margin-right: 5px; vertical-align: 1px; }
+.flag.due.past { border-color: var(--line-2); color: var(--muted); }
+.flag.due.past::before { background: var(--muted); }
+.flag.mk { background: var(--track); color: var(--text); }
+.flag.age { border: 1px solid var(--line-2); color: var(--text-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+.flag.age.fresh { border-color: var(--good); color: var(--text); }
+.flag.age.fresh::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--good); margin-right: 5px; vertical-align: 1px; }
+.flag.age.old { border-color: var(--line); color: var(--muted); font-weight: 500; }
+.sec.arch { margin-top: 8px; opacity: .85; }
+.sec.arch > summary { font-size: 12.5px; color: var(--muted); }
+.flag.visa { border: 1px solid var(--line-2); color: var(--text-2); font-weight: 500; }
+.c-visa { margin-top: 6px; font-size: 13px; color: var(--text-2); display: flex; gap: 6px 14px; flex-wrap: wrap; align-items: baseline; }
+.c-visa b { color: var(--text); font-weight: 600; }
+.c-visa .pri { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; cursor: help; }
+.c-title { font-size: 16px; line-height: 1.35; margin: 6px 0 2px; font-weight: 600; }
+.c-title a { color: var(--text); }
+.c-title a:visited { color: var(--visited); }
+.c-title a:hover { color: var(--accent-ink); }
+.c-meta { font-size: 12.5px; color: var(--text-2); display: flex; flex-wrap: wrap; gap: 2px 12px; }
+.availability { display: grid; gap: 3px; font-size: 12.5px; color: var(--text-2); }
+.audit-history summary { cursor: pointer; }
+.audit-history ol { margin: 5px 0; padding-left: 22px; }
+.audit-history li + li { margin-top: 5px; }
+.audit-history small { display: block; }
+.c-pay { display: flex; align-items: center; gap: 10px; margin: 8px 0 2px; font-size: 12.5px; color: var(--text-2); }
+.pb { position: relative; flex: 0 0 min(46%, 320px); height: 14px; }
+.pb .rail { position: absolute; left: 0; right: 0; top: 6px; height: 2px; background: var(--track); border-radius: 2px; }
+.pb .tick { position: absolute; top: 3px; width: 1px; height: 8px; background: var(--line-2); }
+.pb .seg { position: absolute; top: 4px; height: 6px; border-radius: 4px; background: var(--accent); min-width: 6px; }
+.pb:hover .seg { box-shadow: 0 0 0 2px var(--accent-soft); }
+.pay-t { font-variant-numeric: tabular-nums; color: var(--text); }
+.pay-t.none { color: var(--muted); }
+.c-elig { margin-top: 6px; font-size: 13px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.elig { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 12.5px; white-space: nowrap; color: var(--text); }
+.elig i { font-style: normal; display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; font-size: 11px; color: #fff; }
+.elig.good i { background: var(--good); }
+.elig.warn i { background: var(--warning); color: #0b0b0b; }
+.elig.bad i { background: var(--critical); }
+.elig.none i { background: var(--muted); }
+.elig-line { color: var(--text-2); flex: 1 1 280px; min-width: 0; }
+.c-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line-2); background: var(--card); border-radius: 8px; padding: 4px 11px; font-size: 13px; cursor: pointer; color: var(--text); }
+.btn:hover { border-color: var(--text-2); text-decoration: none; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+.how { font-size: 12px; color: var(--muted); }
+.spacer { flex: 1; }
+.marks { display: inline-flex; gap: 6px; white-space: nowrap; }
+.mark { border: 1px dashed var(--line-2); background: transparent; border-radius: 8px; padding: 3px 9px; font-size: 12.5px; cursor: pointer; color: var(--text-2); }
+.mark.on { border-style: solid; border-color: var(--text); color: var(--text); background: var(--track); }
+.c-detail[hidden] { display: none; }
+.c-detail { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; font-size: 13px; }
+.c-detail dt { color: var(--muted); }
+.c-detail dd { margin: 0; color: var(--text-2); min-width: 0; overflow-wrap: anywhere; }
+.c-detail q { color: var(--text); }
+.warn-t { color: var(--critical); font-weight: 600; }
+.empty { text-align: center; color: var(--muted); padding: 40px 0; border: 1px dashed var(--line-2); border-radius: 12px; }
+.applied-history { margin: 0 0 24px; padding-bottom: 18px; border-bottom: 2px solid var(--line-2); }
+.applied-history[hidden] { display: none; }
+.applied-history h2 { font-size: 17px; margin: 0 0 4px; }
+.applied-history .sub { margin: 0 0 10px; }
+.history-card .c-title { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 8px; margin-top: 2px; }
+.applied-badge { display: inline-block; flex: none; border: 1px solid var(--text-2); border-radius: 6px; padding: 1px 7px; background: var(--track); color: var(--text); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.history-card .c-meta + .c-meta { margin-top: 5px; }
+
+.card.discovered { border-left: 5px solid var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.discovery-meta { font-size: 12px; }
+.verification { margin: 8px 0; padding: 7px 10px; border-left: 2px solid var(--line-2); font-size: 12.5px; color: var(--text-2); }
+.refresh-status { border-left: 3px solid var(--accent); }
+/* sections */
+details.sec { margin-top: 22px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 4px 14px; }
+details.sec > summary { cursor: pointer; padding: 10px 0; font-weight: 600; font-size: 15px; }
+.rows { display: grid; gap: 0; padding-bottom: 8px; }
+.row { display: grid; grid-template-columns: 92px 1fr; gap: 2px 12px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.row .d { color: var(--muted); font-variant-numeric: tabular-nums; }
+.row .t { color: var(--text); }
+.row .t a { color: var(--text); font-weight: 600; }
+.row .n2 { grid-column: 2; color: var(--text-2); font-size: 12.5px; }
+.st { display: inline-block; font-size: 12px; border-radius: 6px; padding: 0 6px; margin-right: 6px; border: 1px solid var(--line-2); color: var(--text-2); }
+.st.applied { border-color: var(--good); color: var(--text); }
+.st.rej { border-color: var(--critical); color: var(--text); }
+.foot { margin-top: 22px; font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+textarea.export { width: 100%; min-height: 120px; margin-top: 8px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--card); color: var(--text); font: 12.5px/1.5 ui-monospace, Menlo, monospace; padding: 8px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+@media (max-width: 640px) {
+  .wrap { padding-top: 14px; }
+  .head h1 { font-size: 19px; }
+  .pb { flex-basis: 50%; }
+  .c-detail { grid-template-columns: 1fr; }
+  .c-detail dt { margin-top: 4px; }
+  .count { margin-left: 0; }
+  .sep { display: none; }
+  .tiles { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .tile { padding: 8px 9px; }
+  .tile .n { font-size: 20px; }
+  .tile .l { font-size: 12px; line-height: 1.35; }
+  .row { grid-template-columns: 1fr; }
+  .row .n2 { grid-column: 1; }
+}
+@media (forced-colors: active) {
+  .pb .seg { background: CanvasText; }
+  .chip.on, .tile.on { outline: 2px solid CanvasText; }
+}
+__COMPANY_FILTER_CSS__
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div>
+      <h1 id="title">医疗 AI 岗位面板</h1>
+      <div class="sub" id="sub"></div>
+    </div>
+    <nav class="head-links" id="head-links"></nav>
+  </header>
+  <div class="note">
+    <b>投之前：</b>每张卡的「票数」行是按薪资区间、工作地和 OFLC 工资表自动算的（远程岗按 DFW），「建议填」是区间内够得着的最高一档；雇主的 LCA 条数和已登记的签证结论在详情里。这些只影响同档内的排序，不改档位，也不能代替逐岗的签证尽调。简历按 CV 贴合指南派生。点职位名或「申请」直达申请页，Workday 类要先登录该公司账号。
+    卡片右下角的「已投 / 不投」只记在这台电脑的浏览器里。正式状态以求职进度面板的 <code>applications.json</code> 为准，投完或收到拒信告诉 Claude 即可。
+  </div>
+
+  <div class="note refresh-status" id="opportunity-refresh" role="status"></div>
+  <div class="note" id="pending-audit" hidden aria-live="polite"></div>
+  <section class="tiles" id="tiles" aria-label="快速筛选"></section>
+  <div class="scale" style="margin-top:-4px">快速筛选、岗位类型总览、方向/公司类型下拉及底部在途/归档：按当前公司范围统计，不受关键词、档位等其他筛选影响。快速筛选的待投数不含 stretch（资深岗，只观察），类型表单列 stretch。点快速筛选可切换条件；圆角标签数字按其他条件交叉计算，跳过本组选择。</div>
+  <section class="rolemx" id="rolemx" aria-label="岗位类型总览"></section>
+
+  <div class="bar" id="bar">
+    <div class="bar-row">
+      <label class="sr" for="q">搜索</label>
+      <input id="q" class="search" type="search" placeholder="搜公司、职位、地点、关键词（如 imaging、Remote、Dallas）">
+      <label class="sr" for="sort">排序</label>
+      <select id="sort">
+        <option value="rec">排序：行动优先级（医学影像 / PhD / DS）</option>
+        <option value="tix">票数高→低</option>
+        <option value="due">截止日最近</option>
+        <option value="pay">薪资上限高→低</option>
+        <option value="posted">最新发布</option>
+        <option value="co">公司 A→Z</option>
+      </select>
+      <select id="cluster" aria-label="方向"></select>
+      <select id="track" aria-label="公司类型"></select>
+      <select id="group" aria-label="显示方式">
+        <option value="">显示：平铺</option>
+        <option value="role">显示：按岗位类型分组</option>
+      </select>
+      <label class="history-toggle" for="show-applied"><input id="show-applied" type="checkbox" aria-controls="applied-history">显示已投递</label>
+    </div>
+    <div class="bar-row" id="chips"></div>
+    <div class="bar-row"><span class="grp-l" id="company-filter-note"></span><button class="link-btn" id="company-filter-open">调整公司筛选 ↑</button><span class="count" id="count"></span><button class="link-btn" id="reset">清空其他筛选</button></div>
+  </div>
+
+  <section class="applied-history" id="applied-history" aria-labelledby="applied-history-title" hidden>
+    <h2 id="applied-history-title">投递历史 <span id="applied-history-count" class="grp-l"></span></h2>
+    <p class="sub">按公司、类型、地点和关键词筛选。按提交日期倒序；仅有收件确认的记录另行标注。不计入待投数量。</p>
+    <div class="list" id="applied-history-list" aria-live="polite"></div>
+  </section>
+
+  <h2 class="grp-h">待投岗位</h2>
+  <div class="scale" id="scale"></div>
+  <main class="list" id="list" aria-live="polite" aria-label="待投岗位"></main>
+
+  <details class="sec" id="sec-applied"><summary></summary><div class="rows"></div></details>
+
+  <div class="foot">
+    <span id="foot-src"></span>
+    <button class="btn" id="export">复制我在面板里标记的岗位</button>
+    <button class="link-btn" id="clear-marks">清除本机标记</button>
+  </div>
+  <textarea class="export" id="export-box" hidden readonly></textarea>
+  <details class="sec arch" id="sec-closed"><summary></summary><div class="rows"></div></details>
+</div>
+
+<script id="data" type="application/json">__DATA_JSON__</script>
+<script>__COMPANY_FILTER_JS__</script>
+<script>
+(function () {
+  "use strict";
+  const D = JSON.parse(document.getElementById("data").textContent);
+  const $ = (s, el) => (el || document).querySelector(s);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const utc = (s) => !s ? "日期未记录" : /^\d{4}-\d{2}-\d{2}$/.test(String(s).trim()) ? String(s).trim() + "（未记录时刻）" : String(s).trim().replace(/^(\d{4}-\d{2}-\d{2})T/, "$1 ").replace(/(?:\s*UTC|Z|\+00:00)$/i, "").replace(/\.\d+$/, "") + " UTC";
+  const AUDIT_LABEL = { open: "在招", closed: "已关闭", unverified: "待核实", not_checked: "待查" };
+  const ATTEMPT_LABEL = { channel_skip: "渠道维护 / 跳过", search_index: "官方搜索索引", page_unreadable: "页面不可读", job_page: "岗位页面 / API" };
+  function opportunityRefreshText(r) {
+    if (!r) return "增量发现记录尚未初始化；不把旧追踪批次当作新发现。";
+    const state = { baseline_ready: "历史基线已建立，尚未完成每日搜索批次", synced: "增量已同步", partial: "刷新部分完成", pending_sync: "来源有变动，待同步" }[r.sync_status] || "刷新状态待确认";
+    return state + (r.sync_status === "pending_sync" ? " " + (r.pending_sync_count || 0) + " 条" : "")
+      + " · 最新刷新：" + (r.last_refresh_at || "尚无搜索刷新记录")
+      + " · 最近成功核验：" + (r.latest_verification_at || "未记录")
+      + " · 待核实 " + (r.unverified_count || 0) + " · 可恢复归档 " + (r.archive_count || 0)
+      + "。近" + (r.new_window_days || 7) + "天新发现按首次发现日期计算；发现日期不等于岗位发布日期。时间保留来源时区。";
+  }
+  function attemptTime(e) {
+    if (!e) return "日期未记录";
+    const w = e.checked_window_utc;
+    if (w && (w.start_utc || w.end_utc)) return [w.start_utc, w.end_utc].filter(Boolean).map(utc).join(" 至 ");
+    if (e.checked_at_utc) return utc(e.checked_at_utc);
+    return e.checked_date ? e.checked_date + "（仅日期）" : "日期未记录";
+  }
+  function auditLine(x) {
+    const a = x.availability_audit;
+    const status = {open: "在招", closed: "已关闭", unverified: "待核实", unknown: "待核实"}[x.verification_status] || "待核实";
+    const source = /^https?:\/\//i.test(x.verification_source || "") ? x.verification_source : "";
+    const registry = x.verification_status ? `<div class="verification"><div>当前状态：<b>${esc(status)}</b>${source ? ` · <a href="${esc(source)}" target="_blank" rel="noopener noreferrer">核验来源 ↗</a>` : ""}</div>${x.verification_note ? `<div>${esc(x.verification_note)}</div>` : ""}<div>最近成功核验：${esc(x.last_verified || "未记录")}${x.last_verification_attempt ? " · 最近尝试：" + esc(x.last_verification_attempt) : ""}</div></div>` : "";
+    if (!a) return registry;
+    const effectiveStatus = x.verification_status === "unknown" ? "unverified" : x.verification_status || a.status;
+    const attempts = a.attempts || [], latest = a.latest_attempt;
+    const verified = a.last_job_verification;
+    const url = /^https?:\/\//i.test(a.canonical_url || "") ? a.canonical_url : "";
+    const link = url ? ` · <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">官方岗位 ↗</a>` : "";
+    const reason = (latest && latest.observed) || a.blocker_reason || "";
+    const label = latest && latest.kind === "channel_skip" ? "本轮渠道尝试" : "本轮核验尝试";
+    const current = latest ? `<div>${label}：${esc(attemptTime(latest))}${reason ? " · " + esc(reason) : ""}</div>` : "";
+    const historical = verified && verified !== latest && latest && latest.kind !== "job_page"
+      ? `<div>最近岗位实证：${esc(attemptTime(verified))} · 当时${esc(AUDIT_LABEL[verified.status] || "已核验")}；当前状态以本轮结论为准</div>` : "";
+    const history = attempts.length ? `<details class="audit-history"><summary>核验记录（${attempts.length} 次） · 同一岗位的访问尝试，非独立来源</summary><ol>${attempts.map((e) => `<li title="${esc(e.url || "")}">${esc(attemptTime(e))} · ${esc(ATTEMPT_LABEL[e.kind] || "核验尝试")}<br>${esc(e.observed || "未记录观察结果")}${e.source ? `<small>来源：${esc(e.source)}</small>` : ""}</li>`).join("")}</ol></details>` : "";
+    return registry + `<div class="availability"><div>当前官方核验：<b>${esc(AUDIT_LABEL[effectiveStatus] || "待查")}</b>${link}</div>${current}${historical}${history}</div>`;
+  }
+  const DOMAIN_FIT_LABEL = { DIRECT: "主领域直接匹配", METHOD_TRANSFER: "仅 ML 方法可迁移，需补目标领域", GENERAL_TECH: "通用技术职责，不代表专科知识", GAP: "领域要求有缺口", UNVERIFIED: "领域适配未核实" };
+  function domainFitLine(x) {
+    const f = x.domain_fit;
+    if (!f) return x.track === "M" ? "" : `<div class="c-meta">领域适配：尚未单独审计</div>`;
+    const detail = f.gap_cn || f.transfer_basis_cn || "";
+    return `<div class="c-meta"><span>领域适配：<b>${esc(DOMAIN_FIT_LABEL[f.status] || DOMAIN_FIT_LABEL.UNVERIFIED)}</b>${f.jd_domain ? " · " + esc(f.jd_domain) : ""}${f.required_domain_status === "UNMET" ? " · 必需领域要求不满足" : ""}${detail ? " · " + esc(detail) : ""}</span></div>`;
+  }
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 私密窗口等情况下不记 */ } },
+  };
+
+  /* ---------- 常量 ---------- */
+  const TIER = { "🥇 投": { k: "gold", l: "🥇 优先", o: 0 }, "🟢 投": { k: "green", l: "🟢 可投", o: 1 }, "🟡 条件投": { k: "yellow", l: "🟡 条件投", o: 2 }, "stretch": { k: "stretch", l: "stretch 观察", o: 3 } };
+  const ELIG = {
+    ELIGIBLE_NEW_GRAD: { l: "应届可投", c: "good", i: "✓", o: 0, g: "ok" },
+    ELIGIBLE_PHD_COUNTS: { l: "PhD 可折算年限", c: "good", i: "✓", o: 1, g: "phd" },
+    CONDITIONAL_RESEARCH_YEARS: { l: "看认不认研究年限", c: "warn", i: "!", o: 2, g: "cond" },
+    UNCLEAR: { l: "JD 信息不足", c: "none", i: "?", o: 3, g: "other" },
+    LEVEL_MISMATCH: { l: "资深岗", c: "bad", i: "✕", o: 4, g: "other" },
+    NOT_ELIGIBLE: { l: "硬门槛不符", c: "bad", i: "✕", o: 5, g: "other" },
+    TIMING_CONFLICT: { l: "时间冲突", c: "bad", i: "✕", o: 5, g: "other" },
+    UNAUDITED: { l: "未审计", c: "none", i: "?", o: 6, g: "other" },
+  };
+  const PAY_MIN = 50000, PAY_MAX = 300000, TICKS = [100000, 150000, 200000, 250000];
+  const TODAY = new Date(D.today + "T00:00:00");
+  const days = (iso) => iso ? Math.round((new Date(iso + "T00:00:00") - TODAY) / 86400000) : null;
+  const md = (iso) => iso ? `${+iso.slice(5, 7)}/${+iso.slice(8, 10)}` : "";
+  const k = (n) => n >= 1000 ? Math.round(n / 1000) + "K" : String(n);
+  const age = (x) => { const n = days(x.posted); return n == null ? null : -n; };   // 发布至今天数
+  const AGE = { d7: (x) => age(x) != null && age(x) <= 7, d30: (x) => age(x) != null && age(x) <= 30, d90: (x) => age(x) != null && age(x) > 90 };
+
+  const pending = D.items.filter((x) => x.status === "pending");
+  const appliedHistory = D.applied_history || [];
+  const applied = D.items.filter((x) => x.status === "applied");
+  const closed = D.items.filter((x) => x.status === "closed" || x.status === "rejected" || x.status === "excluded");
+  const otherAct = (D.other || []).filter((o) => o.active), otherDone = (D.other || []).filter((o) => !o.active);
+
+  /* ---------- 状态 ---------- */
+  const DEFAULT = { tiers: ["🥇 投", "🟢 投", "🟡 条件投"], roles: [], age: [], elig: [], loc: [], flags: [], q: "", sort: "rec", cluster: "", track: "", group: "" };
+  let S = Object.assign({}, DEFAULT, store.get("hcboard.filters", {}));
+  S.tiers = S.tiers || DEFAULT.tiers.slice();
+  S.roles = S.roles || [];
+  delete S.companies;  // 旧 TikTok 单项筛选已由共享公司设置迁移。
+  S.age = S.age || [];
+  let companyFilterState = window.JobCompanyFilter.load();
+  const companyMatches = (x) => window.JobCompanyFilter.matches(x, companyFilterState);
+  let showApplied = store.get("hcboard.show-applied", false) === true;
+  const ROLES = D.roles || {};
+  const roleL = (x) => ROLES[x.role] || "";
+  let marks = store.get("hcboard.marks", {});
+  const save = () => store.set("hcboard.filters", S);
+  // 嵌在统一求职面板里时：标题跟数据走，配色跟外壳（2026-10-06 两面板合一）
+  const EMBED = window.parent !== window;
+  function receiveCompanyFilter(e) {
+    if (!EMBED || e.source !== window.parent || !e.data || e.data.type !== "company-filter") return;
+    companyFilterState = window.JobCompanyFilter.normalize(e.data.value);
+    render();
+  }
+  window.addEventListener("message", receiveCompanyFilter);
+  $("#company-filter-open").hidden = !EMBED;
+  $("#company-filter-open").onclick = () => window.parent.postMessage({ type: "open-company-filter" }, "*");
+  if (D.title) { $("#title").textContent = D.title; document.title = D.title; }
+  if (EMBED) document.documentElement.classList.add("embed");
+
+  /* ---------- 页头 ---------- */
+  const d = D.delta || {};
+  $("#sub").textContent = `生成于 ${D.generated} · 旧追踪批次 ${d.date || "—"}（原批次新增 ${d.n_new ?? "—"}，下线 ${d.n_closed ?? "—"}；不代表本次搜索） · 数据 ${D.final_file}`;
+  $("#opportunity-refresh").textContent = opportunityRefreshText(D.opportunity_refresh);
+  if (D.pending_audit) {
+    const a = D.pending_audit, s = a.summary || {}, box = $("#pending-audit");
+    box.hidden = false;
+    box.textContent = `审核进度（全部记录） ${s.checked || 0}/${a.baseline_total || 59} · 在招 ${s.open || 0} · 关闭 ${s.closed || 0} · 待核实 ${s.unverified || 0} · 待查 ${s.remaining || 0} · 已归档 ${s.archived || 0} · 已投重复移出 ${s.already_applied || 0} · 当前待投 ${s.current_pending ?? D.items.filter((x) => x.status === "pending").length} · 更新于 ${utc(a.updated_at_utc)}`;
+  }
+  const L = D.links || {};
+  $("#head-links").innerHTML = [
+    ["投递进展", L.progress], ["批次首页", L.hub], ["CV 贴合指南", L.cv], ["追踪记录", L.tracking],
+  ].filter((x) => x[1]).map(([t, u]) => `<a class="pill-link" href="${esc(u)}" title="在 Obsidian 打开">${esc(t)}</a>`).join("")
+    + `<button class="theme-btn" id="theme" type="button"></button>`;
+  const themes = ["auto", "light", "dark"], tl = { auto: "外观：跟随系统", light: "外观：浅色", dark: "外观：深色" };
+  let theme = store.get("hcboard.theme", "auto");
+  const applyTheme = () => {
+    if (theme === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", theme);
+    $("#theme").textContent = tl[theme];
+  };
+  applyTheme();
+  $("#theme").onclick = () => { theme = themes[(themes.indexOf(theme) + 1) % 3]; store.set("hcboard.theme", theme); applyTheme(); };
+  if (EMBED) {
+    $("#theme").hidden = true;
+    window.addEventListener("message", (e) => { if (e.data && e.data.type === "theme" && themes.includes(e.data.theme)) { theme = e.data.theme; applyTheme(); } });
+  }
+
+  /* ---------- 快速筛选块 ---------- */
+  const okElig = (x) => ELIG[x.elig] && (ELIG[x.elig].g === "ok" || ELIG[x.elig].g === "phd");
+  const TILES = [
+    { id: "gold", test: (x) => x.tier === "🥇 投", l: "🥇 优先", set: () => ({ tiers: ["🥇 投"] }) },
+    { id: "green", test: (x) => x.tier === "🟢 投", l: "🟢 可投", set: () => ({ tiers: ["🟢 投"] }) },
+    { id: "yellow", test: (x) => x.tier === "🟡 条件投", l: "🟡 条件投", set: () => ({ tiers: ["🟡 条件投"] }) },
+    { id: "ok", test: okElig, l: "资格上可直接投", set: () => ({ elig: ["ok", "phd"] }) },
+    { id: "new", test: (x) => x.new, l: "近7天新发现", set: () => ({ flags: ["new"] }) },
+    { id: "fresh", test: AGE.d7, l: "近 7 天发布", set: () => ({ age: ["d7"], sort: "posted" }) },
+    { id: "due", test: (x) => !!x.deadline, l: "JD 写了截止日", set: () => ({ flags: ["due"], sort: "due" }) },
+    { id: "tx", test: (x) => x.tx, l: "德州（含 DFW）", set: () => ({ loc: ["tx"] }) },
+    { id: "remote", test: (x) => x.remote, l: "可远程", set: () => ({ loc: ["remote"] }) },
+    { id: "applied", l: "在途（含内推待投）", jump: "#sec-applied" },
+  ];
+  let activeTile = store.get("hcboard.tile", "");
+  function tileCount(t) {
+    if (t.id === "applied") return applied.filter(companyMatches).length + otherAct.filter(companyMatches).length;
+    return pending.filter((x) => companyMatches(x) && x.tier !== "stretch" && t.test(x)).length;
+  }
+  function renderTiles() {
+    $("#tiles").innerHTML = TILES.map((t) => `<button type="button" class="tile${activeTile === t.id ? " on" : ""}" data-tile="${t.id}" aria-pressed="${activeTile === t.id}"><div class="n">${tileCount(t)}</div><div class="l">${esc(t.l)}</div></button>`).join("");
+  }
+  $("#tiles").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-tile]"); if (!b) return;
+    const t = TILES.find((x) => x.id === b.dataset.tile);
+    if (t.jump) { const sec = $(t.jump); sec.open = true; sec.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    if (activeTile === t.id) { activeTile = ""; S = Object.assign({}, DEFAULT, { tiers: DEFAULT.tiers.slice() }); }
+    else { activeTile = t.id; S = Object.assign({}, DEFAULT, { tiers: DEFAULT.tiers.slice() }, t.set()); }
+    store.set("hcboard.tile", activeTile); save(); syncControls(); render();
+  });
+
+  /* ---------- 岗位类型总览（2026-10-05 本人要求按 RS / MLE / SDE / Postdoc 分类） ---------- */
+  const MX_T = ["🥇 投", "🟢 投", "🟡 条件投", "stretch"];
+  function renderRoleMx() {
+    const currentPending = pending.filter(companyMatches), currentApplied = applied.filter(companyMatches);
+    const rs = Object.keys(ROLES).filter((r) => D.items.some((x) => companyMatches(x) && x.role === r));
+    const cell = (n) => `<td class="${n ? "" : "z"}">${n || "–"}</td>`;
+    const row = (r) => {
+      const p = currentPending.filter((x) => x.role === r);
+      const main_ = p.filter((x) => x.tier !== "stretch").length;
+      const act = currentApplied.filter((x) => x.role === r).length;
+      const on = S.roles.length === 1 && S.roles[0] === r;
+      return `<tr data-role="${r}" class="${on ? "on" : ""}" title="点一下只看这一类，再点一下取消">` + `<td>${esc(ROLES[r])}</td>` + MX_T.map((t) => cell(p.filter((x) => x.tier === t).length)).join("") + cell(main_) + cell(act) + `</tr>`;
+    };
+    const tot = (f) => currentPending.filter(f).length;
+    $("#rolemx").innerHTML = `<table><thead><tr><th>岗位类型</th>${MX_T.map((t) => `<th>${esc(TIER[t].l)}</th>`).join("")}<th>待投（不含 stretch）</th><th>在途</th></tr></thead>`
+      + `<tbody>${rs.map(row).join("")}</tbody>`
+      + `<tfoot><tr><td>合计</td>${MX_T.map((t) => cell(tot((x) => x.tier === t))).join("")}${cell(tot((x) => x.tier !== "stretch"))}${cell(currentApplied.length)}</tr></tfoot></table>`
+      + `<div class="cap">当前公司范围，不受其他筛选影响。按标题与职族归类：带 Postdoc / Fellow 的单列；Applied Scientist、ML Scientist 算研究科学家；标题写明 AI/ML 的工程岗算 MLE。在途只算扫描池及手工候选里的岗位；已拒和已下线收在页面最底部的「归档」里。</div>`;
+  }
+  $("#rolemx").addEventListener("click", (e) => {
+    const tr = e.target.closest("tr[data-role]"); if (!tr) return;
+    const r = tr.dataset.role;
+    S.roles = S.roles.length === 1 && S.roles[0] === r ? [] : [r];
+    activeTile = ""; store.set("hcboard.tile", ""); save(); syncControls(); render();
+  });
+
+  /* ---------- 筛选条 ---------- */
+  const count = (f) => pending.filter(f).length;
+  const CHIPS = [
+    { g: "tiers", l: "档位", opts: Object.keys(TIER).map((t) => [t, TIER[t].l, count((x) => x.tier === t)]) },
+    { g: "age", l: "发布", opts: [["d7", "7 天内", count(AGE.d7)], ["d30", "30 天内", count(AGE.d30)], ["d90", "超过 90 天", count(AGE.d90)]] },
+    { g: "roles", l: "类型", opts: Object.keys(ROLES).filter((r) => D.items.some((x) => x.role === r) || appliedHistory.some((x) => x.role === r)).map((r) => [r, ROLES[r], count((x) => x.role === r)]) },
+    { g: "elig", l: "资格", opts: [["ok", "应届可投"], ["phd", "PhD 可折算"], ["cond", "看研究年限"], ["other", "资深 / 其他"]].map(([v, t]) => [v, t, count((x) => (ELIG[x.elig] || ELIG.UNAUDITED).g === v)]) },
+    { g: "loc", l: "地点", opts: [["remote", "可远程", count((x) => x.remote)], ["tx", "德州", count((x) => x.tx)], ["dfw", "DFW", count((x) => x.dfw)]] },
+    { g: "flags", l: "其他", opts: [["new", "近7天新发现", count((x) => x.new)], ["due", "写了截止日", count((x) => x.deadline)], ["pay", "披露薪资", count((x) => x.pay)], ["hide", "隐藏我标记的", null]] },
+  ];
+  $("#chips").innerHTML = CHIPS.map((c, i) => `${i ? '<span class="sep" aria-hidden="true"></span>' : ""}<span class="grp" role="group" aria-label="${c.l}"><span class="grp-l">${c.l}</span>${c.opts.map(([v, t, n]) => `<button type="button" class="chip" data-g="${c.g}" data-v="${esc(v)}">${esc(t)}${n != null ? ` <span class="cn" aria-hidden="true">${n}</span>` : ""}</button>`).join("")}</span>`).join("");
+  const clusters = [...new Set(pending.map((x) => x.cluster))].sort();
+  function renderSelectCounts() {
+    const scopedCount = (test) => pending.filter((x) => companyMatches(x) && test(x)).length;
+    $("#cluster").innerHTML = `<option value="">方向：全部</option>` + clusters.map((c) => `<option value="${esc(c)}">${esc(c)}（${scopedCount((x) => x.cluster === c)}）</option>`).join("");
+    $("#track").innerHTML = `<option value="">公司类型：全部</option>` + Object.entries(D.tracks).map(([t, l]) => `<option value="${esc(t)}">${esc(t)} ${esc(l)}（${scopedCount((x) => x.track === t)}）</option>`).join("");
+    $("#cluster").value = S.cluster; $("#track").value = S.track;
+  }
+
+  function syncControls() {
+    document.querySelectorAll(".chip").forEach((b) => { const on = (S[b.dataset.g] || []).includes(b.dataset.v); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+    $("#q").value = S.q; $("#sort").value = S.sort; $("#cluster").value = S.cluster; $("#track").value = S.track; $("#group").value = S.group || "";
+  }
+  $("#chips").addEventListener("click", (e) => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    const g = b.dataset.g, v = b.dataset.v, arr = S[g] = (S[g] || []).slice();
+    const i = arr.indexOf(v);
+    if (i >= 0) arr.splice(i, 1);
+    else arr.push(v);
+    activeTile = ""; store.set("hcboard.tile", ""); save(); syncControls(); render();
+  });
+  let qt;
+  $("#q").addEventListener("input", (e) => { clearTimeout(qt); qt = setTimeout(() => { S.q = e.target.value; save(); render(); }, 120); });
+  ["sort", "cluster", "track", "group"].forEach((id) => $("#" + id).addEventListener("change", (e) => { S[id] = e.target.value; save(); render(); }));
+  $("#reset").onclick = () => { S = Object.assign({}, DEFAULT, { tiers: DEFAULT.tiers.slice() }); activeTile = ""; store.set("hcboard.tile", ""); save(); syncControls(); render(); };
+
+  /* ---------- 过滤与排序 ---------- */
+  const FLAG = { new: (x) => x.new, due: (x) => !!x.deadline, pay: (x) => !!x.pay, hide: (x) => !marks[x.uid] };
+  const CHIP_TEST = {
+    tiers: (x, v) => x.tier === v,
+    roles: (x, v) => x.role === v,
+    age: (x, v) => AGE[v](x),
+    elig: (x, v) => (ELIG[x.elig] || ELIG.UNAUDITED).g === v,
+    loc: (x, v) => !!x[v],
+    flags: (x, v) => FLAG[v](x),
+  };
+  // skip = 计分面计数时跳过的那一组
+  function passes(x, skip) {
+    if (!companyMatches(x)) return false;
+    const q = S.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (skip !== "tiers" && S.tiers.length && !S.tiers.includes(x.tier)) return false;
+    if (skip !== "roles" && S.roles.length && !S.roles.includes(x.role)) return false;
+    if (skip !== "age" && S.age.length && !S.age.some((v) => AGE[v](x))) return false;
+    if (skip !== "elig" && S.elig.length && !S.elig.includes((ELIG[x.elig] || ELIG.UNAUDITED).g)) return false;
+    if (skip !== "loc" && S.loc.length && !S.loc.some((l) => x[l])) return false;
+    if (skip !== "flags" && !S.flags.every((f) => FLAG[f](x))) return false;
+    if (S.cluster && x.cluster !== S.cluster) return false;
+    if (S.track && x.track !== S.track) return false;
+    if (q.length) {
+      const hay = [x.company, x.title, x.loc, x.cluster, roleL(x), x.elig_line, x.judge_line, x.action, x.req].join(" ").toLowerCase();
+      if (!q.every((w) => hay.includes(w))) return false;
+    }
+    return true;
+  }
+  const visible = () => pending.filter((x) => passes(x));
+  function updateCounts() {
+    document.querySelectorAll(".chip").forEach((b) => {
+      const cn = $(".cn", b); if (!cn) return;
+      const g = b.dataset.g, v = b.dataset.v;
+      cn.textContent = pending.filter((x) => passes(x, g) && CHIP_TEST[g](x, v)).length;
+    });
+  }
+  const eo = (x) => (ELIG[x.elig] || ELIG.UNAUDITED).o;
+  const dueKey = (x) => { const n = days(x.deadline); return n == null ? 9999 : n < 0 ? 5000 - n : n; };
+  const sug = (x) => (x.wage && x.wage.suggest) || null;
+  const capEx = (x) => x.emp_policy && x.emp_policy.h1b === "cap-exempt";
+  const tixKey = (x) => capEx(x) ? 4.5 : sug(x) ? sug(x).level : -1;
+  const usd = (n) => "$" + Number(n).toLocaleString("en-US");
+  const reviewRank = (x) => (x.priority_review || {}).rank ?? 999999;
+  const SORTS = {
+    rec: (a, b) => reviewRank(a) - reviewRank(b) || TIER[a.tier].o - TIER[b.tier].o || (b.priority - a.priority) || eo(a) - eo(b) || a.company.localeCompare(b.company),
+    tix: (a, b) => tixKey(b) - tixKey(a) || (b.priority - a.priority),
+    due: (a, b) => dueKey(a) - dueKey(b) || TIER[a.tier].o - TIER[b.tier].o,
+    pay: (a, b) => (b.pay_hi || 0) - (a.pay_hi || 0) || TIER[a.tier].o - TIER[b.tier].o,
+    posted: (a, b) => (b.posted || "").localeCompare(a.posted || "") || TIER[a.tier].o - TIER[b.tier].o,
+    co: (a, b) => a.company.localeCompare(b.company) || a.title.localeCompare(b.title),
+  };
+
+  /* ---------- 卡片 ---------- */
+  function payBar(x) {
+    if (!(x.pay_lo && x.pay_hi)) return "";
+    const pos = (v) => Math.max(0, Math.min(100, (v - PAY_MIN) / (PAY_MAX - PAY_MIN) * 100));
+    const l = pos(x.pay_lo), r = pos(x.pay_hi);
+    const tip = `base ${k(x.pay_lo)}–${k(x.pay_hi)}（刻度 ${k(PAY_MIN)}–${k(PAY_MAX)}，细线为 100K / 150K / 200K / 250K）`;
+    return `<div class="pb" title="${esc(tip)}" role="img" aria-label="${esc(tip)}"><div class="rail"></div>${TICKS.map((t) => `<div class="tick" style="left:${pos(t)}%"></div>`).join("")}<div class="seg" style="left:${l}%;width:${Math.max(r - l, 1.5)}%"></div></div>`;
+  }
+  function flags(x) {
+    const out = [], a = age(x);
+    if (a != null) out.push(`<span class="flag age${a <= 7 ? " fresh" : a > 90 ? " old" : ""}" title="ATS 显示的发布日 ${esc(x.posted)}；重新发布会刷新这个日期">${a <= 0 ? "今天发布" : a + " 天前发布"}</span>`);
+    else out.push(`<span class="flag age old">发布日未知</span>`);
+    if (x.new) out.push(`<span class="flag new">近7天新发现</span>`);
+    if (x.deadline) {
+      const n = days(x.deadline);
+      out.push(n >= 0 ? `<span class="flag due">${md(x.deadline)} 截止 · ${n === 0 ? "今天" : "还剩 " + n + " 天"}</span>`
+        : `<span class="flag due past" title="JD 写的截止日已过，页面仍在线，可能还在收">${md(x.deadline)} 截止已过 ${-n} 天</span>`);
+    }
+    if (marks[x.uid]) out.push(`<span class="flag mk">我标记：${marks[x.uid] === "applied" ? "已投" : "不投"}</span>`);
+    return out.join("");
+  }
+  function referenceScoreDetails(x) {
+    const notes = [];
+    if (!capEx(x) && !sug(x)) notes.push("工资档位未算出：旧规则默认 +8，不能当作已达到 L2");
+    if (x.track === "M") notes.push("手工岗位未纳入统一 coverage、核心匹配及雇主政策/LCA 加减项，不能与扫描池直接横比");
+    if (!x.posted) notes.push("发布日期缺失，时效项未计入");
+    return `<b>${esc(x.priority ?? "未计算")}</b>（未校准、非百分制，不表示匹配度或录取概率）<br>旧规则加减项：${esc((x.pri_why || []).join("；") || "无已计分项")}<br>当前推荐先按逐岗复核的行动序号排序。${notes.length ? "<br>缺项与可比性：" + esc(notes.join("；")) : ""}`;
+  }
+  function visaLine(x) {
+    const w = x.wage || {}, s = sug(x), pol = x.emp_policy || {}, lca = x.emp_lca, out = [];
+    if (capEx(x)) out.push(`<span><b>免抽签</b>（cap-exempt，推断）</span>`);
+    else if (s) {
+      const lv = (n) => n ? "L" + n : "低于 L1";
+      out.push(`<span title="${esc(D.wage_year)} · ${esc(w.area_name)} · SOC ${esc(w.soc)} ${esc(w.soc_name)}：L1–L4 线 ${w.levels.map(usd).join(" / ")}">票数 <b>${lv(w.tix_lo)} / ${lv(w.tix_mid)} / ${lv(w.tix_hi)}</b>（区间下沿 / 中位 / 上沿）</span>`);
+      out.push(`<span>建议填 <b>${s.amount}</b>（${lv(s.level)}${s.level ? "，" + s.level + " 票" : ""}${s.alt ? `；稳妥 ${s.alt.amount} = L${s.alt.level}` : ""}）</span>`);
+    } else if (w.levels) out.push(`<span title="L1–L4 线 ${w.levels.map(usd).join(" / ")}">薪资未披露，${esc(w.area_name.split(",")[0])} 的 L3 线 ${usd(w.levels[2])}、L4 线 ${usd(w.levels[3])}</span>`);
+    else out.push(`<span>票数算不了：${esc(w.note || "缺数据")}</span>`);
+    if (pol.stem_opt === "no") out.push(`<span><b>雇主不做 STEM OPT</b></span>`);
+    if (pol.h1b === "freeze") out.push(`<span><b>新 H-1B 冻结中</b></span>`);
+    if (lca && lca.n_h1b) out.push(`<span title="覆盖 ${esc(D.lca_coverage)}">雇主 LCA ${lca.n_h1b} 条，cap 季新雇 ${lca.n_new_cap}</span>`);
+    else if (x.track === "M") out.push(`<span title="手工调研的岗位不查扫描池的 LCA 摘要">雇主签证情况见档案</span>`);
+    else if (!capEx(x)) out.push(`<span title="覆盖 ${esc(D.lca_coverage)}；零记录只说明没有申报经验">雇主 LCA 查无</span>`);
+    (x.jd_visa || []).forEach((f) => out.push(`<span class="flag visa" title="${esc((x.jd_visa_quote || []).join(" / "))}">${esc(D.visa_wording[f] || f)}</span>`));
+    return `<div class="c-visa">${out.join("")}</div>`;
+  }
+  function card(x) {
+    const t = TIER[x.tier], e = ELIG[x.elig] || ELIG.UNAUDITED;
+    const meta = [
+      x.loc ? `📍 ${esc(x.loc)}` : "",
+      x.posted ? `发布于 ${esc(x.posted)}` : "",
+      x.req ? `req ${esc(x.req.length > 14 ? x.req.slice(0, 8) + "…" : x.req)}` : "",
+    ].filter(Boolean).join("</span><span>");
+    const howT = x.how === "岗位页" ? "在岗位页点 Apply" : x.how;
+    const how = howT && !/打开即申请表/.test(howT) ? `<span class="how">${esc(howT)}</span>` : "";
+    // 在招核验会过期（Dexcom JR117507：10/06 核验"有效"，10/08 已撤下），超过 1 天的标出来
+    const ckDays = x.link_checked ? Math.round((Date.parse(D.today) - Date.parse(x.link_checked.slice(0, 10))) / 864e5) : null;
+    const linkWarn = x.availability_audit && x.availability_audit.status === "open" ? "" : x.link_ok === false ? `<span class="how warn-t">链接实测未通过</span>`
+      : (x.live && x.live !== "有效") ? `<span class="how" title="${esc(x.live_detail)}">在招状态：${esc(x.live)}，投前点开确认</span>`
+      : String(x.uid || "").startsWith("manual:") ? `<span class="how">投前跑 check_jobs.py --job ${esc(x.req || x.company)}</span>`
+      : (ckDays === null || ckDays >= 2) ? `<span class="how warn-t">${ckDays === null ? "未做在招核验" : `在招核验已 ${ckDays} 天`}，投前先重跑</span>` : "";
+    const det = [
+      ["匹配判读", esc(x.judge_line)],
+      ["资格理由", esc(x.elig_reason) + (x.elig_quote ? `<br>JD 原文：<q>${esc(x.elig_quote)}</q>` : "")],
+      ["简历筛卡点", x.s1 ? `${esc(x.s1)}${x.s1_band ? `（直接投过筛 ${esc(x.s1_band)}${x.s1_prep ? `，定制后 ${esc(x.s1_prep)}` : ""}）` : ""}` : ""],
+      ["推荐底稿", x.base ? `${esc(x.base)}${x.base_reason ? `：${esc(x.base_reason)}` : ""}` : ""],
+      ["最小投入", x.cost_a ? `${esc(x.cost_a)}${x.cost_a_note ? `：${esc(x.cost_a_note)}` : ""}` : ""],
+      ["票数口径", x.wage && x.wage.levels ? `${esc(D.wage_year)}，${esc(x.wage.area_name)}（area ${esc(x.wage.area)}，按「${esc(x.wage.loc_used)}」）${x.wage.remote_home ? "，远程岗按住址 DFW 算" : ""}；SOC ${esc(x.wage.soc)} ${esc(x.wage.soc_name)}（按该类标题 LCA 里常报的 SOC，几个都常见时取 L4 线最高的）：${x.wage.levels.map((v, i) => "L" + (i + 1) + " " + usd(v)).join("，")}${(x.wage.soc_alts || []).map((a) => `；若报 ${esc(a.soc)}：${a.levels.map(usd).join(" / ")}`).join("")}${x.wage.note ? `。${esc(x.wage.note)}` : ""}。雇主实际报什么 SOC、按哪档注册要在 offer 阶段问` : ""],
+      ["雇主 LCA", x.emp_lca ? `H-1B ${x.emp_lca.n_h1b} 条，cap 季新雇 ${x.emp_lca.n_new_cap}；${Object.entries(x.emp_lca.classes || {}).map(([c, v]) => `${({ ml: "ML/AI 类", ds: "Data Scientist", swe: "软件类", research: "研究员" })[c] || c} ${v.n} 条（常报 ${v.soc[0][0]}，工资下沿中位 ${v.from_median ? usd(v.from_median) : "—"}${v.tx ? "，德州 " + v.tx + " 条" : ""}）`).join("；")}。申报名：${esc((x.emp_lca.names || []).slice(0, 3).map((n) => n.split("｜")[0]).join("、"))}。覆盖 ${esc(D.lca_coverage)}` : ""],
+      ["雇主签证结论", x.emp_policy && x.emp_policy.checked ? `${esc(x.emp_policy.note)}（${esc(x.emp_policy.checked)} 核实）` : ""],
+      ["旧规则辅助分", referenceScoreDetails(x)],
+      ["雇主实体", esc(x.entity)],
+      ["职级", esc([x.level, x.reach].filter(Boolean).join(" · "))],
+      [x.availability_audit ? "此前在招核验" : "在招核验", x.link_checked ? `${esc(x.live || (x.link_ok ? "页面可打开" : "未通过"))}${x.live_detail ? `：${esc(x.live_detail)}` : ""}（${esc(x.link_checked)}）` : "未测"],
+    ].filter((r) => r[1]).map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
+    const apply = x.apply || x.post;
+    const pr = x.priority_review;
+    const review = pr ? `<div class="c-act"><b>#${esc(pr.rank)} · ${esc(pr.band_label)}</b>${esc(pr.reason)}${pr.blockers && pr.blockers.length ? `<br><b>条件卡点</b>${pr.blockers.map((b) => esc(b.kind + "：" + b.detail)).join("；")}` : ""}${pr.next_step ? `<br><b>下一步</b>${esc(pr.next_step)}` : ""}</div>` : "";
+    return `<article class="card${x.new ? " discovered" : ""}${marks[x.uid] ? " marked" : ""}" data-uid="${esc(x.uid)}">
+      <div class="c-top"><span class="tier">${t.l}</span><span class="tag role">${esc(roleL(x))}</span><span class="co">${esc(x.company)}</span><span class="tag">${esc(x.cluster)}</span><span class="tag" title="${esc(D.tracks[x.track] || "")}">${esc(x.track)} · ${esc(D.tracks[x.track] || "")}</span>${flags(x)}</div>
+      <h3 class="c-title">${apply ? `<a href="${esc(apply)}" target="_blank" rel="noopener noreferrer">${esc(x.title)}</a>` : esc(x.title)}</h3>
+      <div class="c-meta"><span>${meta}</span></div>
+      <div class="c-meta discovery-meta">${x.discovery_baseline ? "历史基线 · " : ""}首次发现：${esc(x.first_seen || "发现日未知")}${x.discovery_batch ? " · 批次 " + esc(x.discovery_batch) : ""}（发现日不等于发布日期）</div>
+      ${review}
+      ${auditLine(x)}
+      <div class="c-pay">${payBar(x)}<span class="pay-t${x.pay ? "" : " none"}">${x.pay ? esc(x.pay) : "薪资未披露"}</span></div>
+      ${visaLine(x)}
+      <div class="c-elig"><span class="elig ${e.c}"><i aria-hidden="true">${e.i}</i>${e.l}</span><span class="elig-line">${esc(x.elig_line)}</span></div>
+      ${domainFitLine(x)}
+      ${x.judge_line && x.track === "M" ? `<div class="c-act"><b>判断</b>${esc(x.judge_line)}</div>` : ""}
+      ${x.action && (!pr || pr.actionable) ? `<div class="c-act"><b>下一步</b>${esc(x.action)}</div>` : ""}
+      <div class="c-actions">
+        <a class="btn primary" href="${esc(apply || "#")}" target="_blank" rel="noopener noreferrer"${apply ? "" : ' aria-disabled="true"'}>申请 ↗</a>
+        <a class="btn" href="${esc(x.post || "#")}" target="_blank" rel="noopener noreferrer"${x.post ? "" : ' aria-disabled="true"'}>原帖</a>
+        <a class="btn" href="${esc(x.note || "#")}" title="在 Obsidian 打开判读笔记"${x.note ? "" : ' aria-disabled="true"'}>笔记</a>
+        <button type="button" class="btn" data-act="more" aria-expanded="false">详情</button>
+        ${how}${linkWarn}
+        <span class="spacer"></span>
+        <span class="marks"><button type="button" class="mark${marks[x.uid] === "applied" ? " on" : ""}" data-mark="applied" aria-pressed="${marks[x.uid] === "applied"}">已投</button>
+        <button type="button" class="mark${marks[x.uid] === "skip" ? " on" : ""}" data-mark="skip" aria-pressed="${marks[x.uid] === "skip"}">不投</button></span>
+      </div>
+      <dl class="c-detail" hidden>${det}</dl>
+    </article>`;
+  }
+
+  function render() {
+    const v = visible().sort(SORTS[S.sort] || SORTS.rec);
+    const grouped = () => Object.keys(ROLES).map((r) => { const g = v.filter((x) => x.role === r); return g.length ? `<h2 class="grp-h">${esc(ROLES[r])}<span class="n">${g.length} 条</span></h2>` + g.map(card).join("") : ""; }).join("");
+    $("#list").innerHTML = v.length ? (S.group === "role" ? grouped() : v.map(card).join("")) : `<div class="empty">没有符合条件的岗位。可在上方调整公司选择，或<button class="link-btn" onclick="document.getElementById('reset').click()">清空其他筛选</button>。</div>`;
+    $("#company-filter-note").textContent = "公司：" + window.JobCompanyFilter.describe(companyFilterState);
+    $("#count").textContent = `显示 ${v.length} / 当前公司待投 ${pending.filter(companyMatches).length} 条（全部 ${pending.length} 条，含 stretch）`;
+    updateCounts();
+    renderTiles(); renderRoleMx(); renderSelectCounts(); renderArchiveRows();
+    renderAppliedHistory();
+  }
+
+  /* ---------- 投递历史：独立于待投档位、排序和数量 ---------- */
+  function appliedHistoryMatches(x) {
+    if (!companyMatches(x)) return false;
+    if (S.roles.length && !S.roles.includes(x.role)) return false;
+    if (S.loc.length && !S.loc.some((l) => x[l])) return false;
+    const words = S.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const hay = [x.company, x.title, x.req, x.loc, roleL(x)].join(" ").toLowerCase();
+    return words.every((word) => hay.includes(word));
+  }
+  function visibleAppliedHistory() {
+    return showApplied ? appliedHistory.filter(appliedHistoryMatches).sort((a, b) => (b.applied_date || b.receipt_date || "").localeCompare(a.applied_date || a.receipt_date || "") || (a.company || "").localeCompare(b.company || "")) : [];
+  }
+  function appliedHistoryCard(x) {
+    const submitted = x.applied_date ? "提交日期：" + x.applied_date : x.receipt_date ? "收件确认：" + x.receipt_date : "提交日期未记录";
+    const note = /^(?:https?:\/\/|obsidian:\/\/|file:\/\/\/)/i.test(x.note_url || "") ? x.note_url : "";
+    const record = EMBED && x.history_id ? `<button type="button" class="btn" data-history-id="${esc(x.history_id)}">查看投递记录</button>` : note ? `<a class="btn" href="${esc(note)}">查看笔记</a>` : "";
+    const outcome = x.outcome && x.outcome.date ? x.outcome : null;
+    const statusDate = outcome ? `结果日期：${esc(outcome.date)}${outcome.manual ? "（手工结果标记）" : ""}` : x.status_date ? "最近动态：" + esc(x.status_date) : "";
+    const extra = x.last_any && (x.last_any.date !== x.status_date || (x.last_any.time || "") !== (x.status_time || "")) ? x.last_any : null;
+    return `<article class="card history-card">
+      <div class="c-top"><span class="co">${esc(x.company)}</span>${roleL(x) ? `<span class="tag role">${esc(roleL(x))}</span>` : ""}</div>
+      <h3 class="c-title">${esc(x.title)}<span class="applied-badge">${esc(x.submission_label || "已投递")}</span></h3>
+      <div class="c-meta">${x.req ? `<span>职位编号：${esc(x.req)}</span>` : ""}${x.loc ? `<span>${esc(x.loc)}</span>` : ""}</div>
+      <div class="c-meta"><span>${esc(submitted)}</span><span>当前状态：${esc(x.status_label || "未记录")}</span>${statusDate ? `<span>${statusDate}</span>` : ""}</div>
+      ${extra ? `<div class="c-meta">补充记录：${esc(extra.date || "日期未记")}${extra.summary ? " · " + esc(extra.summary) : ""}</div>` : ""}
+      ${x.submission_basis ? `<div class="c-meta">记录依据：${esc(x.submission_basis)}</div>` : ""}
+      ${x.note ? `<div class="c-meta">${esc(x.note)}</div>` : ""}
+      ${record ? `<div class="c-actions">${record}</div>` : ""}
+    </article>`;
+  }
+  function renderAppliedHistory() {
+    $("#show-applied").checked = showApplied;
+    $("#applied-history").hidden = !showApplied;
+    const history = visibleAppliedHistory();
+    $("#applied-history-count").textContent = `${history.length} 条`;
+    $("#applied-history-list").innerHTML = !showApplied ? "" : history.length ? history.map(appliedHistoryCard).join("") : `<div class="empty">当前公司、类型、地点和关键词下没有投递记录。</div>`;
+  }
+  function toggleAppliedHistory(e) {
+    showApplied = e.target.checked === true;
+    store.set("hcboard.show-applied", showApplied);
+    renderAppliedHistory();
+  }
+  function handleAppliedHistoryClick(e) {
+    const button = e.target.closest("[data-history-id]");
+    if (!EMBED || !button) return;
+    const id = button.dataset.historyId;
+    if (!id || !appliedHistory.some((x) => x.history_id === id && appliedHistoryMatches(x))) return;
+    window.parent.postMessage({ type: "show-application", id }, "*");
+  }
+  $("#applied-history-list").addEventListener("click", handleAppliedHistoryClick);
+  $("#show-applied").addEventListener("change", toggleAppliedHistory);
+  $("#list").addEventListener("click", (e) => {
+    const c = e.target.closest(".card"); if (!c) return;
+    const more = e.target.closest("[data-act=more]");
+    if (more) { const dl = $(".c-detail", c); dl.hidden = !dl.hidden; more.setAttribute("aria-expanded", !dl.hidden); more.textContent = dl.hidden ? "详情" : "收起"; return; }
+    const m = e.target.closest("[data-mark]");
+    if (m) {
+      const uid = c.dataset.uid, v = m.dataset.mark;
+      if (marks[uid] === v) delete marks[uid]; else marks[uid] = v;
+      store.set("hcboard.marks", marks);
+      const x = pending.find((y) => y.uid === uid); const open = !$(".c-detail", c).hidden;
+      const tmp = document.createElement("div"); tmp.innerHTML = card(x); const nc = tmp.firstElementChild;
+      if (open) { $(".c-detail", nc).hidden = false; const b = $("[data-act=more]", nc); b.textContent = "收起"; b.setAttribute("aria-expanded", "true"); }
+      c.replaceWith(nc);
+      if (S.flags.includes("hide")) render();
+    }
+  });
+
+  /* ---------- 薪资刻度说明 ---------- */
+  $("#scale").innerHTML = `<span>薪资条是 base 年薪区间，刻度统一为 ${k(PAY_MIN)}–${k(PAY_MAX)}：</span>${payBar({ pay_lo: 150000, pay_hi: 200000 }).replace('class="pb"', 'class="pb demo"')}<span>这一条是 150K–200K</span>`;
+
+  /* ---------- 已投递 / 已关闭 ---------- */
+  function rows(sel, title, list) {
+    const sec = $(sel);
+    $("summary", sec).textContent = `${title}（${list.length}）`;
+    $(".rows", sec).innerHTML = list.length ? list.map((r) => `<div class="row"><span class="d">${esc(r.date)}</span><span class="t"><span class="st ${r.cls || ""}">${esc(r.st)}</span>${r.role ? `<span class="tag role">${esc(r.role)}</span> ` : ""}${esc(r.company)} · ${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.title)}</a>` : esc(r.title)}${r.note ? ` · <a href="${esc(r.note)}">笔记</a>` : ""}</span><span class="n2">${esc(r.text)}${auditLine(r)}</span></div>`).join("")
+      : `<div class="row"><span class="n2">暂无</span></div>`;
+  }
+  const byDate = (a, b) => (b.date || "").localeCompare(a.date || "");
+  function renderArchiveRows() {
+    const ap = applied.filter(companyMatches).map((x) => ({ date: x.status_date, st: x.status_label || "已投递", cls: "applied", role: roleL(x), company: x.company, title: x.title, url: x.post, note: x.note, text: x.status_note }))
+      .concat(otherAct.filter(companyMatches).map((o) => ({ date: o.date, st: o.status, cls: "applied", company: o.company, title: o.title, url: o.url, note: o.archive, text: o.note })))
+      .sort(byDate);
+    rows("#sec-applied", "在途（当前公司）：内推待投 / 已投递 / 联系 / 测评 / 面试", ap);
+    rows("#sec-closed", "归档（当前公司）：本人排除 / 已拒 / 已关闭 / 已下线", closed.filter(companyMatches).map((x) => ({ date: x.status_date, st: x.status_label || "已关闭", cls: x.status === "rejected" ? "rej" : "", role: roleL(x), company: x.company, title: x.title, url: x.post, note: x.note, text: x.status_note, availability_audit: x.availability_audit, verification_status: x.verification_status, verification_source: x.verification_source, verification_note: x.verification_note, last_verified: x.last_verified, last_verification_attempt: x.last_verification_attempt }))
+      .concat(otherDone.filter(companyMatches).map((o) => ({ date: o.date, st: o.status, cls: /已拒|撤回/.test(o.status) ? "rej" : "", company: o.company, title: o.title, url: o.url, note: o.archive, text: o.note })))
+      .sort(byDate));
+  }
+
+  /* ---------- 导出本机标记 ---------- */
+  $("#foot-src").textContent = `面板由 工具/healthcare岗位抓取/render_board.py 生成，每次渲染自动刷新，不联网、不上传。`;
+  $("#export").onclick = async () => {
+    const lines = Object.entries(marks).map(([uid, v]) => { const x = D.items.find((y) => y.uid === uid); return x ? `${v === "applied" ? "已投" : "不投"}：${x.company} · ${x.title}（${uid}）` : null; }).filter(Boolean);
+    const text = lines.length ? `岗位面板里我标记的岗位（${D.today}）：\n` + lines.join("\n") : "面板里还没有标记任何岗位。";
+    const box = $("#export-box"); box.value = text; box.hidden = false;
+    try { await navigator.clipboard.writeText(text); $("#export").textContent = "已复制，粘贴给 Claude 即可"; }
+    catch (e) { box.select(); try { document.execCommand("copy"); $("#export").textContent = "已复制，粘贴给 Claude 即可"; } catch (e2) { $("#export").textContent = "请手动复制下方文字"; } }
+    setTimeout(() => { $("#export").textContent = "复制我在面板里标记的岗位"; }, 3000);
+  };
+  $("#clear-marks").onclick = () => { marks = {}; store.set("hcboard.marks", marks); render(); };
+
+  syncControls();
+  render();
+})();
+</script>
+</body>
+</html>
