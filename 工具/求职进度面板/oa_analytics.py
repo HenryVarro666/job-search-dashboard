@@ -203,7 +203,7 @@ def derive_analytics(app, events, stage):
                  or app.get("stage") == "applied" or verified_application_existence(app))
     types = {e["type"] for e in ordered}
     highest = ("offer" if "offer" in types else "interview" if "interview" in types else
-               "assessment" if has_history else "reply" if types & {"human_reply", "rejected"} else
+               "assessment" if has_history else "reply" if "human_reply" in types else
                "application" if confirmed else "unconfirmed")
     if effective in TERMINAL:
         outcome = effective

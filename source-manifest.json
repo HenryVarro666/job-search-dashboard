@@ -10,7 +10,7 @@
     {
       "path": "工具/求职进度面板/oa_analytics.py",
       "sha256": "f5f1f64f259747ebed4135b34552d3bf1d375e4e7e9da96b3afd080c02f760a9",
-      "export_sha256": "53c5076a6245bfac230d140f804bd892509d9a468247ca601884ff236efc01f0"
+      "export_sha256": "0b24a5e177cc72c186e1e43bbc67cb9022a7ccffbfeb19285044619e011f0b56"
     },
     {
       "path": "工具/求职进度面板/internship_updates.py",
