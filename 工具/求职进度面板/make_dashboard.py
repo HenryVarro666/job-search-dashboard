@@ -632,9 +632,14 @@ def today_panel(board, summary, apps, today):
             return None
 
     def card(x, **extra):
+        review = x.get("priority_review") or {}
         return {"uid": x["uid"], "company": x["company"], "req": x.get("req", ""), "title": x["title"], "tier": x["tier"], "role": roles.get(x.get("role"), ""),
                 "url": x.get("apply") or x.get("post"), "note": x.get("note"), "manual": x.get("track") == "M",
-                "paused": (x.get("priority_review") or {}).get("actionable") is False,
+                "paused": review.get("actionable") is False,
+                "reason": review.get("reason") or x.get("judge_line") or "",
+                "blockers": "；".join(b["kind"] + "：" + b["detail"] for b in review.get("blockers", [])),
+                "action": review.get("next_step") or x.get("action") or "",
+                **{k: x.get(k) for k in ("elig_line", "loc", "pay", "deadline", "judge_line")},
                 **{k: x.get(k) for k in ("new", "first_seen", "first_seen_basis", "discovery_batch", "discovery_baseline", "last_verified", "verification_status", "verification_source", "verification_note", "last_verification_attempt")}, **extra}
 
     soon = []
@@ -800,7 +805,8 @@ def main():
     blob = json.dumps(payload, ensure_ascii=False).replace("<", "\\u003c")
     html = (TEMPLATE_FILE.read_text(encoding="utf-8").replace("__DATA_JSON__", blob)
             .replace("__COMPANY_FILTER_CSS__", (HERE / "company_filter.css").read_text(encoding="utf-8"))
-            .replace("__COMPANY_FILTER_JS__", (HERE / "company_filter.js").read_text(encoding="utf-8")))
+            .replace("__COMPANY_FILTER_JS__", (HERE / "company_filter.js").read_text(encoding="utf-8"))
+            .replace("__CHART_MODELS_JS__", (HERE / "chart_models.js").read_text(encoding="utf-8")))
     out = Path(args.out)
     out.write_text(html, encoding="utf-8")
     print_summary(summary, today, out)

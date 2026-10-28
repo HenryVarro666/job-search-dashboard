@@ -1,0 +1,8 @@
+{
+  "name": "local-job-search-dashboard",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Development checks for the offline dashboard; no browser runtime dependencies.",
+  "scripts": {"test": "python3 scripts/check.py"},
+  "devDependencies": {"jsdom": "26.1.0"}
+}
