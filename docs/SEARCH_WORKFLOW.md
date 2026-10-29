@@ -18,6 +18,7 @@ Before a live run, confirm the profile, writable local evidence directory, and a
 | `工具/求职进度面板/opportunity_refresh.json` | Discovery and verification ledger maintained by `opportunity_updates.py`. |
 | `工具/求职进度面板/internships.json` | Independent internship cards and merge history. |
 | `工具/求职进度面板/linkedin_search_state.json` | Optional local record of actual LinkedIn run coverage and separate search, verification, and sync times. |
+| `工具/求职进度面板/handshake_search_state.json` | Optional local Handshake coverage record; public-index and native account searches remain separate. |
 | `.local/runs/<run-id>/` | Suggested ignored location for plans, execution records, leads, evidence, reports, and pending sync results. |
 
 The repository excludes personal records, crawler registries, application materials, and wage-reference datasets. Set them up locally or use the synthetic demo. `make_dashboard.py --data` changes only its application input; it does not relocate every companion file. A profile path is an agent configuration convention, not a new runtime command-line option.
@@ -41,12 +42,15 @@ Use `--scope internship` for the independent internship run. Both planners also 
 | Internship ATS | 12 queries: 6 recent and 6 unrestricted recall queries | Execute all 12, then apply the configured internship gates. |
 | Full-time LinkedIn | 10 entries: 5 `public_web` plus 5 `native_posts` | Execute the 5 public queries; retain 5 separate manual Posts entries. |
 | Internship LinkedIn | 4 entries: 2 public plus 2 manual | Execute the 2 public queries; retain 2 separate manual entries. |
+| Full-time Handshake | 4 configurable `public_index` queries in the recurring prompt | Execute all 4 public queries; record `native_ui` as skipped. |
 
 ATS queries cover Ashby, Greenhouse's current and legacy domains, Lever, Workday, and SmartRecruiters. The shipped default families are medical imaging, tech/fintech data science, applied/research science, and PhD/early-career ML engineering. Recent queries request the past week; unrestricted full-time recall rotates a family across four plan dates using America/Chicago. Those defaults are search terms, not a candidate profile. If configured preferences differ, preserve the original plan and save each actual adapted query. Do not silently describe the planner as profile-driven.
 
 Continue official increments for known companies and independent university/early-career recruiting routes. An existing company is not a reason to skip a new req. Public board enumeration can supplement search indexing; no search engine or adapter list guarantees complete coverage.
 
 For LinkedIn, public queries cover indexed `/posts/` and `/feed/update/` URLs. The `native_posts` URLs contain keywords; they do not prove Posts, sorting, or date filters were applied. Manual execution must confirm the actual surface and filters. Automated runs do not log in, use internal APIs, scrape, or paginate native LinkedIn. Captchas, login requirements, restrictions, and failures are recorded without bypass attempts.
+
+For Handshake, use the [skill](../skills/handshake-job-search/SKILL.md) and its [record contract](../skills/handshake-job-search/references/workflow.md). An authorized native search uses the normal visible interface after the user completes login. Verify actual Full-time/Job, location, degree and sorting settings without assuming institution-specific options. The recurring [three-hour prompt](../prompts/handshake-every-3-hours.md) uses public search providers only, with four configurable role queries; no Handshake planner script, account collector or importer is bundled. Public-index coverage cannot establish account-visible coverage or candidate eligibility.
 
 ## Execution and provenance
 
@@ -74,6 +78,8 @@ Save `linkedin_leads.json` with `schema_version: 1`, a unique `run_id`, and `lea
 Keep post time, official first publication, latest republication, page update, local discovery, verification attempt, last successful verification, and local sync separate. Search-result dates are indexing clues. Greenhouse `updated_at` is an update; Ashby `publishedAt` is latest publication, which may be a republication. Neither establishes a first publication date by itself. Reposts, comments, edits, repeated searches, reopening, and rebuilding do not reset `first_seen`.
 
 Deduplicate posts by reliable activity ID or canonical permalink with tracking parameters removed. Multiple posts may support one opportunity. For opportunities use confirmed company and exact requisition/ATS identifier, including established aliases between detail/apply URLs and legacy/current ATS domains. Do not merge distinct roles by title or invent identity when a careers-to-ATS mapping is unresolved. Internship merge requires a real req; keep req-less internship leads outside that pool.
+
+Handshake plans, execution records and leads use separate private `handshake_*.json` files. Preserve observed Job ID, institution Posting ID, employer profile ID, source URL, access method, actual or unknown institution scope, raw dates, body status, employer-direct/imported/unknown provenance, and verified external ATS identity. Those identifiers have different meanings. Public rows use `observed_surface=web_results` and `school_scope=null`. A complete platform description alone does not prove employer-direct publication. Preserve verified source aliases; for a verified req-less full-time role, a stable `handshake-<real-job-id>` local key still requires a manual check of prior IDs/URLs because the ledger cannot infer platform aliases.
 
 ## Official verification and fit gates
 
@@ -125,11 +131,13 @@ Inspect generated data and counts after syncing: exact identities remain unique,
 
 ## Run clocks, recurring prompts, and notifications
 
-The four files under [prompts](../prompts/) are templates for a configured executor: [manual full-time](../prompts/manual-fulltime-search.md), [daily full-time ATS](../prompts/daily-fulltime-ats-search.md), [daily internships](../prompts/daily-internships.md), and [LinkedIn every three hours](../prompts/linkedin-every-3-hours.md). They do not register schedules, grant additional permissions, or prove any run occurred. Configure scheduling separately only when requested; reuse an existing schedule rather than creating a duplicate.
+The five files under [prompts](../prompts/) are templates for a configured executor: [manual full-time](../prompts/manual-fulltime-search.md), [daily full-time ATS](../prompts/daily-fulltime-ats-search.md), [daily internships](../prompts/daily-internships.md), [LinkedIn every three hours](../prompts/linkedin-every-3-hours.md), and [Handshake every three hours](../prompts/handshake-every-3-hours.md). They do not register schedules, grant additional permissions, or prove any run occurred. Configure scheduling separately only when requested; reuse an existing schedule rather than creating a duplicate.
 
 An executor may maintain `linkedin_search_state.json` after actual work. Use `schema_version: 1`, `scope: fulltime`, configured `timezone`, `last_attempt_at`, `last_successful_search_at`, `last_verification_at`, `last_sync_at`, `updated_at`, and `latest_run`. `latest_run` contains `run_id`, status, separate `public_web`/`native_posts` planned/completed/failed/skipped counts, extra-query coverage, evidence/report paths, limitations, and actual additions or meaningful changes. This file is a local coverage record, not a scheduler or a search engine.
 
 Only all five planned full-time public queries completing normally advances `last_successful_search_at`; zero matching posts can still be a successful search. Partial/failed work updates attempt and coverage fields while preserving the prior successful time. Update verification and sync clocks only after those actual operations succeed. A daily full-time run may reuse an evidenced complete full-time public search from the preceding three hours, citing its batch and real coverage, rather than re-executing it. Do not reuse a partial run, internship-only coverage, future timestamp, or a plan file as success. Internship public queries remain independent.
+
+For Handshake, configure `workflow.handshake_state_path` in the private profile or pass its path in the task. It is an executor convention, not a new helper option. Preserve `last_attempt_at`, `last_successful_public_index_search_at`, verification/sync clocks, and actual per-source coverage in `latest_run`. Only all four planned public queries completing normally advances the public success clock. Partial/failed work preserves the prior successful time; setup probes and public work never advance native-account success. Keep live scheduler IDs, chat bindings and state out of Git, and leave other configured search tasks unchanged.
 
 Recurring runs remain quiet when there is no actionable change. Notify only for a worthwhile newly verified opportunity, explicit closure or meaningful eligibility/policy change, failed run, failed sync, or required user action. Give one concise combined update with useful official links and actual coverage or limitations. Public-query completion without useful matches is not itself a reason to notify. If local files are unavailable, continue independently useful public research where possible, save pending results, and report that sync did not occur. Do not claim a successful local write remotely or route work through an unconfigured chat or machine.
 

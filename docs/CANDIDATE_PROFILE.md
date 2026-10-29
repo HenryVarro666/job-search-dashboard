@@ -66,6 +66,7 @@ workflow:
   internships_path: null
   existing_decisions_path: null
   linkedin_state_path: null
+  handshake_state_path: null
   notification_destination: null
   authorized_external_actions: []
 ```

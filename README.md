@@ -4,7 +4,7 @@ A local workspace for job-search actions, opportunities, and application records
 
 **Python standard library · Vanilla JavaScript · Offline HTML · SVG charts**
 
-**v2.0.0** adds the search workflow around the dashboard: portable skills, prompt templates, offline query planners, evidence-ledger regressions, and an optional configured ATS collector. The existing dashboard views and fictional demo remain available.
+**v2.0.0** adds the search workflow around the dashboard: portable skills, prompt templates, offline query planners, evidence-ledger regressions, and an optional configured ATS collector. The v2 follow-up adds Handshake discovery and a three-hour public-index search prompt. The existing dashboard views and fictional demo remain available.
 
 ![Illustrative demo layout with synthetic data: daily actions, weekly application and referral activity, and a record detail panel.](docs/assets/dashboard-overview.png)
 
@@ -61,16 +61,17 @@ Public search, a readable hiring post, an official job check, and an application
 | Package | Use |
 |---|---|
 | `skills/linkedin-hiring-post-search/` | Public hiring-post discovery, manual Posts handoff, evidence and official-job verification |
+| `skills/handshake-job-search/` | Authorized native search or scheduled public-index discovery, official verification and local sync |
 | `skills/sponsor-check/` | Separate initial OPT, STEM OPT, H-1B and PERM evidence; reuse company findings by legal entity |
 | `skills/postdoc-fit-search/` | Official postdoc vacancies, funding and appointment-specific conditions |
-| `prompts/` | Manual full-time, daily ATS, daily internship and three-hour LinkedIn workflow templates |
+| `prompts/` | Manual full-time, daily ATS, daily internship and three-hour LinkedIn/Handshake workflow templates |
 | `examples/` | Blank or fictional setup inputs; no personal records or active scheduler state |
 
 Configure the [candidate profile](docs/CANDIDATE_PROFILE.md) before using the skills. Follow the [search workflow](docs/SEARCH_WORKFLOW.md) for evidence and synchronization. The optional registered-company collector requires local configuration and an explicit batch workspace; see [crawler setup](docs/CRAWLER_SETUP.md). It does not ship a private employer registry, a candidate's research archive, or an external LLM workflow runner.
 
 Use the skills from this checkout, or install them in your agent's skill directory and provide the repository root in the task configuration. Their shared workflow and profile-template links assume the checkout layout; an installed copy must read those documents from the configured repository root. Supply a private profile and evidence workspace explicitly rather than copying personal inputs into the repository.
 
-The prompt templates do not register a recurring task. A three-hour prompt describes one execution; configure a supported local scheduler separately if desired. Logged-in LinkedIn Posts search remains a manual entry point. The package does not automate account login, social messages, applications or resume uploads.
+The prompt templates do not register a recurring task. A three-hour prompt describes one execution; configure a supported local scheduler separately if desired. The [Handshake prompt](prompts/handshake-every-3-hours.md) executes four configurable public-index queries and records authenticated account search as skipped. Logged-in LinkedIn Posts and Handshake searches remain authorized manual entry points. The package does not automate account login, social messages, applications or resume uploads.
 
 ## How the data works
 

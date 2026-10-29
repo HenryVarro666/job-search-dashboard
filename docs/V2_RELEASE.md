@@ -26,3 +26,11 @@ The v1 and v1.1 tags remain intact. Existing privacy and portability changes in 
 Excluded: real applications, target lists, opportunity ledgers, correspondence, resumes, candidate research notes, crawler responses, wage-reference datasets, generated private HTML, credentials, account IDs and live scheduler state. Only blank or fictional examples are included. New source modules use explicit local setup instead of inheriting a particular candidate's strengths or private batch directory.
 
 See [search workflow](SEARCH_WORKFLOW.md), [candidate profile](CANDIDATE_PROFILE.md), [collector setup](CRAWLER_SETUP.md), and [public-release preparation](PUBLIC_RELEASE.md).
+
+## v2 follow-up: Handshake
+
+Add the portable [Handshake skill](../skills/handshake-job-search/SKILL.md) and [three-hour prompt](../prompts/handshake-every-3-hours.md). The skill supports an authorized, bounded native search and a separate scheduled public-index mode. The recurring template executes four configurable queries, records native account coverage as skipped, and advances its public success clock only after all planned queries complete normally.
+
+Both modes reuse official-source verification, candidate gates, exact requisition and source-alias deduplication, and the existing local target/ledger/dashboard workflow. Imported listings, access failures, platform dates, personal decisions, and application events retain their separate meanings. No Handshake connector, authenticated collector, importer, or scheduler is added.
+
+This is a follow-up commit on the v2 source line; the existing `v2.0.0` tag is unchanged. Private profiles, account and schedule bindings, execution state, search results, applications, resumes and evidence are excluded. The export manifest includes the new templates and refreshed hashes.

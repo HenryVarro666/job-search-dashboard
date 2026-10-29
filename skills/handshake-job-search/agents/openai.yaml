@@ -1,0 +1,4 @@
+interface:
+  display_name: "Handshake job search"
+  short_description: "Verify Handshake leads and sync local job records"
+  default_prompt: "Use $handshake-job-search to find full-time opportunities for my configured profile, verify official sources, deduplicate, and sync my local dashboard."

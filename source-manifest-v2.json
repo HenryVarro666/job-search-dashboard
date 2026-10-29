@@ -2,7 +2,7 @@
   "schema_version": 2,
   "version": "v2.0.0",
   "captured_date": "2026-10-28",
-  "base_commit": "0db53ce728ee66d3bf7f9129667e0e3978c5c5a0",
+  "base_commit": "f9ff8665e769ef2a4b029b59bd41fc67a95c0880",
   "baseline_manifest": "source-manifest.json",
   "scope": "Curated source and portable workflow export; private runtime inputs are not included.",
   "files": [
@@ -13,17 +13,17 @@
     },
     {
       "path": ".gitignore",
-      "export_sha256": "121ef2bcb745efd1a225834ae2b84493f3fa7e23c8703595f25939ee13d94bf2",
+      "export_sha256": "123deb6a8a076b3b501c8db910a434a2ffe01d5051675af56160612a2f1d8e2d",
       "kind": "release_asset_or_template"
     },
     {
       "path": "README.md",
-      "export_sha256": "62e446fdced67355f5f534d351d8bb41b020c60298a36e82a6c94679a6ff1fe5",
+      "export_sha256": "00e528c55465d96efc6ac19d055e9c84db6385523f419a68abaebf38deb48e62",
       "kind": "release_asset_or_template"
     },
     {
       "path": "docs/CANDIDATE_PROFILE.md",
-      "export_sha256": "5efd0ac78d4c4023f4b3f4537401326852037193d2561d16fa5b28ed21400a91",
+      "export_sha256": "30602d92027809c6e8be18b78b30da594dd3891d407d655f47d86b513c536562",
       "kind": "release_asset_or_template"
     },
     {
@@ -38,12 +38,12 @@
     },
     {
       "path": "docs/SEARCH_WORKFLOW.md",
-      "export_sha256": "ffc729cff4b029220b98c8cf4b3948c9373a7845c88ddc65f9e038ded93dcbe4",
+      "export_sha256": "beb9d11a4f953f54c9aae08504177d71b62ef8e7ff06b7e79075a9f42699fcb4",
       "kind": "release_asset_or_template"
     },
     {
       "path": "docs/V2_RELEASE.md",
-      "export_sha256": "f02210e466cf73839b67c74d188e79c1b81f221bb17f5fca5ecf7bb9dec979b7",
+      "export_sha256": "0b0d13a13001b559c6df7a710c7f8c0ea9015ae00fe10cf9c00ca0bf1580aa71",
       "kind": "release_asset_or_template"
     },
     {
@@ -97,6 +97,11 @@
       "kind": "release_asset_or_template"
     },
     {
+      "path": "prompts/handshake-every-3-hours.md",
+      "kind": "release_asset_or_template",
+      "export_sha256": "e2e3822b2087ccae8dc8c8c872f15cac7241181afb6fcf9e69c43fdbe1490606"
+    },
+    {
       "path": "prompts/linkedin-every-3-hours.md",
       "export_sha256": "901fa9282b63bcd36703e5915076e4c7ca5493d5c6e32feb0fdb22dc04c7a5f9",
       "kind": "release_asset_or_template"
@@ -120,6 +125,21 @@
       "path": "scripts/dom-smoke.cjs",
       "export_sha256": "147c1ce1f1785b8da376c0c406b6aa6eb35a80e2814b9be0fbd9a74212b87bb6",
       "kind": "release_asset_or_template"
+    },
+    {
+      "path": "skills/handshake-job-search/SKILL.md",
+      "kind": "release_asset_or_template",
+      "export_sha256": "ed571905192e294c400fe74f5329e5a0a75d52f03a27a1498ec67c909cfd2825"
+    },
+    {
+      "path": "skills/handshake-job-search/agents/openai.yaml",
+      "kind": "release_asset_or_template",
+      "export_sha256": "e47157c9b1b65f94e4f80aef6e39eba1bc32fec7ecc933590c3f7105f30fd6ed"
+    },
+    {
+      "path": "skills/handshake-job-search/references/workflow.md",
+      "kind": "release_asset_or_template",
+      "export_sha256": "148efff1e11a5daa1bf3f03aaeab8154732ff0ae037427badfa4893372f56271"
     },
     {
       "path": "skills/linkedin-hiring-post-search/SKILL.md",
@@ -612,7 +632,8 @@
     "Configured collection and judgment staging require local inputs; no external LLM review runner or current legal-policy snapshot is bundled.",
     "Prompt files are execution templates and do not register scheduled tasks.",
     "The manifest does not hash itself; archived baseline history remains private and has not received a public-release approval.",
-    "Pre-release review corrected absence-based closure, unsafe reopening, incomplete Workday coverage and inherited candidate research tenure; each has synthetic regressions."
+    "Pre-release review corrected absence-based closure, unsafe reopening, incomplete Workday coverage and inherited candidate research tenure; each has synthetic regressions.",
+    "The Handshake follow-up adds a portable skill and a four-query three-hour public-index prompt; authorized native search remains separate, and no personal data, live task configuration or runtime state is exported. The v2.0.0 tag is unchanged."
   ],
   "validation": {
     "python_tests": 205,
@@ -621,6 +642,8 @@
     "javascript_model_ui_dom_checks": "passed",
     "synthetic_build": "passed",
     "live_network_tests": false,
-    "skill_validators": 3
-  }
+    "skill_validators": 4
+  },
+  "base_release_tag": "v2.0.0",
+  "revision": "handshake-workflow-update"
 }

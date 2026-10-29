@@ -12,6 +12,9 @@
 **/logs/
 **/manual/
 **/ref/
+**/automations/
+**/automation.toml
+**/核查记录/
 *.bak
 .DS_Store
 
