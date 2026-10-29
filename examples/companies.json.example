@@ -1,0 +1,8 @@
+{
+  "defaults": {
+    "keywords": ["machine learning", "data scientist"],
+    "max_total_per_keyword": 400,
+    "workers": 2
+  },
+  "companies": []
+}

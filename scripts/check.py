@@ -8,6 +8,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 PANEL = ROOT / "工具" / "求职进度面板"
+DISCOVERY = ROOT / "工具" / "healthcare岗位抓取"
 
 def run(args, cwd=ROOT):
     subprocess.run(args, cwd=cwd, check=True)
@@ -25,6 +26,7 @@ class Scripts(HTMLParser):
 
 def main():
     run([sys.executable, "-B", "-m", "unittest", "discover", "-p", "test_*.py"], PANEL)
+    run([sys.executable, "-B", "-m", "unittest", "discover", "-p", "test_*.py"], DISCOVERY)
     for path in sorted(PANEL.glob("test_*.cjs")): run(["node", str(path)], PANEL)
     run([sys.executable, "scripts/demo.py"])
     page = ROOT / ".local/demo/工具/求职进度面板/dashboard.html"

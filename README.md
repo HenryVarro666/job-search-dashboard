@@ -4,11 +4,15 @@ A local workspace for job-search actions, opportunities, and application records
 
 **Python standard library · Vanilla JavaScript · Offline HTML · SVG charts**
 
+**v2.0.0** adds the search workflow around the dashboard: portable skills, prompt templates, offline query planners, evidence-ledger regressions, and an optional configured ATS collector. The existing dashboard views and fictional demo remain available.
+
 ![Illustrative demo layout with synthetic data: daily actions, weekly application and referral activity, and a record detail panel.](docs/assets/dashboard-overview.png)
 
 *Illustrative demo layout with synthetic data, not an application screenshot. The artwork uses English labels; the current application interface is primarily Chinese.*
 
 [Try the synthetic demo](#try-the-synthetic-demo) · [What it covers](#what-it-covers) · [How the data works](#how-the-data-works) · [Public-release preparation](docs/PUBLIC_RELEASE.md)
+
+[Search workflow](docs/SEARCH_WORKFLOW.md) · [Candidate profile template](docs/CANDIDATE_PROFILE.md) · [v2 release notes](docs/V2_RELEASE.md)
 
 ## What it covers
 
@@ -39,6 +43,34 @@ Open the HTML path printed by the command in a local browser. The demo builds an
 ```
 
 The supplied examples are fictional. The demo does not read or modify a personal vault. While this repository is private, cloning requires access to it.
+
+The demo also writes unexecuted ATS and LinkedIn query plans under `.local/demo/discovery/`. These are offline plans, not search results or evidence that jobs are open.
+
+## Search and verification in v2
+
+```bash
+# Offline only: generate queries for a separate search tool or manual use.
+python3 -B 工具/healthcare岗位抓取/search_plan.py --scope fulltime
+python3 -B 工具/healthcare岗位抓取/linkedin_search_plan.py --scope fulltime
+```
+
+The ATS preset generates 30 full-time queries or 12 internship queries. LinkedIn generates 10 full-time entries: five public-index queries and five manual Posts entries. Its internship preset generates four entries, two per source. Both planners use America/Chicago for the default plan date; use `--date YYYY-MM-DD` when another reporting date is needed. Preset role families are starting points, not candidate eligibility decisions.
+
+Public search, a readable hiring post, an official job check, and an application event are separate records. A recent post does not make a job newly published. Exact employer and requisition identity, hard qualification gates, source dates and access failures stay visible before a role enters the candidate pool. A dynamically rendered careers page may differ from a text extractor's fallback; resolve conflicting availability evidence before acting.
+
+| Package | Use |
+|---|---|
+| `skills/linkedin-hiring-post-search/` | Public hiring-post discovery, manual Posts handoff, evidence and official-job verification |
+| `skills/sponsor-check/` | Separate initial OPT, STEM OPT, H-1B and PERM evidence; reuse company findings by legal entity |
+| `skills/postdoc-fit-search/` | Official postdoc vacancies, funding and appointment-specific conditions |
+| `prompts/` | Manual full-time, daily ATS, daily internship and three-hour LinkedIn workflow templates |
+| `examples/` | Blank or fictional setup inputs; no personal records or active scheduler state |
+
+Configure the [candidate profile](docs/CANDIDATE_PROFILE.md) before using the skills. Follow the [search workflow](docs/SEARCH_WORKFLOW.md) for evidence and synchronization. The optional registered-company collector requires local configuration and an explicit batch workspace; see [crawler setup](docs/CRAWLER_SETUP.md). It does not ship a private employer registry, a candidate's research archive, or an external LLM workflow runner.
+
+Use the skills from this checkout, or install them in your agent's skill directory and provide the repository root in the task configuration. Their shared workflow and profile-template links assume the checkout layout; an installed copy must read those documents from the configured repository root. Supply a private profile and evidence workspace explicitly rather than copying personal inputs into the repository.
+
+The prompt templates do not register a recurring task. A three-hour prompt describes one execution; configure a supported local scheduler separately if desired. Logged-in LinkedIn Posts search remains a manual entry point. The package does not automate account login, social messages, applications or resume uploads.
 
 ## How the data works
 
@@ -77,18 +109,25 @@ The generator accepts `--data`, `--out`, and `--today` for an application-record
 ```text
 scripts/
   demo.py                      Synthetic example and local build
+skills/                        Portable search and evidence-review skills
+prompts/                       Manual and recurring execution templates
+examples/                      Blank or fictional local-setup templates
 工具/
   求职进度面板/                 Main dashboard
     make_dashboard.py          Validation, derived states, HTML generation
     oa_analytics.py            Assessment and application-flow semantics
     dashboard_template.html    Layout, interactions, and SVG charts
     company_filter.js          Shared company filtering
-  healthcare岗位抓取/           Supporting candidate-board modules
+  healthcare岗位抓取/           Query planners, optional ATS collection, candidate-board modules
+    search_plan.py             Offline ATS query plan
+    linkedin_search_plan.py    Public-index queries and manual Posts handoff
+    track.py                   Configured company increment and review staging
   岗位有效性检查/               Existing availability-check dependency
 source-manifest.json            Source hashes for the v1 extraction
+source-manifest-v2.json         v2 export hashes and portability notes
 ```
 
-The supporting modules preserve the existing import structure. This repository does not contain the full research archive, crawler datasets, or wage-reference files.
+The supporting modules preserve the existing import structure. This repository does not contain the private research archive, crawler datasets, wage-reference files, or live application/scheduler state.
 
 ## Checks
 
@@ -99,7 +138,7 @@ npm ci --ignore-scripts
 python3 scripts/check.py
 ```
 
-Python and Node.js 18 or later are required for this check command. The development-only `jsdom` dependency runs full-page DOM checks in memory with network access disabled. The checks also exercise synthetic Python and JavaScript cases and regenerate the demo. They do not provide browser layout or screenshot verification. No live accounts or private application data are required.
+Python and Node.js 18 or later are required for this check command. The development-only `jsdom` dependency runs full-page DOM checks in memory with network access disabled. The checks also exercise synthetic Python and JavaScript cases, the discovery modules, and the offline planners, then regenerate the demo. They do not provide live ATS, browser layout or screenshot verification. No live accounts or private application data are required.
 
 ## Privacy and boundaries
 
@@ -113,6 +152,7 @@ Personal applications, correspondence, resumes, schedules, research notes, and g
 |---|---|
 | [`v1.0.0`](https://github.com/HenryVarro666/job-search-dashboard/tree/v1.0.0) | Preserved runtime baseline before the first redesign, with a synthetic demo and limited portability cleanup |
 | `v1.1.0` | Corrected stage inference, separate weekly activity series, progress subviews, record drawer, global lookup, and unified styling |
+| `v2.0.0` | Search skills and prompt templates, offline ATS/LinkedIn planners, evidence regressions, and optional configured company increments |
 
 The v1 tag is retained for comparison. Its chart semantics predate the corrections described in the redesign plan.
 

@@ -2,6 +2,7 @@
 .local/
 **/*.json
 !source-manifest.json
+!source-manifest-v2.json
 **/dashboard.html
 **/board.html
 **/__pycache__/

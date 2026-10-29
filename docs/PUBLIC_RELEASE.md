@@ -21,6 +21,8 @@ This document prepares a future release. It does not authorize changing reposito
 
 The source review removed a private example comment and a personal default filter from the current export. Their earlier versions remain in the private baseline history; sanitize that history before publishing it. The preserved v1 tag is useful for local comparison and is not yet approved for a public release.
 
+The v2 snapshot adds sanitized search tools, skills and prompt templates. Its `*.json.example` files are setup inputs, not live registries or schedules. The v2 review does not replace the full-history audit above; earlier private-history concerns remain applicable before any visibility change.
+
 ## Release decision
 
 - [ ] Choose and add a license after the rights review. Do not describe the project as open source before a license has been selected.

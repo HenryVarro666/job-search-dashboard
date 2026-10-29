@@ -1,0 +1,10 @@
+{
+  "enabled": false,
+  "target_year": 2031,
+  "candidate_weeks": [8, 26],
+  "search_keywords": ["research intern", "PhD intern", "co-op"],
+  "school_status": "Fictional setup example. Enrollment, return-to-school arrangements and work authorization are unconfirmed.",
+  "graduation_preference": {
+    "exclude_fall_2027_or_later": false
+  }
+}

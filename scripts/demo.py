@@ -64,6 +64,14 @@ def main():
         "group": "primary", "start": "Spring 2027 (fictional)", "duration": "12 weeks", "enrollment": "Must be enrolled; synthetic example",
         "return_to_school": "Unknown", "opt_status": "unconfirmed", "opt_note": "No eligibility conclusion is implied by this demo.",
         "location": "Example City", "next_step": "Confirm the synthetic eligibility conditions", "sources": []}]})
+    # Offline query plans are examples of intended work, never search results.
+    plans = dest / "discovery"
+    plans.mkdir(exist_ok=True)
+    discovery = dest / "工具" / "healthcare岗位抓取"
+    for script, filename in (("search_plan.py", "ats-plan.json"),
+                             ("linkedin_search_plan.py", "linkedin-plan.json")):
+        subprocess.run([sys.executable, "-B", str(discovery / script), "--scope", "all",
+                        "--date", "2026-10-27", "--output", str(plans / filename)], check=True)
     subprocess.run([sys.executable, str(folder / "make_dashboard.py"), "--today", "2026-10-27"], check=True)
     print(folder / "dashboard.html")
 if __name__ == "__main__":
