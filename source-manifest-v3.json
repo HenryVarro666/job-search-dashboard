@@ -1,0 +1,659 @@
+{
+  "schema_version": 3,
+  "version": "v3.0.0",
+  "captured_date": "2026-10-30",
+  "base_commit": "cc2afc7056344b8245a266d7028c6867b540d010",
+  "baseline_manifest": "source-manifest-v2.json",
+  "scope": "Dashboard runtime synchronization; inherited search package unchanged.",
+  "files": [
+    {
+      "path": ".github/workflows/check.yml",
+      "export_sha256": "0ab01d4ed27436a60760b951c3747fc3dce0b6b52dc3a3863f5568d6de991293",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": ".gitignore",
+      "export_sha256": "ce34cdf5ee3527dfb44cb36b45076c09b83b4256c1ec1b789d7cbec66c31cb92",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "README.md",
+      "export_sha256": "c40a4f8cee556ffc93dec3ae073e38cda4c614bc91f1ebd4fffcd536704c81c0",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "docs/CANDIDATE_PROFILE.md",
+      "export_sha256": "30602d92027809c6e8be18b78b30da594dd3891d407d655f47d86b513c536562",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "docs/CRAWLER_SETUP.md",
+      "export_sha256": "dd4d336ea787a6ece12a2d62200f2b995d35c477a161b6995f29212c17909b7d",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "docs/PUBLIC_RELEASE.md",
+      "export_sha256": "3cb0381f78cb00d5980be864b59903b433585875b6e674fd856c1234d52ce551",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "docs/SEARCH_WORKFLOW.md",
+      "export_sha256": "beb9d11a4f953f54c9aae08504177d71b62ef8e7ff06b7e79075a9f42699fcb4",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "docs/V2_RELEASE.md",
+      "export_sha256": "0b0d13a13001b559c6df7a710c7f8c0ea9015ae00fe10cf9c00ca0bf1580aa71",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "docs/V3_RELEASE.md",
+      "kind": "release_asset_or_test",
+      "export_sha256": "0a4e8c840f1645c9f99b58823ec0b407d0afc9e5311c57e2741880c4eb4ec4c2"
+    },
+    {
+      "path": "docs/assets/dashboard-overview.png",
+      "export_sha256": "dcfc5e4faedabc36ee72097983cc14887ea0a48a2a1d6d33c51e587fbfe64e6e",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "docs/assets/dashboard-overview.svg",
+      "export_sha256": "58461bc01164ab14f68936e5bd8b86215fbd8f25b5e6832e651b7c5451748cfd",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-27-dashboard-round-one.md",
+      "export_sha256": "b84ec46680c75db87487a6601fcf6bd2dda5e9093c411e18fde690e52c921801",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "examples/companies.json.example",
+      "export_sha256": "2584476ce3f4c5553844eb2e2d54923f4ca5b9949dcdf5d68f60f99899c45cd2",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "examples/spring_internship_policy.json.example",
+      "export_sha256": "81d0e98015dbcae2c79b8ff3c6c8329ee6bf2c49334f54d1a501cb1bde4f810e",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "examples/候选人事实表.md",
+      "export_sha256": "0ce994338269e0e16ede0c35d13b5f1b816d05c27418dd66019c0854b6ebc593",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "package-lock.json",
+      "export_sha256": "6a609e085a1e24f6b595c816c13198c6e4daf0b6875e7aa298fa01b441c5fa51",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "package.json",
+      "export_sha256": "1ae7aecebe2be3dfb6cc2bf725cbecdbdf11eb1e7f51c9a1808d53d07aa79b15",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "prompts/daily-fulltime-ats-search.md",
+      "export_sha256": "e74bf0d4eaedb44d7fa57800b45ec461a6b0ae6263d550cae1769b78bb608fb7",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "prompts/daily-internships.md",
+      "export_sha256": "766ec94bc35386b012dac8fa2e8d84d1bbc851c24b40842169388fbb6769f40d",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "prompts/handshake-every-3-hours.md",
+      "kind": "release_asset_or_template",
+      "export_sha256": "e2e3822b2087ccae8dc8c8c872f15cac7241181afb6fcf9e69c43fdbe1490606"
+    },
+    {
+      "path": "prompts/linkedin-every-3-hours.md",
+      "export_sha256": "901fa9282b63bcd36703e5915076e4c7ca5493d5c6e32feb0fdb22dc04c7a5f9",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "prompts/manual-fulltime-search.md",
+      "export_sha256": "ee86dcaaa1ab6ab41260e06c95ba434db51b2276435ce5ddb99122be69f0c222",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "scripts/check.py",
+      "export_sha256": "73363144f117867d04245313a6511cda990a9116d54d3f4f761b35b63834accb",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "scripts/demo.py",
+      "export_sha256": "379946a75691f3b2264193c38cb7d84761c97dd39bbc36f00d532ee69000170b",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "scripts/dom-smoke.cjs",
+      "export_sha256": "147c1ce1f1785b8da376c0c406b6aa6eb35a80e2814b9be0fbd9a74212b87bb6",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "skills/handshake-job-search/SKILL.md",
+      "kind": "release_asset_or_template",
+      "export_sha256": "ed571905192e294c400fe74f5329e5a0a75d52f03a27a1498ec67c909cfd2825"
+    },
+    {
+      "path": "skills/handshake-job-search/agents/openai.yaml",
+      "kind": "release_asset_or_template",
+      "export_sha256": "e47157c9b1b65f94e4f80aef6e39eba1bc32fec7ecc933590c3f7105f30fd6ed"
+    },
+    {
+      "path": "skills/handshake-job-search/references/workflow.md",
+      "kind": "release_asset_or_template",
+      "export_sha256": "148efff1e11a5daa1bf3f03aaeab8154732ff0ae037427badfa4893372f56271"
+    },
+    {
+      "path": "skills/linkedin-hiring-post-search/SKILL.md",
+      "export_sha256": "10ff5de465d7be6c4d76e67e8061288f3a09e676dc8b8e65d9191641474c72fb",
+      "source_path": "local-skill:linkedin-hiring-post-search/SKILL.md",
+      "source_sha256": "cd97a52525d6cba7f1debec289783845a4016d8ac35dbf752abf3e6b2f9477bc",
+      "kind": "portable_skill",
+      "notes": [
+        "Personal profile, installation paths, live state and dated legal assumptions replaced with explicit configuration and official-source checks."
+      ]
+    },
+    {
+      "path": "skills/postdoc-fit-search/SKILL.md",
+      "export_sha256": "1a034a22bb23e7b86b872a3b17a7cf7a67bb48c4533de7df3900ca16efa05478",
+      "source_path": "local-skill:postdoc-fit-search/SKILL.md",
+      "source_sha256": "35a0656473b6f3b122a7cea27cd208162976d55e759349e10d1f02bd2606e1da",
+      "kind": "portable_skill",
+      "notes": [
+        "Personal profile, installation paths, live state and dated legal assumptions replaced with explicit configuration and official-source checks."
+      ]
+    },
+    {
+      "path": "skills/sponsor-check/SKILL.md",
+      "export_sha256": "44c08a957d8df403af7b5ae5bb5d52b19322eb6a0a8e927b95bff6fcb7a3fade",
+      "source_path": "local-skill:sponsor-check/SKILL.md",
+      "source_sha256": "593c7cab27062021c1cfeb40f094ba626bbd9f8454a9565cea5edad3128197cf",
+      "kind": "portable_skill",
+      "notes": [
+        "Personal profile, installation paths, live state and dated legal assumptions replaced with explicit configuration and official-source checks."
+      ]
+    },
+    {
+      "path": "source-manifest-v2.json",
+      "kind": "release_asset_or_test",
+      "export_sha256": "1f65a04f83e5484ae98bba1690c801ce49c83b9346ae4d99521d7e0fbc13c8d4"
+    },
+    {
+      "path": "source-manifest.json",
+      "export_sha256": "280d86789dd49ef3aa745a9abb1535eed9efcdfaae5535beec266988236dd279",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/adapters.py",
+      "export_sha256": "251bbd7e728ad9bf4d8d89d492dec332da2e4c05bf437c91a5ebf2924538b52f",
+      "source_path": "工具/healthcare岗位抓取/adapters.py",
+      "source_sha256": "6dcc27d33bee67b925e0eebafe918cd895c798a9cf8ba8926d2dc897f2ab038f",
+      "notes": [
+        "Generalized dated adapter observation comments; endpoint/request behavior retained.",
+        "Skipped overly broad Workday query returns existing incomplete marker None; other successful queries cannot certify coverage."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/adapters_ext_a.py",
+      "export_sha256": "266c41727c1c04d52e26a4445356a8bb5caee1da4e4512b6d9635723e9dd2b45",
+      "source_path": "工具/healthcare岗位抓取/adapters_ext_a.py",
+      "source_sha256": "c1e204c69bcee9695c3c82485457e23e49085dd7a40ef10138f615785fd95182",
+      "notes": [
+        "Replaced dated source-company observations/tenant case histories with adapter config contracts; generalized tenant-specific explanatory comments."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/adapters_ext_b.py",
+      "export_sha256": "b4b9a2909a85bf04795a602019516fcaae32c75ee749f0a91a24f6b6bc3d8237",
+      "source_path": "工具/healthcare岗位抓取/adapters_ext_b.py",
+      "source_sha256": "85ba238d6e691a1c8f75e7150acc1cd4e367b77c4eb9ac960296a2ecfe9d7c3d",
+      "notes": [
+        "Replaced source-company board/portal history with generic adapter configuration contracts."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/adapters_ext_c.py",
+      "export_sha256": "76e792e8ef9c95ef1ba2966b39d602fbee5f7e5dfe2699c3b5c33b65ac032c1f",
+      "source_path": "工具/healthcare岗位抓取/adapters_ext_c.py",
+      "source_sha256": "918ff04c57ff2ea7fbb26253aa0d5986692204cc42cbd0f39a8d9b7360f749da",
+      "notes": [
+        "Replaced source-company board/count/pay case history with generic adapter contracts and conflict explanation."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/app_status.py",
+      "export_sha256": "f5c55956d081359584618309ea1927c0363e728296cabcbde58be341cae447a0",
+      "source_path": "工具/healthcare岗位抓取/app_status.py",
+      "source_sha256": "32f23d63a1b1b2bb7bd9743a4d2b95a0a3e4c8708e068e6ef9e79b845e05efd2",
+      "kind": "preserved_runtime",
+      "notes": [
+        "Preserve existing repository privacy and portability adaptation."
+      ]
+    },
+    {
+      "path": "工具/healthcare岗位抓取/apply_links.py",
+      "export_sha256": "c400cb319d27aca3573a677e89fb59834b25dd93adcbd6d1f48c385d9f378a37",
+      "source_path": "工具/healthcare岗位抓取/apply_links.py",
+      "source_sha256": "c400cb319d27aca3573a677e89fb59834b25dd93adcbd6d1f48c385d9f378a37",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/board_template.html",
+      "export_sha256": "93427fe98105e7424855e99ec6dc7c4e99edc17bc035a2c71d102ca2fc814327",
+      "source_path": "工具/healthcare岗位抓取/board_template.html",
+      "source_sha256": "93427fe98105e7424855e99ec6dc7c4e99edc17bc035a2c71d102ca2fc814327",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/common.py",
+      "export_sha256": "deb144a78446dcd31d0da3cf54da3f9d47d4d9dbb1dd7a94e6c8a7f2c1823667",
+      "source_path": "工具/healthcare岗位抓取/common.py",
+      "source_sha256": "deb144a78446dcd31d0da3cf54da3f9d47d4d9dbb1dd7a94e6c8a7f2c1823667",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/fetch_ats.py",
+      "export_sha256": "84f50ed09a09505dcc6cc349116ca0d6abf108b95a8b96b1eb5810f98f539058",
+      "source_path": "工具/healthcare岗位抓取/fetch_ats.py",
+      "source_sha256": "a05f54d72e5100c9cae421e16799fc74122196f301ca59987173fc56c775d126",
+      "notes": [
+        "Replaced company-specific CLI example and reference to absent discover_slugs.py with registry setup guidance.",
+        "Empty selection error points to local setup documentation."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/funnel.py",
+      "export_sha256": "3d59c9081d0eface959a6e3f1e1be7e5e2e75c5d6be7557b098cec1b4034708f",
+      "source_path": "工具/healthcare岗位抓取/funnel.py",
+      "source_sha256": "f2b779e55f7198fd45fd15d47c933c9f4c188212a7f06d4f0ce2bd7c6686d77d",
+      "notes": [
+        "Replaced personal dated role-selection instructions with descriptions of preserved screening rules."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/judge_tools.py",
+      "export_sha256": "25c88a06290178ea37b90f33aecce3ed263d2632cdd4ac5de910885a9e84c18a",
+      "source_path": "工具/healthcare岗位抓取/judge_tools.py",
+      "source_sha256": "e65945e4ed9b5fc53f452ab08b21e860632bc34bcdf9872065e65b278ceebf73",
+      "notes": [
+        "Removed inherited candidate strengths; all domain tags initialize NONE.",
+        "Explicit complete local fact sheet required before ranking; prior strength/evidence state clears before each load or failure.",
+        "Generalized source-company listing-age anecdote and removed absent workflow runner references.",
+        "Removed personal research start date and calendar-derived tenure.",
+        "Positive research-experience requirements use per-judgment verified_research_years plus nonempty reviewed research_evidence_ids; absent/invalid evidence is conditional, verified insufficient duration fails."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/linkedin_search_plan.py",
+      "export_sha256": "5f5b1e6a8437039ce59c4669c46c954e174fb6a09e87bcaad4adbb426843d4de",
+      "source_path": "工具/healthcare岗位抓取/linkedin_search_plan.py",
+      "source_sha256": "5f5b1e6a8437039ce59c4669c46c954e174fb6a09e87bcaad4adbb426843d4de",
+      "notes": [
+        "Byte-identical source-only export."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/make_registry.py",
+      "export_sha256": "fe46d1451574c9a435e998fa4dfdaa418554d3281e289a0ef8835c74ca01569b",
+      "source_path": "工具/healthcare岗位抓取/make_registry.py",
+      "source_sha256": "fe46d1451574c9a435e998fa4dfdaa418554d3281e289a0ef8835c74ca01569b",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/parse_jd.py",
+      "export_sha256": "b62a7763be05a31ee7b5069d388b962fc8b2cee77e10c4f4b42d8f4f19257ae9",
+      "source_path": "工具/healthcare岗位抓取/parse_jd.py",
+      "source_sha256": "b62a7763be05a31ee7b5069d388b962fc8b2cee77e10c4f4b42d8f4f19257ae9",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/render_board.py",
+      "export_sha256": "f9d6ae2e3d30895dff251f10f996c38dff9a033b0ef41276dc52fbb46ebb0138",
+      "source_path": "工具/healthcare岗位抓取/render_board.py",
+      "source_sha256": "f9d6ae2e3d30895dff251f10f996c38dff9a033b0ef41276dc52fbb46ebb0138",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/render_notes.py",
+      "export_sha256": "3a4120c9cd995441bf3c919ba0f6f35366ce7e0729ccf488cacb986048984576",
+      "source_path": "工具/healthcare岗位抓取/render_notes.py",
+      "source_sha256": "8ba8a40ae44af0bce9e384996038c7d62087358288c41209e4b17678fce97488",
+      "kind": "preserved_runtime",
+      "notes": [
+        "Preserve existing repository privacy and portability adaptation."
+      ]
+    },
+    {
+      "path": "工具/healthcare岗位抓取/search_plan.py",
+      "export_sha256": "4eb53116009495c9b0f7c2619c4d6c7e84eb7eec98ecab5a4d0b033f790f5748",
+      "source_path": "工具/healthcare岗位抓取/search_plan.py",
+      "source_sha256": "4eb53116009495c9b0f7c2619c4d6c7e84eb7eec98ecab5a4d0b033f790f5748",
+      "notes": [
+        "Byte-identical source-only export."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/spring_internships.py",
+      "export_sha256": "d811758cdba923564d96c94922bd5ed5105099b36cb5b67476c77f5139f7de5c",
+      "source_path": "工具/healthcare岗位抓取/spring_internships.py",
+      "source_sha256": "037af40dcdd35d4b94001de0111e10b3e094916441f5a9353b705d397549b2ac",
+      "notes": [
+        "Added explicit --policy CLI path and understandable missing-policy error.",
+        "Removed fixed cohort in review checks and graduation exclusions; use configured target_year and candidate_weeks.",
+        "Preserved legacy graduation_preference.exclude_fall_2027_or_later key; opt-in meaning follows target_year.",
+        "Generalized private graduation/school/authorization assumptions in generated notes."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_ats_freshness.py",
+      "export_sha256": "63a9248dd375d881f9cad34eacf9f934e53c3ef0486e376c0dad863684c2eeed",
+      "source_path": "工具/healthcare岗位抓取/test_ats_freshness.py",
+      "source_sha256": "63a9248dd375d881f9cad34eacf9f934e53c3ef0486e376c0dad863684c2eeed",
+      "notes": [
+        "Byte-identical source-only export."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_career_level_gates.py",
+      "export_sha256": "dd0fd09a8c3cfb7754b100b7cc39597099d04fc28b3c72940bc25ed3dd6e20e1",
+      "source_path": "工具/healthcare岗位抓取/test_career_level_gates.py",
+      "source_sha256": "dd0fd09a8c3cfb7754b100b7cc39597099d04fc28b3c72940bc25ed3dd6e20e1",
+      "notes": [
+        "Byte-identical source-only export."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_internship_search_integration.py",
+      "export_sha256": "9a44cf23e1f104573c1e92bbbc8c235dc99a334ac3a2f5fdf664412c052bd845",
+      "source_path": "工具/healthcare岗位抓取/test_internship_search_integration.py",
+      "source_sha256": "ab4cbd62ad97cb1f393a3bb8fafbcb8e649319eb40e0e739c0f2f796219f2c8d",
+      "notes": [
+        "Added skipped-broad-query plus successful-narrow-query regression preserving incomplete company coverage."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_judge_domain_fit.py",
+      "export_sha256": "6e2a4b5374fccc29a78af2cf079cc556b4818fdab2763b8aeabe04e69bdcb23b",
+      "source_path": "工具/healthcare岗位抓取/test_judge_domain_fit.py",
+      "source_sha256": "455a10200847cc814c322eb32ba754faa85e0e1857ca6dd855dad207c605ce1b",
+      "notes": [
+        "Replace candidate-specific evidence ID with fictional ID."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_judge_eligibility.py",
+      "export_sha256": "da5ef5a100fff02b2169e13b00ca6dd2cd7ef25dda25aa9cbaf3e82ea5afede6",
+      "source_path": "工具/healthcare岗位抓取/test_judge_eligibility.py",
+      "source_sha256": "9e46edff178dce4e914945303fc80695de57871ce7563041cb6a5ccdc4908b38",
+      "notes": [
+        "Research-duration regressions use two fictional candidate histories against one employer requirement; unknown/malformed evidence remains conditional and employer acceptance alone supplies no candidate duration."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_linkedin_search_plan.py",
+      "export_sha256": "343d86d982bedab7e19ea80b2c94c8b0c5329d56c489718c478e5b694957cfc5",
+      "source_path": "工具/healthcare岗位抓取/test_linkedin_search_plan.py",
+      "source_sha256": "343d86d982bedab7e19ea80b2c94c8b0c5329d56c489718c478e5b694957cfc5",
+      "notes": [
+        "Byte-identical source-only export."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_profile_setup.py",
+      "export_sha256": "9a12d8a607a76431396da1699386cdb1c080d4c628fc7363fa3a324732801f37",
+      "kind": "release_asset_or_template"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_search_plan.py",
+      "export_sha256": "ff67c4460ceb7421627796349b388bebd7f3bce5367777a20fcb581cc7d8083c",
+      "source_path": "工具/healthcare岗位抓取/test_search_plan.py",
+      "source_sha256": "ff67c4460ceb7421627796349b388bebd7f3bce5367777a20fcb581cc7d8083c",
+      "notes": [
+        "Byte-identical source-only export."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_spring_internships.py",
+      "export_sha256": "1302f770577f9ed1262cc527a7867c2d29c47b13daf63434c32152bf174859f2",
+      "source_path": "工具/healthcare岗位抓取/test_spring_internships.py",
+      "source_sha256": "8e897d45bc039919816bab5411d135002790bed32425b11d7925adf6bdc973f8",
+      "notes": [
+        "Inject synthetic policy; CLI receives --policy in temp workspace; add non-2027 portability regression."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_talentbrew_identifier.py",
+      "export_sha256": "255e7dd707a1d4d56b690781d496562e84eae4ce01d207839b8172e9b42b9aa8",
+      "source_path": "工具/healthcare岗位抓取/test_talentbrew_identifier.py",
+      "source_sha256": "2085d71bd5ebf5b3a5b57a81dbf1f7145db9e5ec58eea387ec5e55b3b2f9b9f0",
+      "notes": [
+        "Replace actual employer, requisition, posting, location and URL fixtures with fictional values."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/test_tracking_closure.py",
+      "kind": "release_asset_or_template",
+      "export_sha256": "ac2eff7cffbb54bac50b2e502ad67d9d6881ea7de9c65e3fbea3f3ea1817d96d"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/track.py",
+      "export_sha256": "a186a28eaae1245636ff4a59a1e149cae9866124b851e112207f919c33dd1a59",
+      "source_path": "工具/healthcare岗位抓取/track.py",
+      "source_sha256": "40fd0dcd8b4e4cea7ae7e3c1b71f998f31f068ce11ed20cb8e592ce2c886278d",
+      "notes": [
+        "Removed default private batch path; delta/stage/run require explicit --batch-dir.",
+        "stage/run validate existence of explicit local fact sheet, review prompt and schema before fetching.",
+        "Removed absent Claude workflow/runner promise; outputs are external review inputs.",
+        "Optional archive drift check reads only batch-local career-archive.md.",
+        "Removed dated private batch/report link and personalized notification text.",
+        "Missing/empty company registry stops before combined work.",
+        "Missing optional internship policy skips internship selector rather than reading another workspace.",
+        "Absence of normalized/list records never auto-closes; every missing normalized previously judged record is unverifiable.",
+        "Explicit can_apply=False closes only with primary source authority and current-day detail fetched at/after current official enumeration; stale/missing/manual/display evidence stays unverifiable.",
+        "Restoring a tracking closure requires explicit can_apply=True with the same current primary detail evidence as closure; stale/unknown/non-primary evidence preserves closure and is saved as unverifiable.",
+        "Shared current_primary_detail predicate applies freshness/provenance symmetrically; apply_links-origin closures remain preserved."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/healthcare岗位抓取/visa_signals.py",
+      "export_sha256": "0dc82c9084af3d8fffa7d9a8e41378595419ea44c8d79c6dbcc3da5718722c0d",
+      "source_path": "工具/healthcare岗位抓取/visa_signals.py",
+      "source_sha256": "c5ee12453ea421f52c3c6a42621e5fe07feb168fbd0d4127eb961c5926f1e3a2",
+      "kind": "preserved_runtime",
+      "notes": [
+        "Preserve existing repository privacy and portability adaptation."
+      ]
+    },
+    {
+      "path": "工具/岗位有效性检查/check_jobs.py",
+      "export_sha256": "f2b8df07342acab07d1040480aafdec4569c3d5552f4c1e28e373e25fda64e7d",
+      "source_path": "工具/岗位有效性检查/check_jobs.py",
+      "source_sha256": "f2b8df07342acab07d1040480aafdec4569c3d5552f4c1e28e373e25fda64e7d",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/求职进度面板/chart_models.js",
+      "export_sha256": "53faa80475b1c1dc24fbaf5a897a43a30f784fff66b621460b5caa12c35255bf",
+      "source_path": "工具/求职进度面板/chart_models.js",
+      "source_sha256": "53faa80475b1c1dc24fbaf5a897a43a30f784fff66b621460b5caa12c35255bf",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/求职进度面板/company_filter.css",
+      "export_sha256": "9e0536332dabf46157964f14fb07a3cca417bef4661e25f4502ce9a33a141c61",
+      "source_path": "工具/求职进度面板/company_filter.css",
+      "source_sha256": "9e0536332dabf46157964f14fb07a3cca417bef4661e25f4502ce9a33a141c61",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/求职进度面板/company_filter.js",
+      "export_sha256": "ea0c6c4d13c896ec9011b7365ca5dc19980931d36ac99361fc0edd6e4aa692e6",
+      "source_path": "工具/求职进度面板/company_filter.js",
+      "source_sha256": "ea0c6c4d13c896ec9011b7365ca5dc19980931d36ac99361fc0edd6e4aa692e6",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/求职进度面板/dashboard_template.html",
+      "export_sha256": "4d03d6d28105824c5b16f01a0233b918ecbdbc3835411e73a910f59da8abf854",
+      "source_path": "工具/求职进度面板/dashboard_template.html",
+      "source_sha256": "1ca0bfc4c7fc48a37841515c871f50c3e3181b8dc4a3d6ea46f39b8f14db29d8",
+      "kind": "synchronized_dashboard",
+      "notes": [
+        "Sync current dashboard behavior; retain generic example text and an empty default company filter."
+      ]
+    },
+    {
+      "path": "工具/求职进度面板/internship_updates.py",
+      "export_sha256": "abf4ba9c97d0ce393a8e1eb3ca4b252d1d2b1ed78578eca95e1710502830c980",
+      "source_path": "工具/求职进度面板/internship_updates.py",
+      "source_sha256": "abf4ba9c97d0ce393a8e1eb3ca4b252d1d2b1ed78578eca95e1710502830c980",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/求职进度面板/make_dashboard.py",
+      "export_sha256": "0fbd67544423cdbabd7d165a89e6c8b87d888a65e886f81e4b735e14fa98f20a",
+      "source_path": "工具/求职进度面板/make_dashboard.py",
+      "source_sha256": "97cdfd79ff68705bc9b6dc08697b857e7a1cb6b80942218071737e05569abfaa",
+      "kind": "synchronized_dashboard",
+      "notes": [
+        "Sync current dashboard behavior; retain generic example text and an empty default company filter."
+      ]
+    },
+    {
+      "path": "工具/求职进度面板/oa_analytics.py",
+      "export_sha256": "dd5cd8439428811bc488077f58fe57984cb92bc7a4fe3737986c99ab0075c26c",
+      "source_path": "工具/求职进度面板/oa_analytics.py",
+      "source_sha256": "45023dbeb060c93f8a1be4e796049cf24cd09f0ffdc60e2cf1e263f39bd8df58",
+      "kind": "synchronized_dashboard",
+      "notes": [
+        "Sync current dashboard behavior; retain generic example text and an empty default company filter."
+      ]
+    },
+    {
+      "path": "工具/求职进度面板/opportunity_updates.py",
+      "export_sha256": "77faff5b97363be31db435ef14bf400410af39a955e7b0bd72979da818854c2e",
+      "source_path": "工具/求职进度面板/opportunity_updates.py",
+      "source_sha256": "77faff5b97363be31db435ef14bf400410af39a955e7b0bd72979da818854c2e",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/求职进度面板/test_application_evidence.py",
+      "kind": "release_asset_or_test",
+      "export_sha256": "0f1843bb860da20fd2894060ffb5b8862bf6024bf864cd30b38ed071344c32ff"
+    },
+    {
+      "path": "工具/求职进度面板/test_candidate_detail_fields.py",
+      "export_sha256": "bc4932b84c296c05f6993d7c2bab5c17ecceb3aa98f9a5839d68f2cf283916e1",
+      "source_path": "工具/求职进度面板/test_candidate_detail_fields.py",
+      "source_sha256": "bc4932b84c296c05f6993d7c2bab5c17ecceb3aa98f9a5839d68f2cf283916e1",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/求职进度面板/test_chart_models.cjs",
+      "export_sha256": "6b11395115948815b46b92613123ecc0f5c683daef4998b051a82d53eccd816c",
+      "source_path": "工具/求职进度面板/test_chart_models.cjs",
+      "source_sha256": "6b11395115948815b46b92613123ecc0f5c683daef4998b051a82d53eccd816c",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/求职进度面板/test_chart_semantics.py",
+      "export_sha256": "1bdb776e7540b3a2c019a0292b4db46cbd5f80479e11a38eef306b59bda76347",
+      "source_path": "工具/求职进度面板/test_chart_semantics.py",
+      "source_sha256": "1bdb776e7540b3a2c019a0292b4db46cbd5f80479e11a38eef306b59bda76347",
+      "kind": "preserved_runtime"
+    },
+    {
+      "path": "工具/求职进度面板/test_discovery_date.py",
+      "export_sha256": "736a0239978f24e79d2c897cfa92823556c1658019ebd78019a29863afe77e11",
+      "source_path": "工具/求职进度面板/test_discovery_date.py",
+      "source_sha256": "736a0239978f24e79d2c897cfa92823556c1658019ebd78019a29863afe77e11",
+      "notes": [
+        "Byte-identical source-only export."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/求职进度面板/test_internship_updates.py",
+      "export_sha256": "6a737ee0e21f0f9bc1411e1b307ea707f8df73b64db9dd9ca580a6b614491689",
+      "source_path": "工具/求职进度面板/test_internship_updates.py",
+      "source_sha256": "6a737ee0e21f0f9bc1411e1b307ea707f8df73b64db9dd9ca580a6b614491689",
+      "notes": [
+        "Byte-identical source-only export."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/求职进度面板/test_internships_data.py",
+      "export_sha256": "8e0146c46ab20f6b63ea7e56e5fdc759d9e14bfbbe2fea89c338ee77088962fa",
+      "source_path": "工具/求职进度面板/test_internships_data.py",
+      "source_sha256": "8e0146c46ab20f6b63ea7e56e5fdc759d9e14bfbbe2fea89c338ee77088962fa",
+      "notes": [
+        "Byte-identical source-only export."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/求职进度面板/test_oa_dashboard.cjs",
+      "kind": "release_asset_or_test",
+      "export_sha256": "5bd3e2a4756158e5738a8d862ae23e7323434421318ce3578ed972c02437f42d"
+    },
+    {
+      "path": "工具/求职进度面板/test_opportunity_updates.py",
+      "export_sha256": "7cda0394ee00a2085d04abefdae57c70c046ee95ff717d78072266417b26387a",
+      "source_path": "工具/求职进度面板/test_opportunity_updates.py",
+      "source_sha256": "7cda0394ee00a2085d04abefdae57c70c046ee95ff717d78072266417b26387a",
+      "notes": [
+        "Byte-identical source-only export."
+      ],
+      "kind": "source_export"
+    },
+    {
+      "path": "工具/求职进度面板/test_round_one_ui.cjs",
+      "export_sha256": "60a191bdcb71c88329c58067c69f18788b23f90f9923949110f357517dcdf974",
+      "source_path": "工具/求职进度面板/test_round_one_ui.cjs",
+      "source_sha256": "60a191bdcb71c88329c58067c69f18788b23f90f9923949110f357517dcdf974",
+      "kind": "preserved_runtime"
+    }
+  ],
+  "validation": {
+    "command": "python3 scripts/check.py",
+    "python_tests": 209,
+    "dashboard_tests": 59,
+    "discovery_tests": 150,
+    "javascript_regression_files": 3,
+    "synthetic_build": "passed",
+    "inline_javascript_syntax": "passed",
+    "dom_checks": "passed",
+    "browser_rendering": false,
+    "live_network_tests": false
+  },
+  "packaging_notes": [
+    "Personal data, generated private HTML and live schedule state remain excluded.",
+    "Version 1 and 2 tags and manifests are unchanged.",
+    "Search workflow bodies remain unchanged for the separate v4 packaging commit.",
+    "The manifest excludes its own hash."
+  ]
+}

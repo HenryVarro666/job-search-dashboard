@@ -3,6 +3,7 @@
 **/*.json
 !source-manifest.json
 !source-manifest-v2.json
+!source-manifest-v3.json
 **/dashboard.html
 **/board.html
 **/__pycache__/

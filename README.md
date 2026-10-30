@@ -4,7 +4,7 @@ A local workspace for job-search actions, opportunities, and application records
 
 **Python standard library · Vanilla JavaScript · Offline HTML · SVG charts**
 
-**v2.0.0** adds the search workflow around the dashboard: portable skills, prompt templates, offline query planners, evidence-ledger regressions, and an optional configured ATS collector. The v2 follow-up adds Handshake discovery and a three-hour public-index search prompt. The existing dashboard views and fictional demo remain available.
+**v3.0.0** syncs the latest dashboard changes: a simplified current-outcome flow, readable table headers and long fields, and explicit handling of historical applications verified by an employer rejection. The portable search skills and prompt templates introduced in v2 remain available.
 
 ![Illustrative demo layout with synthetic data: daily actions, weekly application and referral activity, and a record detail panel.](docs/assets/dashboard-overview.png)
 
@@ -12,7 +12,7 @@ A local workspace for job-search actions, opportunities, and application records
 
 [Try the synthetic demo](#try-the-synthetic-demo) · [What it covers](#what-it-covers) · [How the data works](#how-the-data-works) · [Public-release preparation](docs/PUBLIC_RELEASE.md)
 
-[Search workflow](docs/SEARCH_WORKFLOW.md) · [Candidate profile template](docs/CANDIDATE_PROFILE.md) · [v2 release notes](docs/V2_RELEASE.md)
+[Search workflow](docs/SEARCH_WORKFLOW.md) · [Candidate profile template](docs/CANDIDATE_PROFILE.md) · [v3 release notes](docs/V3_RELEASE.md) · [v2 release notes](docs/V2_RELEASE.md)
 
 ## What it covers
 
@@ -24,7 +24,7 @@ A local workspace for job-search actions, opportunities, and application records
 | **Statistics** | Review activity and current states | Separate application and referral dates, explicit denominators, and detailed application flows |
 | **Internships** | Review a separate candidate pool | Enrollment, return-to-school conditions, timing, and personal decisions |
 
-The dashboard keeps actions close to their evidence: a detail panel beside the list, quick lookup across applications, candidates and internships, and separate progress views for current work, records, and statistics. State bars open matching records; the detailed flow diagram expands on demand. Weekly applications, referral requests, and receipts with unknown submission dates remain separate. The overview above illustrates the layout. See the [implementation plan](docs/superpowers/plans/2026-10-27-dashboard-round-one.md) for its scope.
+The dashboard keeps actions close to their evidence: a detail panel beside the list, quick lookup across applications, candidates and internships, and separate progress views for current work, records, and statistics. State bars open matching records; the current-outcome flow starts expanded, with one confirmed-application source and outcomes ordered from offer to rejection. OA and interview history remain in the assessment view and record timelines. Weekly applications, referral requests, and receipts with unknown submission dates remain separate. The overview above illustrates the layout. See the [implementation plan](docs/superpowers/plans/2026-10-27-dashboard-round-one.md) for the original redesign scope.
 
 ## Try the synthetic demo
 
@@ -126,6 +126,7 @@ examples/                      Blank or fictional local-setup templates
   岗位有效性检查/               Existing availability-check dependency
 source-manifest.json            Source hashes for the v1 extraction
 source-manifest-v2.json         v2 export hashes and portability notes
+source-manifest-v3.json         v3 dashboard synchronization hashes
 ```
 
 The supporting modules preserve the existing import structure. This repository does not contain the private research archive, crawler datasets, wage-reference files, or live application/scheduler state.
@@ -154,6 +155,7 @@ Personal applications, correspondence, resumes, schedules, research notes, and g
 | [`v1.0.0`](https://github.com/HenryVarro666/job-search-dashboard/tree/v1.0.0) | Preserved runtime baseline before the first redesign, with a synthetic demo and limited portability cleanup |
 | `v1.1.0` | Corrected stage inference, separate weekly activity series, progress subviews, record drawer, global lookup, and unified styling |
 | `v2.0.0` | Search skills and prompt templates, offline ATS/LinkedIn planners, evidence regressions, and optional configured company increments |
+| `v3.0.0` | Latest dashboard flow and table fixes, plus employer-rejection evidence without invented application dates |
 
 The v1 tag is retained for comparison. Its chart semantics predate the corrections described in the redesign plan.
 

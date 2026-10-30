@@ -545,7 +545,14 @@ svg text{font-size:12px}
 .oa-app{padding:13px}
 .oa-title{font-size:13px}
 .tbl-wrap{overflow-x:auto}
-th{font-size:12px;top:58px}
+/* .tbl-wrap scrolls, so sticky headers are measured from it, not the page: any top offset pushes the header onto the first row. */
+th{font-size:12px;top:0}
+/* Long emails, file names and IDs may break so the channel, latest and next columns do not widen the table;
+   the minimum widths keep ordinary words whole. */
+#tbl td:nth-child(3),#tbl td.latest,#tbl td:last-child{overflow-wrap:anywhere}
+#tbl td:nth-child(3){min-width:6em}
+#tbl td.latest{min-width:11em}
+#tbl td:last-child{min-width:6.5em}
 .drawer{position:fixed;inset:0 0 0 auto;margin:0;width:min(680px,95vw);height:100dvh;max-height:100dvh;max-width:100vw;border:0;border-left:1px solid var(--border);padding:0;background:var(--surface);color:var(--ink);box-shadow:-16px 0 50px rgba(0,0,0,.15)}
 .drawer[hidden]{display:none}
 .drawer::backdrop{background:rgba(17,26,40,.36)}
@@ -976,102 +983,145 @@ __COMPANY_FILTER_CSS__
 
   // ---------- flow: recorded highest stage x current result, not an assumed funnel ----------
   function flowHistoryLabel(key) {
-    return {application: "申请 / 收件记录", reply: "招聘联系记录", assessment: "OA / 测评记录", interview: "面试记录", offer: "Offer记录", unconfirmed: "阶段待核"}[key] || "阶段待核";
+    return {all: "已确认申请", application: "申请 / 收件记录", reply: "招聘联系记录", assessment: "OA / 测评记录", interview: "面试记录", offer: "Offer记录", unconfirmed: "阶段待核"}[key] || "阶段待核";
   }
   function flowOutcomeLabel(key) {
-    return {waiting: "等待后续", reactivation_pending: "暂停 · 重新激活待确认", contact: "已联系，待下一步", oa_active: "OA待完成 / 待确认", oa_submitted: "OA已提交，待结果", oa_reused: "测评复用，待下一步", interview: "当前面试阶段", oa_expired: "OA已明确过期", rejected: "已拒", closed: "已关闭", withdrawn: "已撤回", archived: "沉默归档", offer: "当前Offer", unconfirmed: "当前状态待核"}[key] || "当前状态待核";
+    return {waiting: "等待后续", progress: "当前推进", paused: "暂停 · 待确认", reactivation_pending: "暂停 · 重新激活待确认", contact: "已联系，待下一步", oa_active: "OA待完成 / 待确认", oa_submitted: "OA已提交，待结果", oa_reused: "测评复用，待下一步", interview: "当前面试阶段", oa_expired: "OA已明确过期", rejected: "已拒", closed: "已关闭", withdrawn: "已撤回", ended: "已关闭 / 撤回", archived: "沉默归档", offer: "当前Offer", unconfirmed: "当前状态待核"}[key] || "当前状态待核";
   }
   function flowColor(key) {
-    return {application: "#8795a6", reply: "#85a7cd", assessment: "#3b82c4", interview: "#5668bd", offer: "#27846b", oa_active: "#397dc0", oa_submitted: "#439d9a", oa_reused: "#7c77b5", oa_expired: "#a48657", contact: "#769ec5", waiting: "#a4adb9", reactivation_pending: "#927454", rejected: "#cc6267", withdrawn: "#a3a0a3", closed: "#92959b", archived: "#898781", unconfirmed: "#a7adb5"}[key] || "#a7adb5";
+    return {all: "#8795a6", application: "#8795a6", reply: "#85a7cd", assessment: "#3b82c4", interview: "#5668bd", offer: "#27846b", progress: "#4c9a5e", paused: "#927454", oa_active: "#397dc0", oa_submitted: "#439d9a", oa_reused: "#7c77b5", oa_expired: "#a48657", contact: "#769ec5", waiting: "#a4adb9", reactivation_pending: "#927454", rejected: "#cc6267", withdrawn: "#a3a0a3", closed: "#92959b", ended: "#92959b", archived: "#898781", unconfirmed: "#a7adb5"}[key] || "#a7adb5";
   }
-  function applicationFlowModel(rows) {
+  // The flow card starts every application from one node and groups current results like the stage cards (the group field);
+  // OA and interview history stay in the OA workspace and the timeline.
+  function flowKeys(a, grouped) {
+    var h = a.history_highest || "application", o = a.flow_outcome || "unconfirmed";
+    if (!grouped) return {h: h, o: o};
+    return {h: "all",
+      o: o === "offer" ? "offer" : {waiting: "waiting", progress: "progress", paused: "paused", rejected: "rejected", closed: "ended", archived: "archived"}[a.group] || "unconfirmed"};
+  }
+  function applicationFlowModel(rows, grouped) {
     var all = oaUniqueRows(rows || oaContextRows()), list = all.filter(function (a) { return a.application_confirmed; });
     var hs = {}, os = {}, edges = {};
     function edge(source, target) {var k = source + ":" + target; if (!edges[k]) edges[k] = {source: source, target: target, value: 0}; edges[k].value++;}
     list.forEach(function (a) {
-      var h = a.history_highest || "application", o = a.flow_outcome || "unconfirmed";
+      var keys = flowKeys(a, grouped), h = keys.h, o = keys.o;
       if (!hs[h]) hs[h] = {key: h, value: 0}; hs[h].value++;
       if (!os[o]) os[o] = {key: o, value: 0}; os[o].value++;
       edge("applications", "history:" + h); edge("history:" + h, "outcome:" + o);
     });
-    var ho = ["application", "reply", "assessment", "interview", "offer", "unconfirmed"];
-    var oo = ["waiting", "reactivation_pending", "contact", "oa_active", "oa_submitted", "oa_reused", "interview", "offer", "oa_expired", "rejected", "closed", "withdrawn", "archived", "unconfirmed"];
-    return {total: list.length, record_count: all.length, unconfirmed_count: all.length - list.length,
+    var ho = ["all", "application", "reply", "assessment", "interview", "offer", "unconfirmed"];
+    // Current results run from best to worst, so the chart reads top to bottom from Offer to rejection.
+    var oo = ["offer", "progress", "interview", "oa_submitted", "oa_reused", "oa_active", "contact", "waiting", "paused", "reactivation_pending", "archived", "oa_expired", "ended", "closed", "withdrawn", "rejected", "unconfirmed"];
+    return {total: list.length, record_count: all.length, unconfirmed_count: all.length - list.length, grouped: !!grouped,
       histories: Object.keys(hs).map(function (k) { return hs[k]; }).sort(function (a, b) {return ho.indexOf(a.key) - ho.indexOf(b.key);}),
       outcomes: Object.keys(os).map(function (k) { return os[k]; }).sort(function (a, b) {return oo.indexOf(a.key) - oo.indexOf(b.key);}),
       links: Object.keys(edges).map(function (k) {return edges[k];})};
   }
   function applicationFlowSvg(model) {
-    var plot = Math.max(390, Math.max(model.histories.length, model.outcomes.length) * 52), height = plot + 110, gap = 30;
-    var scale = model.total ? (plot - gap * (Math.max(model.histories.length, model.outcomes.length, 1) - 1)) / model.total : 0;
+    // Thin gaps keep the bars proportional; two small neighbours get only the extra room their labels need.
+    var gap = 10, top = 70, bottom = top, most = Math.max(model.histories.length, model.outcomes.length, 1);
+    var scale = model.total ? (420 - gap * (most - 1)) / model.total : 0;
+    function labelSize(value) { return value * scale >= 32 ? 36 : 18; }
+    // Every application starts in the left column, so the total goes in the header instead of a column of its own.
+    var nodes = {}, links = model.links.filter(function (l) { return l.source !== "applications"; });
+    var columns = [{x: 230, prefix: "history:", rows: model.histories, left: true}, {x: 790, prefix: "outcome:", rows: model.outcomes}];
+    columns.forEach(function (c) {
+      var y = top;
+      c.rows.forEach(function (r, i) {
+        var prev = c.rows[i - 1];
+        if (prev) y += Math.max(gap, (labelSize(prev.value) + labelSize(r.value) - (prev.value + r.value) * scale) / 2);
+        nodes[c.prefix + r.key] = {x: c.x, y: y, value: r.value, color: flowColor(r.key), left: c.left};
+        bottom = Math.max(bottom, y + r.value * scale, y + (r.value * scale + labelSize(r.value)) / 2);
+        y += r.value * scale;
+      });
+    });
+    var height = Math.ceil(bottom) + 55;
     var svg = sv("svg", {xmlns: SVGNS, viewBox: "0 0 1080 " + height, role: "img", "aria-labelledby": "flow-svg-title flow-svg-desc", id: "application-flow-svg"});
-    var title = sv("title", {id: "flow-svg-title"}); title.textContent = "已确认申请、已记录最高阶段与当前结果的流向"; svg.appendChild(title);
-    var desc = sv("desc", {id: "flow-svg-desc"}); desc.textContent = "仅统计有投递、收件或明确申请存在证据的申请，每项一次。没有OA或面试记录时不补造；下方有等价数据表。"; svg.appendChild(desc);
+    var title = sv("title", {id: "flow-svg-title"}); title.textContent = model.total + " 条已确认申请：已记录最高阶段与当前结果的流向"; svg.appendChild(title);
+    var desc = sv("desc", {id: "flow-svg-desc"}); desc.textContent = "仅统计有投递、收件或明确申请存在证据的申请，每项一次；当前结果从好到坏排列，下方有等价数据表。"; svg.appendChild(desc);
     svg.appendChild(sv("rect", {width: 1080, height: height, fill: "var(--surface)"}));
-    function text(x, y, str, size, weight) {var n = sv("text", {x: x, y: y, style: "fill:var(--ink2);font-size:" + (size || 13) + "px;font-weight:" + (weight || 400), "font-family": "system-ui, sans-serif"}); n.textContent = str; return n;}
-    svg.appendChild(text(28, 30, "已确认申请", 14, 650)); svg.appendChild(text(385, 30, "已记录的最高阶段", 14, 650)); svg.appendChild(text(765, 30, "当前结果 / 待办", 14, 650));
-    var nodes = {applications: {x: 28, y: 70 + (plot - model.total * scale) / 2, value: model.total, color: "#8795a6"}}, offsets = {};
-    function column(rows, prefix, x) {
-      var full = model.total * scale + Math.max(0, rows.length - 1) * gap, y = 70 + (plot - full) / 2;
-      rows.forEach(function (r) {nodes[prefix + r.key] = {x: x, y: y, value: r.value, color: flowColor(r.key)}; y += r.value * scale + gap;});
+    // The surface-coloured halo keeps labels readable where they sit on top of a band.
+    function text(x, y, str, size, weight, anchor) {var n = sv("text", {x: x, y: y, "text-anchor": anchor || "start", style: "fill:var(--ink2);font-size:" + (size || 13) + "px;font-weight:" + (weight || 400) + ";paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round", "font-family": "system-ui, sans-serif"}); n.textContent = str; return n;}
+    svg.appendChild(text(28, 30, "共 " + model.total + " 条已确认申请", 14, 650)); svg.appendChild(text(790, 30, "当前结果（从好到坏）", 14, 650));
+    // Stack the bands at each node in the vertical order of the nodes they connect to, so bands do not cross needlessly.
+    var ends = {}, outgoing = {}, incoming = {};
+    links.forEach(function (link) {
+      (outgoing[link.source] = outgoing[link.source] || []).push(link);
+      (incoming[link.target] = incoming[link.target] || []).push(link);
+    });
+    function stack(groups, end, other) {
+      Object.keys(groups).forEach(function (key) {
+        var y = nodes[key].y;
+        groups[key].sort(function (a, b) { return nodes[a[other]].y - nodes[b[other]].y; }).forEach(function (link) {
+          var k = link.source + ">" + link.target; ends[k] = ends[k] || {}; ends[k][end] = y; y += link.value * scale;
+        });
+      });
     }
-    column(model.histories, "history:", 385); column(model.outcomes, "outcome:", 765);
-    model.links.forEach(function (link) {
-      var s = nodes[link.source], t = nodes[link.target], side = link.source + ">out", incoming = link.target + ">in";
-      var sy = s.y + (offsets[side] || 0), ty = t.y + (offsets[incoming] || 0), h = link.value * scale, sx = s.x + 9, tx = t.x, mid = (sx + tx) / 2;
-      offsets[side] = (offsets[side] || 0) + h; offsets[incoming] = (offsets[incoming] || 0) + h;
-      var d = "M " + sx + " " + sy + " C " + mid + " " + sy + " " + mid + " " + ty + " " + tx + " " + ty + " L " + tx + " " + (ty + h) + " C " + mid + " " + (ty + h) + " " + mid + " " + (sy + h) + " " + sx + " " + (sy + h) + " Z";
+    stack(outgoing, "sy", "target"); stack(incoming, "ty", "source");
+    // Wide bands first, so thin ones stay on top and remain clickable.
+    links.sort(function (a, b) { return b.value - a.value; }).forEach(function (link) {
+      var s = nodes[link.source], t = nodes[link.target], e = ends[link.source + ">" + link.target];
+      var sy = e.sy, ty = e.ty, h = link.value * scale, sx = s.x + 9, tx = t.x, mid = (sx + tx) / 2;
+      var d ="M " + sx + " " + sy + " C " + mid + " " + sy + " " + mid + " " + ty + " " + tx + " " + ty + " L " + tx + " " + (ty + h) + " C " + mid + " " + (ty + h) + " " + mid + " " + (sy + h) + " " + sx + " " + (sy + h) + " Z";
       var path = sv("path", {d: d, fill: t.color, "fill-opacity": 0.25, "data-flow-count": link.value, tabindex: "0", role: "button", "aria-label": link.value + " 条申请，打开对应记录"});
       function openLink() {
         var rows = oaContextRows().filter(function (a) {
-          if (!a.application_confirmed) return false;
-          if (link.source.indexOf("history:") === 0 && a.history_highest !== link.source.slice(8)) return false;
-          return link.target.indexOf("history:") === 0 ? a.history_highest === link.target.slice(8) : a.flow_outcome === link.target.slice(8);
+          var keys = flowKeys(a, model.grouped);
+          return a.application_confirmed && keys.h === link.source.slice(8) && keys.o === link.target.slice(8);
         });
         openRecordList("申请去向 · " + link.value + " 条", rows);
       }
       path.addEventListener("click", openLink);
       path.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLink(); } });
-      var tooltip = sv("title"); tooltip.textContent = (link.source === "applications" ? "已确认申请" : flowHistoryLabel(link.source.slice(8))) + " → " + (link.target.indexOf("history:") === 0 ? flowHistoryLabel(link.target.slice(8)) : flowOutcomeLabel(link.target.slice(8))) + "：" + link.value + " 条申请"; path.appendChild(tooltip); svg.appendChild(path);
+      var tooltip = sv("title"); tooltip.textContent = flowHistoryLabel(link.source.slice(8)) + " → " + flowOutcomeLabel(link.target.slice(8)) + "：" + link.value + " 条申请"; path.appendChild(tooltip); svg.appendChild(path);
     });
     Object.keys(nodes).forEach(function (key) {
       var n = nodes[key]; svg.appendChild(sv("rect", {x: n.x, y: n.y, width: 9, height: Math.max(n.value * scale, 1), rx: 1, fill: n.color}));
-      var label = key === "applications" ? "已确认申请" : key.indexOf("history:") === 0 ? flowHistoryLabel(key.slice(8)) : flowOutcomeLabel(key.slice(8));
-      var y = n.y + n.value * scale / 2;
-      svg.appendChild(text(n.x + 17, y - 2, label, 13, 500));
-      svg.appendChild(text(n.x + 17, y + 15, String(n.value) + " · " + (100 * n.value / Math.max(1, model.total)).toFixed(1) + "%", 12, 650));
+      // Left-column labels sit outside the bars, to the left, so they never cover a band.
+      var label = n.left ? flowHistoryLabel(key.slice(8)) : flowOutcomeLabel(key.slice(8)), lx = n.left ? n.x - 8 : n.x + 17, anchor = n.left ? "end" : "start";
+      var y = n.y + n.value * scale / 2, count = String(n.value) + " · " + (100 * n.value / Math.max(1, model.total)).toFixed(1) + "%";
+      if (labelSize(n.value) > 18) {
+        svg.appendChild(text(lx, y - 2, label, 13, 500, anchor));
+        svg.appendChild(text(lx, y + 15, count, 12, 650, anchor));
+      } else {
+        // Small bars get a single-line label so neighbouring labels fit without spreading the bars apart.
+        var line = text(lx, y + 5, label, 13, 500, anchor), num = sv("tspan", {dx: 8, style: "font-size:12px;font-weight:650"});
+        num.textContent = count; line.appendChild(num); svg.appendChild(line);
+      }
     });
-    svg.appendChild(text(28, height - 15, "历史最高仅指已记录阶段；右侧为当前状态。缺失经历不补造。", 12));
+    svg.appendChild(text(28, height - 15, "右侧分组与阶段卡片一致；OA、面试等历史记录见「OA / 测评」和岗位时间线。", 12));
     return svg;
   }
   function renderApplicationFlow() {
     var box = document.getElementById("application-flow");
     if (!box) return;
-    var m = applicationFlowModel(); box.textContent = "";
-    box.appendChild(el("div", {class: "oa-head"}, [el("div", {}, [el("h2", {text: "申请去向"}), el("p", {class: "oa-note", text: "先看当前结果，点条形查看对应岗位；阶段与结果的关联在下方展开。"})]),
+    var m = applicationFlowModel(null, true); box.textContent = "";
+    box.appendChild(el("div", {class: "oa-head"}, [el("div", {}, [el("h2", {text: "申请去向"}), el("p", {class: "oa-note", text: "先看当前结果，点条形查看对应岗位；分组与上方阶段卡片一致，OA 细分状态见「OA / 测评」。"})]),
       el("button", {class: "btn", type: "button", disabled: !m.total, onclick: exportApplicationFlow, text: "导出 SVG"})]));
     box.appendChild(el("p", {class: "chart-scope", text: "图中仅含 " + m.total + " 条有申请存在证据的申请；当前范围共 " + m.record_count + " 条记录，另 " + m.unconfirmed_count + " 条投递证据未确认，不混入申请分母。公司、搜索、医疗 AI 与最新动态日期生效，阶段隐藏不影响此图。"}));
     if (!m.total) { box.appendChild(el("div", {class: "t-empty", text: "当前范围没有已确认申请，未确认记录仍保留在原列表。"})); return; }
     var max = Math.max.apply(null, m.outcomes.map(function (row) { return row.value; }).concat([1]));
     box.appendChild(el("div", {class: "state-bars"}, m.outcomes.slice().sort(function (a, b) { return b.value - a.value; }).map(function (row) {
       var fill = el("i", {class: "state-fill"}); fill.style.width = (row.value / max * 100) + "%"; fill.style.background = flowColor(row.key);
-      return el("button", {type: "button", class: "state-bar", onclick: function () { openRecordList(flowOutcomeLabel(row.key), oaContextRows().filter(function (a) { return a.application_confirmed && a.flow_outcome === row.key; })); }}, [
+      return el("button", {type: "button", class: "state-bar", onclick: function () { openRecordList(flowOutcomeLabel(row.key), oaContextRows().filter(function (a) { return a.application_confirmed && flowKeys(a, true).o === row.key; })); }}, [
         el("span", {text: flowOutcomeLabel(row.key)}), el("span", {class: "state-track", "aria-hidden": "true"}, [fill]),
         el("span", {class: "state-value", text: row.value + " · " + (row.value / m.total * 100).toFixed(1) + "%"})]);
     })));
-    var detail = el("details", {class: "flow-expanded"}, [el("summary", {text: "展开：最高记录阶段与当前结果的关联"}),
-      el("p", {class: "oa-note", text: "已记录的最高阶段 × 当前结果；不是依次转化漏斗，不假定每条申请都经历 OA 和面试。"}),
+    var detail = el("details", {class: "flow-expanded", open: true}, [el("summary", {text: "已确认申请的当前去向"}),
+      el("p", {class: "oa-note", text: "每条已确认申请计一次，右侧从好到坏排列；不含 OA、面试等历史阶段。"}),
       el("div", {class: "flow-figure"}, [applicationFlowSvg(m)])]);
     var header = el("tr", {}, [el("th", {text: "从"}), el("th", {text: "到"}), el("th", {text: "申请数 / 图中分母"})]);
     var table = el("table", {class: "flow-table"}, [el("thead", {}, [header])]);
     var body = el("tbody");
-    m.links.forEach(function (e) {
-      var from = e.source === "applications" ? "已确认申请" : flowHistoryLabel(e.source.slice(8));
-      var to = e.target.indexOf("history:") === 0 ? "最高阶段：" + flowHistoryLabel(e.target.slice(8)) : flowOutcomeLabel(e.target.slice(8));
+    // The single left node already holds every application, so its entry link adds nothing to the table.
+    var order = m.outcomes.map(function (r) { return "outcome:" + r.key; });
+    m.links.filter(function (e) { return e.source !== "applications"; }).sort(function (a, b) { return order.indexOf(a.target) - order.indexOf(b.target); }).forEach(function (e) {
+      var from = flowHistoryLabel(e.source.slice(8));
+      var to = flowOutcomeLabel(e.target.slice(8));
       body.appendChild(el("tr", {}, [el("td", {text: from}), el("td", {text: to}), el("td", {text: e.value + " / " + m.total})]));
     });
     table.appendChild(body);
-    detail.appendChild(el("details", {class: "flow-data"}, [el("summary", {text: "查看流量数据表与统计口径"}), el("p", {class: "oa-note", text: "每项申请在左右两段各计一次，两段流量分别守恒。百分比以图内已确认申请为分母，不是阶段通过率；只有明确事件的最高记录，不代表阶段发生顺序。"}), table]));
+    detail.appendChild(el("details", {class: "flow-data"}, [el("summary", {text: "查看流量数据表与统计口径"}), el("p", {class: "oa-note", text: "每项申请只计一次，流量守恒。百分比以图内已确认申请为分母，不是阶段通过率。"}), table]));
     box.appendChild(detail);
   }
   function exportApplicationFlow() {

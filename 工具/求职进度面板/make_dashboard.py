@@ -197,6 +197,9 @@ def submission_evidence(app, events):
         return {"label": "已收件", "applied_date": None, "receipt_date": receipt_date,
                 "basis": "系统收件记录；实际提交日期未记录"}
     if verified_application_existence(app):
+        if app.get("existence_evidence_kind") == "employer_rejection_email":
+            return {"label": "历史申请已核实；原提交日期未知", "applied_date": None, "receipt_date": None,
+                    "basis": "招聘拒信证明申请存在；实际提交日期和收件日期均未知"}
         return {"label": "历史申请已核实；原提交日期未知", "applied_date": None, "receipt_date": None,
                 "basis": "撤回确认或额度通知证明申请曾存在；通知日不是提交日或收件日"}
     if app.get("stage") == "applied":

@@ -156,7 +156,7 @@ def verified_application_existence(app):
     """Explicit employer evidence confirms existence, never the submission date."""
     return (app.get("application_existence_verified") is True
             and app.get("existence_evidence_kind") in
-            ("withdrawal_confirmation", "application_limit_notice"))
+            ("withdrawal_confirmation", "application_limit_notice", "employer_rejection_email"))
 
 
 def derive_analytics(app, events, stage):
