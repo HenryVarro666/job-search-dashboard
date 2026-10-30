@@ -18,7 +18,7 @@
     },
     {
       "path": "README.md",
-      "export_sha256": "2149fb9b1e9c314b9ce47a8c63d040729a448cbb47091fbea59c6f9dcff00a5e",
+      "export_sha256": "222680d82089b6068922fec75b1209a344be26bc30d27b5b5234ac292d50cd7f",
       "kind": "release_asset_or_template"
     },
     {
@@ -33,7 +33,7 @@
     },
     {
       "path": "docs/PUBLIC_RELEASE.md",
-      "export_sha256": "3cb0381f78cb00d5980be864b59903b433585875b6e674fd856c1234d52ce551",
+      "export_sha256": "5d669e9f3b2ea020eba2caf209366803a44b420c8eecc3f23be4792157b0c646",
       "kind": "release_asset_or_template"
     },
     {
@@ -43,7 +43,7 @@
     },
     {
       "path": "docs/V2_RELEASE.md",
-      "export_sha256": "0b0d13a13001b559c6df7a710c7f8c0ea9015ae00fe10cf9c00ca0bf1580aa71",
+      "export_sha256": "b132b66383e5db182ef13532be64d0156bc820e8d7f8be290e7d0af13afa2472",
       "kind": "release_asset_or_template"
     },
     {
@@ -118,7 +118,7 @@
     },
     {
       "path": "scripts/demo.py",
-      "export_sha256": "379946a75691f3b2264193c38cb7d84761c97dd39bbc36f00d532ee69000170b",
+      "export_sha256": "849f294f5a566ac93e29b982fcbd858272de26abf1f5882e999188e563e7861b",
       "kind": "release_asset_or_template"
     },
     {

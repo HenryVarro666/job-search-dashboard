@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="420" viewBox="0 0 1600 420" role="img" aria-labelledby="title desc">
+  <title id="title">Job Search Dashboard</title>
+  <desc id="desc">An offline workspace for opportunities, application records and the next useful action.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0b1832"/><stop offset="1" stop-color="#172e51"/></linearGradient>
+    <linearGradient id="blue"><stop stop-color="#75a9ff"/><stop offset="1" stop-color="#a7d5ff"/></linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#fff" stroke-opacity=".035"/></pattern>
+  </defs>
+  <rect width="1600" height="420" rx="24" fill="url(#bg)"/>
+  <rect width="1600" height="420" rx="24" fill="url(#grid)"/>
+  <circle cx="1450" cy="40" r="275" fill="#3479ef" opacity=".10"/>
+  <circle cx="1200" cy="400" r="210" fill="#59c9b9" opacity=".055"/>
+  <g font-family="Arial,Helvetica,sans-serif">
+    <text x="78" y="78" fill="#9ab7e7" font-size="16" font-weight="700" letter-spacing="4">A LOCAL CAREER WORKSPACE</text>
+    <text x="72" y="170" fill="#fff" font-size="68" font-weight="700" letter-spacing="-2">Job Search Dashboard</text>
+    <text x="77" y="226" fill="#c0cee4" font-size="27">Your next step, with the record behind it.</text>
+    <g transform="translate(77 285)" font-size="16" font-weight="600">
+      <rect width="155" height="43" rx="12" fill="#283d61"/><text x="23" y="28" fill="#d5e5ff">Offline HTML</text>
+      <rect x="168" width="166" height="43" rx="12" fill="#283d61"/><text x="190" y="28" fill="#d5e5ff">Local JSON data</text>
+      <rect x="347" width="152" height="43" rx="12" fill="#283d61"/><text x="370" y="28" fill="#d5e5ff">MIT licensed</text>
+    </g>
+    <g transform="translate(1120 96)">
+      <rect width="360" height="234" rx="20" fill="#ffffff" fill-opacity=".055" stroke="#a1c2ff" stroke-opacity=".18"/>
+      <circle cx="27" cy="27" r="5" fill="#fd9c9c"/><circle cx="45" cy="27" r="5" fill="#ffd89c"/><circle cx="63" cy="27" r="5" fill="#90d8c7"/>
+      <rect x="26" y="61" width="130" height="12" rx="6" fill="#a5c6ff"/>
+      <rect x="26" y="88" width="242" height="7" rx="3.5" fill="#738fb5" opacity=".5"/>
+      <g transform="translate(26 125)"><rect width="8" height="70" rx="4" fill="#91b5f0"/>
+        <path d="M8 0C93 0 130 0 219 0V19C130 19 93 20 8 20Z" fill="#78c5ac" opacity=".6"/>
+        <path d="M8 22C93 22 130 28 219 28V47C130 47 93 42 8 42Z" fill="#91b5f0" opacity=".55"/>
+        <path d="M8 44C93 44 130 56 219 56V70C130 70 93 70 8 70Z" fill="#e19ba4" opacity=".5"/>
+        <rect x="219" width="8" height="19" rx="3" fill="#78c5ac"/><rect x="219" y="28" width="8" height="19" rx="3" fill="#91b5f0"/><rect x="219" y="56" width="8" height="14" rx="3" fill="#e19ba4"/>
+        <rect x="242" y="5" width="46" height="7" rx="3" fill="#7995ba"/><rect x="242" y="34" width="58" height="7" rx="3" fill="#7995ba"/><rect x="242" y="60" width="37" height="7" rx="3" fill="#7995ba"/>
+      </g>
+    </g>
+  </g>
+</svg>

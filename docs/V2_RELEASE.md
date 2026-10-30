@@ -1,5 +1,7 @@
 # v2.0.0 release notes
 
+> Historical source snapshot. The repository now uses the [MIT license](../LICENSE); see the [public release record](PUBLIC_RELEASE.md) for the current publication status.
+
 Released as a source snapshot on October 28, 2026. The repository remains private; this release does not change visibility or select an open-source license.
 
 ## Search workflow

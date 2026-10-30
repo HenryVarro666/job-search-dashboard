@@ -2,7 +2,7 @@
   "schema_version": 4,
   "version": "v4.0.0",
   "captured_date": "2026-10-30",
-  "base_commit": "b37297eee6fdaac6da6733cc588878e3fa85b192",
+  "base_commit": "5019c9840337e9ef7aa9888228abdb32e4628b84",
   "dashboard_base_tag": "v3.0.0",
   "baseline_manifest": "source-manifest-v3.json",
   "scope": "Separate search prompt and skill package catalogs; inherits the v3 dashboard unchanged.",
@@ -34,9 +34,19 @@
       "kind": "release_asset_or_template"
     },
     {
+      "path": "LICENSE",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "75eecd05b3dd4aeaff811ccfa0cbbff938a9f97348714be4959e7b921ee2285a"
+    },
+    {
       "path": "README.md",
-      "export_sha256": "2149fb9b1e9c314b9ce47a8c63d040729a448cbb47091fbea59c6f9dcff00a5e",
+      "export_sha256": "222680d82089b6068922fec75b1209a344be26bc30d27b5b5234ac292d50cd7f",
       "kind": "release_asset_or_template"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "0687e9f2409bb86d82938ad115ba67d13737dcdbd45596d1f9b8c0973e270a86"
     },
     {
       "path": "docs/CANDIDATE_PROFILE.md",
@@ -50,8 +60,13 @@
     },
     {
       "path": "docs/PUBLIC_RELEASE.md",
-      "export_sha256": "3cb0381f78cb00d5980be864b59903b433585875b6e674fd856c1234d52ce551",
+      "export_sha256": "5d669e9f3b2ea020eba2caf209366803a44b420c8eecc3f23be4792157b0c646",
       "kind": "release_asset_or_template"
+    },
+    {
+      "path": "docs/SCREENSHOTS.md",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "0db1b47f37a1587d378e0ee2b68db3765cb6244f8d8cbd88382bb445380e298c"
     },
     {
       "path": "docs/SEARCH_WORKFLOW.md",
@@ -60,18 +75,18 @@
     },
     {
       "path": "docs/V2_RELEASE.md",
-      "export_sha256": "0b0d13a13001b559c6df7a710c7f8c0ea9015ae00fe10cf9c00ca0bf1580aa71",
+      "export_sha256": "b132b66383e5db182ef13532be64d0156bc820e8d7f8be290e7d0af13afa2472",
       "kind": "release_asset_or_template"
     },
     {
       "path": "docs/V3_RELEASE.md",
       "kind": "release_asset_or_test",
-      "export_sha256": "0a4e8c840f1645c9f99b58823ec0b407d0afc9e5311c57e2741880c4eb4ec4c2"
+      "export_sha256": "fe9b3055c29bce20f8423f5eb6d88bc19274ffa0a81f972a7013011052fb8b04"
     },
     {
       "path": "docs/V4_RELEASE.md",
       "kind": "release_asset_or_template",
-      "export_sha256": "cd84deeea578e3ac69bd475456e0db222541b6cfbce2b70bf25a27d5cff3f02c"
+      "export_sha256": "54ec85ce0fe85f7d6f540d2e29070e02c2f97dae5e14e1be664af6fd2d200886"
     },
     {
       "path": "docs/assets/dashboard-overview.png",
@@ -82,6 +97,131 @@
       "path": "docs/assets/dashboard-overview.svg",
       "export_sha256": "58461bc01164ab14f68936e5bd8b86215fbd8f25b5e6832e651b7c5451748cfd",
       "kind": "release_asset_or_template"
+    },
+    {
+      "path": "docs/assets/readme-banner.svg",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "460a048508ca1fb164012f59a07ac455c70e728d041dbe4ce116d6e69c1d8e7d"
+    },
+    {
+      "path": "docs/assets/screenshots/01-today.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "55737e294ba7fda7d271da4e710f6d0f3ff96267c9e9dd32146602ed6fe18843"
+    },
+    {
+      "path": "docs/assets/screenshots/02-discovered.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "216fd79be658036ff3cccf6fe4f1f776609ecc061ba35382060e7678d6474d56"
+    },
+    {
+      "path": "docs/assets/screenshots/03-opportunities.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "0c1ab5a7dcc6fb5cb20ff12737b88bf7d224ab1c0dec10d8ce41ead83ce7323f"
+    },
+    {
+      "path": "docs/assets/screenshots/04-internships.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "d58772598fa68000bc17b9392810417edfcceb36b94e22f6d039dba58439f73f"
+    },
+    {
+      "path": "docs/assets/screenshots/05-progress-current.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "a3db34c029be120af57ebb0d7083172ebbc7b59c8fe8eea82329a1112a71f6e1"
+    },
+    {
+      "path": "docs/assets/screenshots/06-progress-records.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "a35122f10a2c292331ecc3f63a8e3a6bbf761617c0e28a1df014a64b84e02cd7"
+    },
+    {
+      "path": "docs/assets/screenshots/07-progress-statistics.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "ed378adc3a324b77a6ff5e0f8623e18d7fc17aeea5c06d62e6706f2905100577"
+    },
+    {
+      "path": "docs/assets/screenshots/08-application-flow.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "1644ba61ae082a09ec8c1fbb9faf52e4a9d1152c563d57d3270f6375a9e2ccbc"
+    },
+    {
+      "path": "docs/assets/screenshots/09-detail-drawer.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "78afdd5acbfac5f10da05d2fd86bcedac52249f85696c5b740cd7ab938306be1"
+    },
+    {
+      "path": "docs/assets/screenshots/10-dark-mode.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "858137bde3fe155f9ca081704098a4e0db1d960972d076dcce28c12c61342a13"
+    },
+    {
+      "path": "docs/assets/screenshots/11-oa-workspace.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "d421640504eaa2f120eb94bf19f53cb5c1e5b9552e805b395f8caee912cf0b56"
+    },
+    {
+      "path": "docs/assets/screenshots/12-mobile-today.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "9b1317e8a76999c8bf6c66c120111e93a3445bde592f66338442d0cba3db4dfa"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/01-today.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "2980546e37ec4dcb220dfcbd1d6f15c90804ecb408e61a2a26c9dc9167660b9e"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/02-discovered.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "ed785d0ac511f6f51b4acf7b40c3146a9c39175c927a96a7b0707e62f8d8de64"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/03-opportunities.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "7f127a36816a3f9f3b3c87c4da2144b800099faa7faed6020304c89bd80c1c9d"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/04-internships.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "56c00504d2fb76c53c8840c08f09e282f648045b2a27ee75e60d4b47de91ff32"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/05-progress-current.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "150aeb2229b63960065b4f844e17911760ae1da83a33f9db5489d73a048a0d03"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/06-progress-records.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "3894d12556142ad08329332d7764ff024d095c10ab58c9b563d4155089b28b8d"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/07-progress-statistics.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "c918adfd7e09a47b862a37c8f4776240c732e5858f3fc55f2e32bd3bfcb8cadc"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/08-application-flow.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "1644ba61ae082a09ec8c1fbb9faf52e4a9d1152c563d57d3270f6375a9e2ccbc"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/09-detail-drawer.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "78afdd5acbfac5f10da05d2fd86bcedac52249f85696c5b740cd7ab938306be1"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/10-dark-mode.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "f861ded07b06117d5c65f3a3d1df0d97177fd75e2f38c72b16940992bd4e9d4f"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/11-oa-workspace.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "d421640504eaa2f120eb94bf19f53cb5c1e5b9552e805b395f8caee912cf0b56"
+    },
+    {
+      "path": "docs/assets/screenshots/previews/12-mobile-today.png",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "f6987fbe7259f28669d62246116ed769327c7b45bed6be0ce3ace39a8a77c695"
     },
     {
       "path": "docs/superpowers/plans/2026-10-27-dashboard-round-one.md",
@@ -144,13 +284,18 @@
       "kind": "release_asset_or_template"
     },
     {
+      "path": "scripts/capture_screenshots.cjs",
+      "kind": "public_documentation_or_synthetic_asset",
+      "export_sha256": "f3c8660aabbb4f8e77b22bc88b76b3525ad82cb890f0d85c378898d601f5de28"
+    },
+    {
       "path": "scripts/check.py",
       "export_sha256": "73363144f117867d04245313a6511cda990a9116d54d3f4f761b35b63834accb",
       "kind": "release_asset_or_template"
     },
     {
       "path": "scripts/demo.py",
-      "export_sha256": "379946a75691f3b2264193c38cb7d84761c97dd39bbc36f00d532ee69000170b",
+      "export_sha256": "849f294f5a566ac93e29b982fcbd858272de26abf1f5882e999188e563e7861b",
       "kind": "release_asset_or_template"
     },
     {
@@ -211,12 +356,12 @@
     {
       "path": "source-manifest-v2.json",
       "kind": "release_asset_or_test",
-      "export_sha256": "1b13cc58fb3fc28dc96e4ef8eee12e5d87633b3c7dc63299a9e6c3ca17c36eff"
+      "export_sha256": "2d12318f320da331a9a261e96e634605a92f8dc8288c7672f31b4aa3bc2ef0d0"
     },
     {
       "path": "source-manifest-v3.json",
       "kind": "release_asset_or_template",
-      "export_sha256": "5d05931265b72b85dcdaf250ca82b66cde065dc93ba25d27e37ddb7f01dbc35a"
+      "export_sha256": "8762401e7e3517c254f88d79f021050347786b15eb55ee2e4eb4d71631ed90c1"
     },
     {
       "path": "source-manifest.json",
@@ -685,15 +830,20 @@
     "inline_javascript_syntax": "passed",
     "dom_checks": "passed",
     "package_hashes": "passed",
-    "documentation_relative_links": 59,
-    "browser_rendering": false,
-    "live_network_tests": false
+    "documentation_relative_links": 107,
+    "browser_rendering": true,
+    "live_network_tests": false,
+    "screenshot_views": 12,
+    "screenshot_previews": 12,
+    "screenshot_external_requests": 0
   },
   "packaging_notes": [
     "The five prompt bodies and four skills were already present in v2 and its Handshake follow-up.",
     "No new portable source rules were found during the current source review.",
     "Catalogs document selection, private inputs, installation and scheduler boundaries.",
     "Personal profiles, applications, correspondence, generated personal HTML, account bindings and live schedule state are excluded.",
-    "Earlier tags and manifests remain unchanged; this manifest excludes its own hash."
-  ]
+    "Earlier tags and manifests remain unchanged; this manifest excludes its own hash.",
+    "Public presentation adds MIT licensing, English and Chinese documentation, and twelve real Chromium captures from fictional fixtures. Personal runtime inputs remain excluded."
+  ],
+  "revision": "public-readme-and-synthetic-screenshots"
 }

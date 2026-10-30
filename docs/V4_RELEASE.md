@@ -1,5 +1,7 @@
 # v4.0.0 release notes
 
+> Historical source snapshot. The repository now uses the [MIT license](../LICENSE); see the [public release record](PUBLIC_RELEASE.md) for the current publication status.
+
 Search workflow package snapshot dated October 30, 2026. The repository remains private.
 
 The v4 package gives the search prompts and skills their own catalogs after the v3 dashboard update. The five prompt bodies and four skills were already included on the v2 source line, including its Handshake follow-up. This release keeps those bodies and adds clearer entry points for choosing, configuring, and installing them.

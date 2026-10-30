@@ -1,34 +1,27 @@
-# Public-release preparation
+# Public release record
 
-This document prepares a future release. It does not authorize changing repository visibility. The repository remains private until its owner approves that change.
+Publication preparation dated October 30, 2026. The owner explicitly authorized public visibility and selected the MIT license for this project.
 
-## Content review
+## Published scope
 
-- [ ] Inspect every tracked file and the full Git history for private application records, correspondence, resume content, personal paths, account identifiers, schedules, and credentials.
-- [x] Confirm that only fictional data appears in demos, tests, documentation, and images.
-- [ ] Keep real JSON inputs, source documents, generated private HTML, and local reference datasets out of the repository. Ignoring a file does not remove it from Git history.
-- [ ] Review inherited source comments and region-specific defaults. Explain configurable defaults without presenting them as universal rules.
-- [ ] Check the rights and provenance of all included code and artwork before choosing a license.
+The repository contains the offline dashboard runtime, its development checks, optional configured discovery tools, five search prompts and four portable skills. A fictional demo and reproducible browser screenshots illustrate the interface. The [English README](../README.md) and [Chinese guide](../README.zh-CN.md) describe the actual scope and setup.
 
-## Reproducibility and presentation
+Personal application ledgers, correspondence, resumes, research notes, local references, credentials, account bindings, active schedules and generated personal HTML are excluded. Blank setup examples and fictional fixtures are identified as such.
 
-- [ ] Clone into a clean directory and run `python3 scripts/demo.py` using a supported Python version.
-- [ ] Run the documented regression checks against the exact release commit.
-- [ ] Verify the synthetic demo in a browser, including a narrow viewport, dark mode, keyboard navigation, search, details, and charts.
-- [x] Confirm that the README describes the released behavior, not planned work.
-- [ ] Check relative links and image rendering on GitHub.
-- [ ] If replacing the illustration with actual screenshots, capture only an isolated synthetic demo and label it accurately.
+## History preparation
 
-The source review removed a private example comment and a personal default filter from the current export. Their earlier versions remain in the private baseline history; sanitize that history before publishing it. The preserved v1 tag is useful for local comparison and is not yet approved for a public release.
+Before public visibility, reachable source history is reviewed along with branch and annotated-tag metadata. Two early personal example defaults are generalized and personal commit/tag email metadata is replaced with the owner's GitHub noreply identity. A private local backup is kept outside the published history. Version names v1.0.0 through v4.0.0 are retained; commit and tag object IDs change during sanitization.
 
-The v2 snapshot adds sanitized search tools, skills and prompt templates. Its `*.json.example` files are setup inputs, not live registries or schedules. The v2 review does not replace the full-history audit above; earlier private-history concerns remain applicable before any visibility change.
+Export manifests retain original source provenance hashes and refresh exported-file hashes where sanitization changes a snapshot. Base-commit references are mapped to the sanitized history. A source hash identifies the source reviewed at the time; it is distinct from the hash of the portable export.
 
-## Release decision
+## Validation
 
-- [ ] Choose and add a license after the rights review. Do not describe the project as open source before a license has been selected.
-- [ ] Create release notes that distinguish the preserved v1 baseline from the redesigned version and disclose material limitations.
-- [ ] Obtain the owner's explicit decision to make the repository public.
+The regression command is `python3 scripts/check.py`: 209 Python tests, JavaScript regressions, synthetic demo generation, generated-script syntax checks and DOM integration. Browser capture separately exercises all main tabs, progress subviews, assessment/detail views, light/dark mode and a narrow viewport with external requests blocked.
 
-## Documentation artwork
+Documentation paths, image dimensions, versioned manifest hashes and reachable publication history are reviewed before the visibility change. A fresh checkout is used for the final source verification. These checks cover the shipped local demo; they do not establish live vacancy availability, authenticated account behavior or unattended scheduler success.
 
-`docs/assets/dashboard-overview.svg` is authored vector artwork. `dashboard-overview.png` is its raster export for README compatibility. It depicts a fictional layout and fictional values, with English labels for an audience-facing overview. Neither file is a screenshot or evidence that the corresponding browser interactions were tested.
+## License and provenance
+
+[MIT](../LICENSE), selected by the owner. Third-party development dependencies retain their own licenses. The interface keeps its own Python/JSON runtime and chart behavior; layout inspiration is credited in the README.
+
+Real screenshots and older authored illustrations are distinguished in [image provenance](SCREENSHOTS.md). No screenshots of private job-search records are published.

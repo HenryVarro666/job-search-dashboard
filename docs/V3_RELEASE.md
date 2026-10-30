@@ -1,5 +1,7 @@
 # v3.0.0 release notes
 
+> Historical source snapshot. The repository now uses the [MIT license](../LICENSE); see the [public release record](PUBLIC_RELEASE.md) for the current publication status.
+
 Dashboard source snapshot dated October 30, 2026. The repository remains private.
 
 ## Dashboard changes
