@@ -13,12 +13,12 @@
     },
     {
       "path": ".gitignore",
-      "export_sha256": "ce34cdf5ee3527dfb44cb36b45076c09b83b4256c1ec1b789d7cbec66c31cb92",
+      "export_sha256": "3a7fe34a61027de41863de2aebd53f9d4839dfc076e6a12c71b7cab20766ae34",
       "kind": "release_asset_or_template"
     },
     {
       "path": "README.md",
-      "export_sha256": "c40a4f8cee556ffc93dec3ae073e38cda4c614bc91f1ebd4fffcd536704c81c0",
+      "export_sha256": "2149fb9b1e9c314b9ce47a8c63d040729a448cbb47091fbea59c6f9dcff00a5e",
       "kind": "release_asset_or_template"
     },
     {
@@ -78,12 +78,12 @@
     },
     {
       "path": "package-lock.json",
-      "export_sha256": "6a609e085a1e24f6b595c816c13198c6e4daf0b6875e7aa298fa01b441c5fa51",
+      "export_sha256": "8cfc38cdc2850d55565ab1a5c9760d199c7fe3917939c998bb0c293585e5e45f",
       "kind": "release_asset_or_template"
     },
     {
       "path": "package.json",
-      "export_sha256": "1ae7aecebe2be3dfb6cc2bf725cbecdbdf11eb1e7f51c9a1808d53d07aa79b15",
+      "export_sha256": "5021268c3830df2fe540fd480a5abafe8feb686ab3eecb368a4429141860bf1e",
       "kind": "release_asset_or_template"
     },
     {

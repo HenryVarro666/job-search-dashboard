@@ -4,7 +4,7 @@ A local workspace for job-search actions, opportunities, and application records
 
 **Python standard library · Vanilla JavaScript · Offline HTML · SVG charts**
 
-**v3.0.0** syncs the latest dashboard changes: a simplified current-outcome flow, readable table headers and long fields, and explicit handling of historical applications verified by an employer rejection. The portable search skills and prompt templates introduced in v2 remain available.
+**v4.0.0** packages the five search prompts and four portable skills with dedicated catalogs and configuration instructions. It retains the latest dashboard changes from **v3.0.0**: a simplified current-outcome flow, readable tables, and employer-rejection evidence with unknown dates preserved. The prompt and skill bodies were already present on the v2 source line; v4 gives them a separate versioned package entry point.
 
 ![Illustrative demo layout with synthetic data: daily actions, weekly application and referral activity, and a record detail panel.](docs/assets/dashboard-overview.png)
 
@@ -12,7 +12,7 @@ A local workspace for job-search actions, opportunities, and application records
 
 [Try the synthetic demo](#try-the-synthetic-demo) · [What it covers](#what-it-covers) · [How the data works](#how-the-data-works) · [Public-release preparation](docs/PUBLIC_RELEASE.md)
 
-[Search workflow](docs/SEARCH_WORKFLOW.md) · [Candidate profile template](docs/CANDIDATE_PROFILE.md) · [v3 release notes](docs/V3_RELEASE.md) · [v2 release notes](docs/V2_RELEASE.md)
+[Prompt catalog](prompts/README.md) · [Skill catalog](skills/README.md) · [Search workflow](docs/SEARCH_WORKFLOW.md) · [Candidate profile template](docs/CANDIDATE_PROFILE.md) · [v4 release notes](docs/V4_RELEASE.md) · [v3 release notes](docs/V3_RELEASE.md)
 
 ## What it covers
 
@@ -46,7 +46,7 @@ The supplied examples are fictional. The demo does not read or modify a personal
 
 The demo also writes unexecuted ATS and LinkedIn query plans under `.local/demo/discovery/`. These are offline plans, not search results or evidence that jobs are open.
 
-## Search and verification in v2
+## Search and verification
 
 ```bash
 # Offline only: generate queries for a separate search tool or manual use.
@@ -110,8 +110,8 @@ The generator accepts `--data`, `--out`, and `--today` for an application-record
 ```text
 scripts/
   demo.py                      Synthetic example and local build
-skills/                        Portable search and evidence-review skills
-prompts/                       Manual and recurring execution templates
+skills/                        Portable search and evidence-review skills; README catalog
+prompts/                       Manual and recurring execution templates; README catalog
 examples/                      Blank or fictional local-setup templates
 工具/
   求职进度面板/                 Main dashboard
@@ -127,6 +127,7 @@ examples/                      Blank or fictional local-setup templates
 source-manifest.json            Source hashes for the v1 extraction
 source-manifest-v2.json         v2 export hashes and portability notes
 source-manifest-v3.json         v3 dashboard synchronization hashes
+source-manifest-v4.json         v4 package hashes and validation scope
 ```
 
 The supporting modules preserve the existing import structure. This repository does not contain the private research archive, crawler datasets, wage-reference files, or live application/scheduler state.
@@ -156,6 +157,7 @@ Personal applications, correspondence, resumes, schedules, research notes, and g
 | `v1.1.0` | Corrected stage inference, separate weekly activity series, progress subviews, record drawer, global lookup, and unified styling |
 | `v2.0.0` | Search skills and prompt templates, offline ATS/LinkedIn planners, evidence regressions, and optional configured company increments |
 | `v3.0.0` | Latest dashboard flow and table fixes, plus employer-rejection evidence without invented application dates |
+| `v4.0.0` | Separate prompt and skill package catalogs, setup instructions and refreshed export hashes; inherits the v3 dashboard |
 
 The v1 tag is retained for comparison. Its chart semantics predate the corrections described in the redesign plan.
 
